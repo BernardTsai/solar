@@ -1,6 +1,15 @@
 #!/bin/bash
+# Instructions - source this file to setup the proper environment:
+# > source setup.sh
+
+# determine working directory
 ROOTDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 BINDIR=$ROOTDIR/bin
+
+# create required directories
+mkdir -p $ROOTDIR/src
+mkdir -p $ROOTDIR/bin
+mkdir -p $ROOTDIR/pkg
 
 # export GOPATH
 export GOPATH=$ROOTDIR
@@ -10,8 +19,9 @@ if [ -d "$BINDIR" ] && [[ ":$PATH:" != *":$BINDIR:"* ]]; then
     PATH="${PATH:+"$PATH:"}$BINDIR"
 fi
 
-# import missing libraries
+# import required libraries
 go get github.com/google/uuid
 go get github.com/pkg/errors
 go get gopkg.in/yaml.v2
 go get gopkg.in/abiosoft/ishell.v2
+go get github.com/spf13/viper

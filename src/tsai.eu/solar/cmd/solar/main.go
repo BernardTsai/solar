@@ -13,6 +13,13 @@ import (
 
 // main entry point for the orchestrator
 func main() {
+	// parse configuration file 'solar-conf.yaml' in local directory
+	_, err := util.ReadConfiguration()
+	if err != nil {
+		fmt.Println("unable to read the configuration file")
+		fmt.Println(err)
+	}
+
 	// initialise command line options
 	util.ParseCommandLineOptions()
 
