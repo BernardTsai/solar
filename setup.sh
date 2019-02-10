@@ -5,6 +5,7 @@
 # determine working directory
 ROOTDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 BINDIR=$ROOTDIR/bin
+SRCDIR=$ROOTDIR/src
 
 # create required directories
 mkdir -p $ROOTDIR/src
@@ -25,3 +26,10 @@ go get github.com/pkg/errors
 go get gopkg.in/yaml.v2
 go get gopkg.in/abiosoft/ishell.v2
 go get github.com/spf13/viper
+
+# install binaries
+cd $SRCDIR
+go install tsai.eu/solar/cmd/solar
+
+# change to root directory
+cd $ROOTDIR
