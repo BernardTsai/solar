@@ -1,4 +1,4 @@
-package shell
+package cli
 
 import (
 	ishell "gopkg.in/abiosoft/ishell.v2"

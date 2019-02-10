@@ -32,14 +32,11 @@ func ReadConfiguration() (Configuration, error) {
   // set default values
   viper.SetDefault("MSG", map[string]string{"Events": "events", "Status": "status"})
 
-  // read configuration
-	err := viper.ReadInConfig()
-  if err != nil {
-    return configuration, err
-  }
+  // read configuration (ignore any errors)
+	viper.ReadInConfig()
 
   // decode the configuration
-  err = viper.Unmarshal(&configuration)
+  err := viper.Unmarshal(&configuration)
 	if err != nil {
     return configuration, err
   }

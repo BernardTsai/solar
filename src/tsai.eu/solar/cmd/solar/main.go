@@ -5,7 +5,7 @@ import (
 
 	"tsai.eu/solar/engine"
 	"tsai.eu/solar/model"
-	"tsai.eu/solar/shell"
+	"tsai.eu/solar/cli"
 	"tsai.eu/solar/util"
 )
 
@@ -33,7 +33,7 @@ func main() {
 	engine.StartDispatcher(m)
 
 	// start the command line interface
-	shell.Run(m)
+	cli.Run(m)
 }
 
 //------------------------------------------------------------------------------
