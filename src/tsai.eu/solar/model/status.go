@@ -7,9 +7,10 @@ import "fmt"
 // ComponentStatus object received from controller.
 type ComponentStatus struct {
 	Domain            string `yaml:"Domain"`            // name of domain
-	Component         string `yaml:"Component"`         // name of component
+	Solution          string `yaml:"Solution"`          // name of solution
+	Element           string `yaml:"Element"`           // name of element
+	Version           string `yaml:"Version"`           // version of element
 	Instance          string `yaml:"Instance"`          // name of instance
-	Version           string `yaml:"Version"`           // version of component
 	ComponentEndpoint string `yaml:"ComponentEndpoint"` // endpoint of component
 	VersionEndpoint   string `yaml:"VersionEndpoint"`   // endpoint of component version
 	InstanceEndpoint  string `yaml:"InstanceEndpoint"`  // endpoint of instance
@@ -31,9 +32,10 @@ func DeriveComponentStatus(configuration *ComponentConfiguration) (status *Compo
 
 	status = &ComponentStatus{
 		Domain:            configuration.Domain,
-		Component:         configuration.Component,
-		Instance:          configuration.Instance,
+		Solution:          configuration.Solution,
+		Element:           configuration.Element,
 		Version:           instance.Version,
+		Instance:          configuration.Instance,
 		ComponentEndpoint: configuration.Endpoint,
 		VersionEndpoint:   configuration.Endpoints[instance.Version],
 		InstanceEndpoint:  instance.Endpoint,
@@ -50,12 +52,14 @@ func SetStatus(status ComponentStatus) (err error) {
 	if status.Changed {
 		// TODO: proper error handling
 		domain, _ := GetModel().GetDomain(status.Domain)
-		component, _ := domain.GetComponent(status.Component)
-		instance, _ := component.GetInstance(status.Instance)
+		solution, _ := domain.GetSolution(status.Solution)
+		element, _ := solution.GetElement(status.Element)
+		cluster, _ := element.GetCluster(status.Version)
+		instance, _ := cluster.GetInstance(status.Instance)
 
 		// update component
-		component.Endpoint = status.ComponentEndpoint
-		component.AddEndpoint(instance.Version, status.VersionEndpoint)
+		cluster.Endpoint = status.ComponentEndpoint
+		cluster.AddEndpoint(cluster.Version, status.VersionEndpoint)
 
 		// update instance
 		instance.Endpoint = status.InstanceEndpoint

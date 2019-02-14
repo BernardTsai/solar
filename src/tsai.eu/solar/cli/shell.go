@@ -1,12 +1,18 @@
 package cli
 
 import (
+	"os"
+	"fmt"
 	"strings"
 
 	ishell "gopkg.in/abiosoft/ishell.v2"
 	"tsai.eu/solar/model"
 	"tsai.eu/solar/util"
 )
+
+//------------------------------------------------------------------------------
+
+var output string
 
 //------------------------------------------------------------------------------
 
@@ -21,6 +27,7 @@ func Run(m *model.Model) {
 		Name: "usage",
 		Help: "usage command",
 		Func: func(c *ishell.Context) {
+			OutputUsage(true, c)
 			ModelUsage(true, c)
 			DomainUsage(false, c)
 			TemplateUsage(false, c)
@@ -34,6 +41,13 @@ func Run(m *model.Model) {
 			TaskUsage(false, c)
 			EventUsage(false, c)
 		},
+	})
+
+	// register a function for the "output" command.
+	shell.AddCmd(&ishell.Cmd{
+		Name: "output",
+		Help: "output commands",
+		Func: func(c *ishell.Context) { OutputCommand(c, m) },
 	})
 
 	// register a function for the "model" command.
@@ -139,13 +153,62 @@ func Run(m *model.Model) {
 func handleResult(context *ishell.Context, err error, fail string, success string) {
 	if err != nil {
 		if util.Debug() {
-			context.Printf("%s\n%+v\n	", fail, err)
+
+			info := fmt.Sprintf("%s\n%+v\n	", fail, err)
+			writeError(context, info)
 		} else {
-			context.Printf("%s\n ", fail)
+			info := fmt.Sprintf("%s\n ", fail)
+			writeError(context, info)
 		}
 	} else {
-		context.Println(success)
+		writeOutput(context, success)
 	}
+}
+
+//------------------------------------------------------------------------------
+
+// setOutput defines the name of the output file.
+func setOutput(filename string) {
+	output = filename
+}
+
+//------------------------------------------------------------------------------
+
+// writeInfo prints information to the console.
+func writeInfo(context *ishell.Context, info string) {
+	context.Println(info)
+}
+
+//------------------------------------------------------------------------------
+
+// writeError prints error information to the console.
+func writeError(context *ishell.Context, info string) {
+	context.Println(info)
+}
+
+//------------------------------------------------------------------------------
+
+// writeOutput writes the provided information to the console or a file.
+func writeOutput(context *ishell.Context, info string) error {
+	// check which channel to use
+	if output == "" {
+		context.Println(info)
+	} else {
+		f, err := os.OpenFile(output, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+    if err != nil {
+			fmt.Println(err)
+      return err
+    }
+    defer f.Close()
+
+    _, err = f.WriteString(info)
+    if err != nil {
+			fmt.Println(err)
+      return err
+    }
+	}
+
+	return nil
 }
 
 //------------------------------------------------------------------------------

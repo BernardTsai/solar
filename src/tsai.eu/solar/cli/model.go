@@ -22,16 +22,24 @@ func ModelCommand(context *ishell.Context, m *model.Model) {
 	switch action {
 	case "?":
 		ModelUsage(true, context)
-	case "reset":
-		err := m.Reset()
-		handleResult(context, err, "model could not be reset", "model has been reset")
-	case "load":
+	case _set:
 		err := m.Load(context.Args[1])
-		handleResult(context, err, "model could not be loaded", "model has been loaded")
-	case "save":
-		err := m.Save(context.Args[1])
-		handleResult(context, err, "model could not be saved", "model has been saved")
-	case "show":
+		if err != nil {
+			handleResult(context, err, "model could not be loaded", "")
+		}
+
+		// display contents of model
+		result, err := m.Show()
+		handleResult(context, err, "model can not be displayed", result)
+	case _get:
+		result, err := m.Show()
+		handleResult(context, err, "model can not be displayed", result)
+	case _reset:
+		err := m.Reset()
+		if err != nil {
+			handleResult(context, err, "model could not be reset", "")			
+		}
+
 		result, err := m.Show()
 		handleResult(context, err, "model can not be displayed", result)
 	default:
@@ -43,13 +51,15 @@ func ModelCommand(context *ishell.Context, m *model.Model) {
 
 // ModelUsage describes how to make use of the model subcommand
 func ModelUsage(header bool, context *ishell.Context) {
+	info := ""
 	if header {
-		context.Println("usage:")
+		info = _usage
 	}
-	context.Println(`  model reset`)
-	context.Println(`        load <filename>`)
-	context.Println(`        save <filename>`)
-	context.Println(`        show`)
+	info += "  model set <filename>\n"
+	info += "        get\n"
+	info += "        reset\n"
+
+  writeInfo(context, info)
 }
 
 //------------------------------------------------------------------------------

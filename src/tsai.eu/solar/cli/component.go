@@ -8,6 +8,16 @@ import (
 
 //------------------------------------------------------------------------------
 
+// ComponentVersion refers to a specific version of a component in a domain.
+type ComponentVersion struct {
+	Domain string
+	Component string
+	Version string
+}
+
+//------------------------------------------------------------------------------
+
+
 // ComponentCommand executes the component related subcommands
 func ComponentCommand(context *ishell.Context, m *model.Model) {
 	// check if the action has been defined
@@ -23,11 +33,55 @@ func ComponentCommand(context *ishell.Context, m *model.Model) {
 	switch action {
 	case "?":
 		ComponentUsage(true, context)
-	case "list":
+	case _list:
+		// set default filter criteria
+		domainName := ""
+		componentName := ""
+		versionName := ""
+
+		// initialise result
+		var result []ComponentVersion
+
 		// check availability of arguments
-		if len(context.Args) != 2 {
+		if len(context.Args) < 2 || 4 < len(context.Args) {
 			ComponentUsage(true, context)
 			return
+		}
+		if len(context.Args) >= 2 {
+			domainName = context.Args[1]
+		}
+		if len(context.Args) >= 3 {
+			versionName = context.Args[2]
+		}
+		if len(context.Args) == 4 {
+			versionName = context.Args[3]
+		}
+
+		// loop over all domains
+		for dName, d in range m.Domains {
+			// filter by domain
+			if domainName == "" || domainName == dName {
+
+				// loop over all components
+				for cName, c in range d.Components {
+					// filter by component
+					if componentName == "" || componentName == cName {
+
+						// loop over all versions
+						for vName, v in range c.Components {
+							// filter by component
+							if componentName == "" || componentName == cName {
+
+
+
+
+
+
+							}
+						}
+					}
+				}
+			}
 		}
 
 		// execute command
@@ -42,32 +96,7 @@ func ComponentCommand(context *ishell.Context, m *model.Model) {
 		result, err := util.ConvertToJSON(components)
 		handleResult(context, err, "components could not be listed", result)
 
-	case "create":
-		// check availability of arguments
-		if len(context.Args) < 4 {
-			ComponentUsage(true, context)
-			return
-		}
-
-		// determine domain
-		domain, err := m.GetDomain(context.Args[1])
-
-		if err != nil {
-			handleResult(context, err, "domain can not be identified", "")
-			return
-		}
-
-		// create new component
-		component, err := model.NewComponent(context.Args[2], context.Args[3])
-		if err != nil {
-			handleResult(context, err, "unable to create a new component", "")
-			return
-		}
-
-		// add component to domain
-		err = domain.AddComponent(component)
-		handleResult(context, err, "unable to create component", "component has been created")
-	case "load":
+	case _set:
 		// check availability of arguments
 		if len(context.Args) != 3 {
 			ComponentUsage(true, context)
@@ -95,33 +124,7 @@ func ComponentCommand(context *ishell.Context, m *model.Model) {
 		// add component to domain
 		err = domain.AddComponent(component)
 		handleResult(context, err, "unable to load component", "component has been loaded")
-	case "save":
-		// check availability of arguments
-		if len(context.Args) != 4 {
-			ComponentUsage(true, context)
-			return
-		}
-
-		// determine domain
-		domain, err := m.GetDomain(context.Args[1])
-
-		if err != nil {
-			handleResult(context, err, "domain can not be identified", "")
-			return
-		}
-
-		// determine component
-		component, err := domain.GetComponent(context.Args[2])
-
-		if err != nil {
-			handleResult(context, err, "component can not be identified", "")
-			return
-		}
-
-		// save component
-		err = component.Save(context.Args[3])
-		handleResult(context, err, "unable to save component", "component has been saved")
-	case "show":
+	case _get:
 		// check availability of arguments
 		if len(context.Args) != 3 {
 			ComponentUsage(true, context)
@@ -147,7 +150,7 @@ func ComponentCommand(context *ishell.Context, m *model.Model) {
 		// execute the command
 		result, err := t.Show()
 		handleResult(context, err, "component can not be displayed", result)
-	case "delete":
+	case _delete:
 		// check availability of arguments
 		if len(context.Args) != 3 {
 			ComponentUsage(true, context)
@@ -182,15 +185,16 @@ func ComponentCommand(context *ishell.Context, m *model.Model) {
 
 // ComponentUsage describes how to make use of the subcommand
 func ComponentUsage(header bool, context *ishell.Context) {
+	info := ""
 	if header {
-		context.Println("usage:")
+		info = _usage
 	}
-	context.Println(`  component list <domain>`)
-	context.Println(`            create <domain> <component> <type>`)
-	context.Println(`            load <domain> <filename>`)
-	context.Println(`            save <domain> <component> <filename>`)
-	context.Println(`            show <domain> <component>`)
-	context.Println(`            delete <domain> <component>`)
+	info += "  component list <domain> <component> <version>\n"
+	info += "            set <domain> <filename>\n"
+	info += "            get <domain> <component> <version>\n"
+	info += "            delete <domain> <component> <version>\n"
+
+  writeInfo(context, info)
 }
 
 //------------------------------------------------------------------------------

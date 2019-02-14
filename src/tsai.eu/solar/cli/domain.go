@@ -23,11 +23,11 @@ func DomainCommand(context *ishell.Context, m *model.Model) {
 	switch action {
 	case "?":
 		DomainUsage(true, context)
-	case "list":
+	case _list:
 		domains, _ := m.ListDomains()
 		result, err := util.ConvertToYAML(domains)
 		handleResult(context, err, "domains could not be listed", result)
-	case "create":
+	case _create:
 		// check availability of arguments
 		if len(context.Args) < 2 {
 			DomainUsage(true, context)
@@ -35,27 +35,30 @@ func DomainCommand(context *ishell.Context, m *model.Model) {
 		}
 
 		// execute command
-		domain, _ := model.NewDomain(context.Args[1])
-		err := m.AddDomain(domain)
-		handleResult(context, err, "unable to create domain", "domain has been created")
-	case "show":
-		// check availability of arguments
-		if len(context.Args) < 2 {
-			DomainUsage(true, context)
-			return
-		}
-
-		// execute command
-		d, err := m.GetDomain(context.Args[1])
-
+		d, _ := model.NewDomain(context.Args[1])
+		err := m.AddDomain(d)
 		if err != nil {
-			handleResult(context, err, "domain can not be displayed", "")
-			return
+			handleResult(context, err, "unable to create domain", "")
 		}
 
+		// display domain
 		result, err := d.Show()
 		handleResult(context, err, "domain can not be displayed", result)
-	case "load":
+	case _delete:
+		// check availability of arguments
+		if len(context.Args) < 2 {
+			DomainUsage(true, context)
+			return
+		}
+
+		// execute command
+		err := m.DeleteDomain(context.Args[1])
+		if err != nil {
+			handleResult(context, err, "domain can not be deleted", "")
+		}
+
+		// no output
+	case _set:
 		// check availability of arguments
 		if len(context.Args) < 2 {
 			DomainUsage(true, context)
@@ -75,10 +78,12 @@ func DomainCommand(context *ishell.Context, m *model.Model) {
 
 		// add domain to model
 		err = m.AddDomain(d)
-		handleResult(context, err, "domain could not be loaded", "domain has been loaded")
-	case "save":
+		if err != nil {
+			handleResult(context, err, "domain could not be loaded", "")
+		}
+	case _get:
 		// check availability of arguments
-		if len(context.Args) < 3 {
+		if len(context.Args) < 2 {
 			DomainUsage(true, context)
 			return
 		}
@@ -87,22 +92,33 @@ func DomainCommand(context *ishell.Context, m *model.Model) {
 		d, err := m.GetDomain(context.Args[1])
 
 		if err != nil {
-			handleResult(context, err, "unknown domain", "")
+			handleResult(context, err, "domain is not known", "")
 			return
 		}
 
-		err = d.Save(context.Args[2])
-		handleResult(context, err, "domain could not be saved", "domain has been saved")
-	case "delete":
+		// display domain
+		result, err := d.Show()
+		handleResult(context, err, "domain can not be displayed", result)
+	case _reset:
 		// check availability of arguments
 		if len(context.Args) < 2 {
 			DomainUsage(true, context)
 			return
 		}
 
-		// execute command
-		err := m.DeleteDomain(context.Args[1])
-		handleResult(context, err, "domain can not be deleted", "domain has been deleted")
+		// execute delete command
+		m.DeleteDomain(context.Args[1])
+
+		// execute create ommand
+		d, _ := model.NewDomain(context.Args[1])
+		err := m.AddDomain(d)
+		if err != nil {
+			handleResult(context, err, "unable to create domain", "")
+		}
+
+		// display domain
+		result, err := d.Show()
+		handleResult(context, err, "domain can not be displayed", result)
 	default:
 		DomainUsage(true, context)
 	}
@@ -112,15 +128,18 @@ func DomainCommand(context *ishell.Context, m *model.Model) {
 
 // DomainUsage describes how to make use of the domain subcommand
 func DomainUsage(header bool, context *ishell.Context) {
+	info := ""
 	if header {
-		context.Println("usage:")
+		info = _usage
 	}
-	context.Println("  domain list")
-	context.Println("         create <domain>")
-	context.Println("         show <domain>")
-	context.Println("         load <filename>")
-	context.Println("         save <domain> <filename>")
-	context.Println("         delete <domain>")
+	info += "  domain list\n"
+	info += "         create <domain>\n"
+	info += "         delete <domain>\n"
+	info += "         set <filename>\n"
+	info += "         get <domain>\n"
+	info += "         reset <domain>\n"
+
+  writeInfo(context, info)
 }
 
 //------------------------------------------------------------------------------

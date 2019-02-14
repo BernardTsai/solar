@@ -5,7 +5,9 @@ package model
 // ComponentConfiguration object passed to controller.
 type ComponentConfiguration struct {
 	Domain    string                            // domain of the component
-	Component string                            // component name
+	Solution  string                            // solution name
+	Element   string                            // element name
+	Version   string                            // element version
 	Instance  string                            // instance name
 	Endpoint  string                            // endpoint of the component
 	Endpoints map[string]string                 // endpoints of the instances
