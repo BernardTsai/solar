@@ -137,7 +137,7 @@ func (m *ElementMap) UnmarshalYAML(unmarshal func(interface{}) error) error {
 // Solution describes the runtime configuration of a solution within a domain.
 type Solution struct {
 	Solution      string     `yaml:"solution"`       // name of solution
-	Version       string     `yaml:"type"`           // type of solution
+	Version       string     `yaml:"version"`        // version of solution
 	Configuration string     `yaml:"configuration"`  // configuration of solution
 	Elements      ElementMap `yaml:"elements"`       // elements of solution
 }
