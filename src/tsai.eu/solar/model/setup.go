@@ -4,59 +4,59 @@ package model
 
 // InstanceSetup object describes the setup for an instance of a cluster of a solution element.
 type InstanceSetup struct {
-  Instance                string  `yaml:"instance"`                // uuid of the instance
-	State                   string  `yaml:"state"`                   // state of the instance
-  BaseConfiguration       string  `yaml:"baseConfiguration"`       // runtime configuration of the instance
-  DesignTimeConfiguration string  `yaml:"designTimeConfiguration"` // runtime configuration of the instance
-	RuntimeConfiguration    string  `yaml:"runtimeConfiguration"`    // design time configuration of the instance
-	Endpoint                string  `yaml:"endpoint"`                // endpoint of the instance
+  Instance                string  `yaml:"Instance"`                // uuid of the instance
+	State                   string  `yaml:"State"`                   // state of the instance
+  BaseConfiguration       string  `yaml:"BaseConfiguration"`       // runtime configuration of the instance
+  DesignTimeConfiguration string  `yaml:"DesignTimeConfiguration"` // runtime configuration of the instance
+	RuntimeConfiguration    string  `yaml:"RuntimeConfiguration"`    // design time configuration of the instance
+	Endpoint                string  `yaml:"Endpoint"`                // endpoint of the instance
 }
 
 // RelationshipSetup object describes the setup for a relationship.
 type RelationshipSetup struct {
-  Relationship            string  `yaml:"relationship"`            // name of the relationship
-	Element                 string  `yaml:"element"`                 // element to which this relationship refers to
-	Version                 string  `yaml:"version"`                 // version of the element to which this relationship refers to
-  BaseConfiguration       string  `yaml:"baseConfiguration"`       // runtime configuration of the relationship
-  DesignTimeConfiguration string  `yaml:"designTimeConfiguration"` // runtime configuration of the relationship
-	RuntimeConfiguration    string  `yaml:"runtimeConfiguration"`    // design time configuration of the relationship
-	Endpoint                string  `yaml:"endpoint"`                // endpoint of the relationship
+  Relationship            string  `yaml:"Relationship"`            // name of the relationship
+	Element                 string  `yaml:"Element"`                 // element to which this relationship refers to
+	Version                 string  `yaml:"Version"`                 // version of the element to which this relationship refers to
+  BaseConfiguration       string  `yaml:"BaseConfiguration"`       // runtime configuration of the relationship
+  DesignTimeConfiguration string  `yaml:"DesignTimeConfiguration"` // runtime configuration of the relationship
+	RuntimeConfiguration    string  `yaml:"RuntimeConfiguration"`    // design time configuration of the relationship
+	Endpoint                string  `yaml:"Endpoint"`                // endpoint of the relationship
 }
 
 // ClusterSetup object describes the setup for a cluster of a solution element.
 type ClusterSetup struct {
-  Cluster                 string                        `yaml:"cluster"`                 // version of the solution element cluster
-	State                   string                        `yaml:"state"`                   // state of the solution element cluster
-	Size                    int                           `yaml:"size"`                    // size of the solution element cluster
-  BaseConfiguration       string                        `yaml:"baseConfiguration"`       // runtime configuration of the cluster
-  DesignTimeConfiguration string                        `yaml:"designTimeConfiguration"` // runtime configuration of the cluster
-	RuntimeConfiguration    string                        `yaml:"runtimeConfiguration"`    // design time configuration of the cluster
-	Endpoint                string                        `yaml:"endpoint"`                // endpoint of the solution element cluster
-	Relationships           map[string]*RelationshipSetup `yaml:"relationships"`           // setups for the relationships of the solution element cluster
-  Instances               map[string]*InstanceSetup     `yaml:"instances"`               // setups for the instances of the solution element cluster
+  Cluster                 string                        `yaml:"Cluster"`                 // version of the solution element cluster
+	State                   string                        `yaml:"State"`                   // state of the solution element cluster
+	Size                    int                           `yaml:"Size"`                    // size of the solution element cluster
+  BaseConfiguration       string                        `yaml:"BaseConfiguration"`       // runtime configuration of the cluster
+  DesignTimeConfiguration string                        `yaml:"DesignTimeConfiguration"` // runtime configuration of the cluster
+	RuntimeConfiguration    string                        `yaml:"RuntimeConfiguration"`    // design time configuration of the cluster
+	Endpoint                string                        `yaml:"Endpoint"`                // endpoint of the solution element cluster
+	Relationships           map[string]*RelationshipSetup `yaml:"Relationships"`           // setups for the relationships of the solution element cluster
+  Instances               map[string]*InstanceSetup     `yaml:"Instances"`               // setups for the instances of the solution element cluster
 }
 
 // ElementSetup object describes the setup for a solution element.
 type ElementSetup struct {
-  Element                 string                   `yaml:"element"`                 // name of the solution element
-	Component               string                   `yaml:"component"`               // type of the solution elmenent
-  DesignTimeConfiguration string                   `yaml:"designTimeConfiguration"` // runtime configuration of the cluster
-	RuntimeConfiguration    string                   `yaml:"runtimeConfiguration"`    // design time configuration of the cluster
-	Endpoint                string                   `yaml:"endpoint"`                // state of the solution element
-  Clusters                map[string]*ClusterSetup `yaml:"clusters"`                // setups for clusters of the solution element
+  Element                 string                   `yaml:"Element"`                 // name of the solution element
+	Component               string                   `yaml:"Component"`               // type of the solution elmenent
+  DesignTimeConfiguration string                   `yaml:"DesignTimeConfiguration"` // runtime configuration of the cluster
+	RuntimeConfiguration    string                   `yaml:"RuntimeConfiguration"`    // design time configuration of the cluster
+	Endpoint                string                   `yaml:"Endpoint"`                // state of the solution element
+  Clusters                map[string]*ClusterSetup `yaml:"Clusters"`                // setups for clusters of the solution element
 }
 
 // Setup object passed between engine and controller.
 type Setup struct {
-  Domain                  string                   `yaml:"domain"`                  // name of the domain
-  Solution                string                   `yaml:"solution"`                // name of solution
-	Version                 string                   `yaml:"version"`                 // version of solution
-  Element                 string                   `yaml:"element"`                 // name of element
-  Cluster                 string                   `yaml:"cluster"`                 // name of cluster
-  Instance                string                   `yaml:"instance"`                // name of instance
-  DesignTimeConfiguration string                   `yaml:"designTimeConfiguration"` // runtime configuration of the solution
-	RuntimeConfiguration    string                   `yaml:"runtimeConfiguration"`    // design time configuration of the solution
-	Elements                map[string]*ElementSetup `yaml:"elements"`                // elements of solution
+  Domain                  string                   `yaml:"Domain"`                  // name of the domain
+  Solution                string                   `yaml:"Solution"`                // name of solution
+	Version                 string                   `yaml:"Version"`                 // version of solution
+  Element                 string                   `yaml:"Element"`                 // name of element
+  Cluster                 string                   `yaml:"Cluster"`                 // name of cluster
+  Instance                string                   `yaml:"Instance"`                // name of instance
+  DesignTimeConfiguration string                   `yaml:"DesignTimeConfiguration"` // runtime configuration of the solution
+	RuntimeConfiguration    string                   `yaml:"RuntimeConfiguration"`    // design time configuration of the solution
+	Elements                map[string]*ElementSetup `yaml:"Elements"`                // elements of solution
 }
 
 //------------------------------------------------------------------------------

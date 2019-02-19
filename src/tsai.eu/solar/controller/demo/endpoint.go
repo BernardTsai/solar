@@ -1,4 +1,4 @@
-package file
+package demo
 
 import "tsai.eu/solar/util"
 
@@ -6,16 +6,21 @@ import "tsai.eu/solar/util"
 
 // Endpoint describes the endpoint of the component
 type Endpoint struct {
-	Path string
+	Path string `yaml:"path"` // path to instance
 }
 
-func newEndpoint(path string) (endp *Endpoint) {
+//------------------------------------------------------------------------------
+
+// NewEndpoint creates an endpoint from a path
+func NewEndpoint(path string) (endp *Endpoint) {
 	endp = &Endpoint{
 		Path: path,
 	}
 
 	return
 }
+
+//------------------------------------------------------------------------------
 
 // DecodeEndpoint decodes endpoint yaml into an object
 func DecodeEndpoint(yaml string) (*Endpoint, error) {
@@ -26,7 +31,10 @@ func DecodeEndpoint(yaml string) (*Endpoint, error) {
 	return &endp, err
 }
 
-func encodeEndpoint(endp *Endpoint) (string, error) {
+//------------------------------------------------------------------------------
+
+// EncodeEndpoint converts an endpoint into yaml
+func EncodeEndpoint(endp *Endpoint) (string, error) {
 	yaml, err := util.ConvertToYAML(endp)
 
 	return yaml, err

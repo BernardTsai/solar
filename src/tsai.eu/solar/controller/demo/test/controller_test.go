@@ -6,18 +6,21 @@ import (
 	"strings"
 	"testing"
 
-	"tsai.eu/solar/controller/file"
+	"tsai.eu/solar/controller/demo"
 	"tsai.eu/solar/model"
 	"tsai.eu/solar/util"
 )
 
-const TESTDATA string = "testdata"
+//------------------------------------------------------------------------------
+
+const TESTDATA       string = "testdata"
+const CONFIGURATIONS string = "_configurations"
 
 //------------------------------------------------------------------------------
 
 // LoadConfigurations load a list of configuration filenames
-func LoadConfigurations(filename string) (list []string, err error) {
-	path := filepath.Join(TESTDATA, filename)
+func LoadConfigurations() (list []string, err error) {
+	path := filepath.Join(TESTDATA, CONFIGURATIONS)
 
 	// retrieve list
 	result, err := util.LoadFile(path)
@@ -35,13 +38,12 @@ func LoadConfigurations(filename string) (list []string, err error) {
 //------------------------------------------------------------------------------
 
 // LoadConfiguration load a configuration file
-func LoadConfiguration(filename string) *model.ComponentConfiguration {
-	configuration := model.ComponentConfiguration{}
-	path := filepath.Join(TESTDATA, filename)
+func LoadConfiguration(filename string) *model.Setup {
+	setup := model.Setup{}
+	path  := filepath.Join(TESTDATA, filename)
+	util.LoadYAML(path, &setup)
 
-	util.LoadYAML(path, &configuration)
-
-	return &configuration
+	return &setup
 }
 
 //------------------------------------------------------------------------------
@@ -57,51 +59,37 @@ func LoadConfiguration(filename string) *model.ComponentConfiguration {
 //  nodeA (instances nodeA1(V1.0.0), nodeA2(V1.0.0), nodeA3((V2.0.0), nodeA4((V2.0.0))
 //  nodeB (instances nodeB1(V1.0.0), nodeB2(V1.0.0), nodeB3((V2.0.0), nodeB4((V2.0.0))
 
-// TestFileController verifies the FileController object.
+// TestController verifies the DemoController object.
 func TestController(t *testing.T) {
-	var conf *model.ComponentConfiguration
+	var setup *model.Setup
 	// var status *model.ComponentStatus
 	var err error
 
 	// create controller
-	fc := file.Controller{}
+	fc := demo.Controller{}
 
 	// Load names of configuration files
-	list, err := LoadConfigurations("_configurations")
+	list, err := LoadConfigurations()
 	if err != nil {
 		fmt.Println(err)
 		t.Errorf("%s", err)
 	}
-
+ 
 	for _, entry := range list {
 		if entry != "" {
-			conf = LoadConfiguration(entry)
-			fmt.Println(entry)
-			_, err = fc.Create(conf)
+			setup = LoadConfiguration(entry)
+			_, err = fc.Create(setup)
 			if err != nil {
 				fmt.Println("Unable to create:" + entry)
 				fmt.Println(err)
 			}
-			_, err = fc.Start(conf)
+			_, err = fc.Start(setup)
 			if err != nil {
 				fmt.Println("Unable to start:" + entry)
 				fmt.Println(err)
 			}
 		}
 	}
-
-	//----- read status -----
-	// conf = LoadConfiguration("configurationA1")
-	// status, err = fc.Status(conf)
-
-	// util.DumpYAML(status)
-	// fmt.Println(err)
-
-	//----- detele root -----
-	// status, err = fc.Destroy(conf)
-
-	// util.DumpYAML(status)
-	// fmt.Println(err)
 }
 
 //------------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-package file
+package demo
 
 import (
 	"tsai.eu/solar/model"
@@ -7,8 +7,8 @@ import (
 //------------------------------------------------------------------------------
 
 // Configure reconfigures an instance
-func (c Controller) Configure(configuration *model.ComponentConfiguration) (status *model.ComponentStatus, err error) {
-	return nil, nil
+func (c Controller) Configure(setup *model.Setup) (status *model.Status, err error) {
+	return c.Status(setup)
 }
 
 //------------------------------------------------------------------------------

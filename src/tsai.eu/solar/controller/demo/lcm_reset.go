@@ -1,4 +1,4 @@
-package file
+package demo
 
 import (
 	"tsai.eu/solar/model"
@@ -7,8 +7,8 @@ import (
 //------------------------------------------------------------------------------
 
 // Reset cleans up an instance
-func (c Controller) Reset(configuration *model.ComponentConfiguration) (status *model.ComponentStatus, err error) {
-	return c.Destroy(configuration)
+func (c Controller) Reset(setup *model.Setup) (status *model.Status, err error) {
+	return c.Destroy(setup)
 }
 
 //------------------------------------------------------------------------------

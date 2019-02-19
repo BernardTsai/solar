@@ -4,7 +4,7 @@ import (
 	"errors"
 	"sync"
 
-	"tsai.eu/solar/controller/file"
+	"tsai.eu/solar/controller/demo"
 	"tsai.eu/solar/model"
 )
 
@@ -12,13 +12,13 @@ import (
 
 // Controller defines the standard operations of a controller
 type Controller interface {
-	Status(configuration *model.ComponentConfiguration) (status *model.ComponentStatus, err error)
-	Create(configuration *model.ComponentConfiguration) (status *model.ComponentStatus, err error)
-	Destroy(configuration *model.ComponentConfiguration) (status *model.ComponentStatus, err error)
-	Configure(configuration *model.ComponentConfiguration) (status *model.ComponentStatus, err error)
-	Start(configuration *model.ComponentConfiguration) (status *model.ComponentStatus, err error)
-	Stop(configuration *model.ComponentConfiguration) (status *model.ComponentStatus, err error)
-	Reset(configuration *model.ComponentConfiguration) (status *model.ComponentStatus, err error)
+	Status(configuration *model.Setup) (status *model.Status, err error)
+	Create(configuration *model.Setup) (status *model.Status, err error)
+	Destroy(configuration *model.Setup) (status *model.Status, err error)
+	Configure(configuration *model.Setup) (status *model.Status, err error)
+	Start(configuration *model.Setup) (status *model.Status, err error)
+	Stop(configuration *model.Setup) (status *model.Status, err error)
+	Reset(configuration *model.Setup) (status *model.Status, err error)
 }
 
 //------------------------------------------------------------------------------
@@ -35,7 +35,7 @@ func GetController(componentType string) (Controller, error) {
 	once.Do(func() {
 		controllers = map[string]Controller{}
 
-		controllers["file"] = file.Controller{}
+		controllers["demo"] = demo.NewController()
 	})
 
 	// determine controller

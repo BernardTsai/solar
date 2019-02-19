@@ -1,24 +1,23 @@
-package file
+package demo
 
 import "tsai.eu/solar/util"
 
 //------------------------------------------------------------------------------
 
-// configuration describes the configuration of a component
-type configuration struct {
-	Name     string
-	Template string
+// Configuration describes the configuration of a component
+type Configuration struct {
+	Template string `yaml:"template"`   // template
 }
 
-func decodeConfiguration(yaml string) (*configuration, error) {
-	config := configuration{}
+func decodeConfiguration(yaml string) (*Configuration, error) {
+	config := Configuration{}
 
 	err := util.ConvertFromYAML(yaml, &config)
 
 	return &config, err
 }
 
-func encodeConfiguration(config *configuration) (string, error) {
+func encodeConfiguration(config *Configuration) (string, error) {
 	yaml, err := util.ConvertToYAML(config)
 
 	return yaml, err
