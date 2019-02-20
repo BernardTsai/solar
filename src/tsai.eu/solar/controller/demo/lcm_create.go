@@ -3,6 +3,7 @@ package demo
 import (
 	"errors"
 	"os"
+	"fmt"
 
 	"tsai.eu/solar/model"
 )
@@ -26,12 +27,13 @@ func (c Controller) Create(setup *model.Setup) (status *model.Status, err error)
 	}
 
 	elementPath := parentPath + "/" + elementSetup.Element
-	clusterPath := elementPath + ".V" + clusterSetup.Cluster
+	clusterPath := elementPath + "/." + clusterSetup.Cluster
 	instancePath := clusterPath + "/" + instanceSetup.Instance
 
 	// create path to element directory if it does not exist yet
 	if _, err = os.Stat(elementPath); os.IsNotExist(err) {
 		if err = os.Mkdir(elementPath, os.ModePerm); err != nil {
+			fmt.Println(err)
 			return nil, errors.New("unable to create element directory")
 		}
 	}

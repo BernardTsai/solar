@@ -7,7 +7,7 @@ const ROOTDIR = "/tmp/demo"
 
 // Controller manages the lifecycle of a file
 type Controller struct {
-  Root string `yaml:"root"`   // root directory
+  Root string `yaml:"Root"`   // root directory
 }
 
 //------------------------------------------------------------------------------

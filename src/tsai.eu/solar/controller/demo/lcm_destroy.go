@@ -25,7 +25,7 @@ func (c Controller) Destroy(setup *model.Setup) (status *model.Status, err error
 	}
 
 	elementPath := parentPath + "/" + elementSetup.Element
-	clusterPath := elementPath + ".V" + clusterSetup.Cluster
+	clusterPath := elementPath + "/." + clusterSetup.Cluster
 	instancePath := clusterPath + "/" + instanceSetup.Instance
 
 	// delete instance information file

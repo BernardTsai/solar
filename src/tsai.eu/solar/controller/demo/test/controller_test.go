@@ -25,7 +25,6 @@ func LoadConfigurations() (list []string, err error) {
 	// retrieve list
 	result, err := util.LoadFile(path)
 	if err != nil {
-		fmt.Println(err)
 		return []string{}, err
 	}
 
@@ -66,7 +65,7 @@ func TestController(t *testing.T) {
 	var err error
 
 	// create controller
-	fc := demo.Controller{}
+	dc := demo.NewController()
 
 	// Load names of configuration files
 	list, err := LoadConfigurations()
@@ -74,19 +73,17 @@ func TestController(t *testing.T) {
 		fmt.Println(err)
 		t.Errorf("%s", err)
 	}
- 
+
 	for _, entry := range list {
 		if entry != "" {
 			setup = LoadConfiguration(entry)
-			_, err = fc.Create(setup)
+			_, err = dc.Create(setup)
 			if err != nil {
-				fmt.Println("Unable to create:" + entry)
-				fmt.Println(err)
+				t.Errorf("Unable to create: %s\n%s", entry, err)
 			}
-			_, err = fc.Start(setup)
+			_, err = dc.Start(setup)
 			if err != nil {
-				fmt.Println("Unable to start:" + entry)
-				fmt.Println(err)
+				t.Errorf("Unable to start: %s\n%s", entry, err)
 			}
 		}
 	}
