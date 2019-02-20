@@ -1,27 +1,46 @@
-Domain:    test
-Component: applications
-Instance:  51547790-4337-4516-9e55-e2e9f1b5c8ce
-Endpoints: []
-State:     active
-Instances:
-  51547790-4337-4516-9e55-e2e9f1b5c8ce:
-    Version:       1.0.0
-    UUID:          51547790-4337-4516-9e55-e2e9f1b5c8ce
-    Configuration: |
-      Name:     applications
-      Template: "Applications within tenant: '{{tenant}}'"
-    State:         active
-    Endpoint:      ""
-    Dependencies:
-      parent:
-        Name:      parent
-        Type:      context
-        Component: tenant
-        Version:   1.0.0
-        Endpoint:  "path: '/tenant'"
-      tenant:
-        Name:      tenant
-        Type:      service
-        Component: tenant
-        Version:   1.0.0
-        Endpoint:  "path: '/tenant'"
+Domain:                    "demo-domain"
+Solution:                  "demo-solution"
+Version:                   "V1.0.0"
+Element:                   "Applications"
+Cluster:                   "V1.0.0"
+Instance:                  "51547790-4337-4516-9e55-e2e9f1b5c8ce"
+DesignTimeConfiguration:   ""
+RuntimeConfiguration:      ""
+Elements:
+  "Applications":
+  #--------------
+    Element:                 "Applications"
+    Component:               "Demo"
+    DesignTimeConfiguration: ""
+    RuntimeConfiguration:    ""
+    Endpoint:                ""
+    Clusters:
+      "V1.0.0":
+      #--------
+        Cluster:                 "V1.0.0"
+        State:                   "active"
+        Size:                    "1"
+        BaseConfiguration:       ""
+        DesignTimeConfiguration: ""
+        RuntimeConfiguration:    ""
+        Endpoint:                ""
+        Relationships:
+          "Parent":
+          #--------
+            Relationship:            "Parent"
+            Element:                 "Tenant"
+            Version:                 "V1.0.0"
+            BaseConfiguration:       ""
+            DesignTimeConfiguration: ""
+            RuntimeConfiguration:    ""
+            Endpoint:                "path: /Tenant/.V1.0.0"
+        Instances:
+          "51547790-4337-4516-9e55-e2e9f1b5c8ce":
+          #--------------------------------------
+            Instance:                "51547790-4337-4516-9e55-e2e9f1b5c8ce"
+            State:                   "active"
+            BaseConfiguration:       ""
+            DesignTimeConfiguration: |
+              Template: "Applications within tenant: '{{Parent}}'"
+            RuntimeConfiguration:    ""
+            Endpoint:                ""

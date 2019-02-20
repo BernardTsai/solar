@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"path/filepath"
-	"strings"
 	"testing"
 
 	"tsai.eu/solar/controller/demo"
@@ -18,20 +17,36 @@ const CONFIGURATIONS string = "_configurations"
 
 //------------------------------------------------------------------------------
 
+// Task defines an action to be executed with a specific setup
+type Task struct {
+	Action string `yaml:"action"`     // action to be executed
+	Setup  string `yaml:"setup"`      // name of the setup file
+}
+
+//------------------------------------------------------------------------------
+
+// Tasks defines a list of tasks to be executed sequentially
+type Tasks struct {
+	Tasks []Task `yaml:"tasks"` // list of tasks to be executed
+}
+
+//------------------------------------------------------------------------------
+
 // LoadConfigurations load a list of configuration filenames
-func LoadConfigurations() (list []string, err error) {
+func LoadConfigurations() (list []Task, err error) {
 	path := filepath.Join(TESTDATA, CONFIGURATIONS)
+	tasks := Tasks{}
 
 	// retrieve list
-	result, err := util.LoadFile(path)
+	err = util.LoadYAML(path, &tasks)
 	if err != nil {
-		return []string{}, err
+		return list, err
 	}
 
-	// convert to a slice of strings
-	list = strings.Split(result, "\n")
+	// success
+	list = tasks.Tasks
 
-	return
+	return list, nil
 }
 
 //------------------------------------------------------------------------------
@@ -46,17 +61,6 @@ func LoadConfiguration(filename string) *model.Setup {
 }
 
 //------------------------------------------------------------------------------
-// Procedure:
-// - create root file component
-// - check status
-// - start root file component
-// - check status
-//
-// Structure:
-//
-// <root>
-//  nodeA (instances nodeA1(V1.0.0), nodeA2(V1.0.0), nodeA3((V2.0.0), nodeA4((V2.0.0))
-//  nodeB (instances nodeB1(V1.0.0), nodeB2(V1.0.0), nodeB3((V2.0.0), nodeB4((V2.0.0))
 
 // TestController verifies the DemoController object.
 func TestController(t *testing.T) {
@@ -74,13 +78,21 @@ func TestController(t *testing.T) {
 		t.Errorf("%s", err)
 	}
 
-	for _, entry := range list {
-		if entry != "" {
-			setup = LoadConfiguration(entry)
+	fmt.Println("Executing tests:")
+	fmt.Println("Nr. Action     Setup          ")
+	fmt.Println("------------------------------")
+	for index, entry := range list {
+		fmt.Printf("%03d %10s %s\n", index, entry.Action, entry.Setup)
+
+		setup = LoadConfiguration(entry.Setup)
+
+		switch entry.Action {
+		case "create":
 			_, err = dc.Create(setup)
 			if err != nil {
 				t.Errorf("Unable to create: %s\n%s", entry, err)
 			}
+		case "start":
 			_, err = dc.Start(setup)
 			if err != nil {
 				t.Errorf("Unable to start: %s\n%s", entry, err)

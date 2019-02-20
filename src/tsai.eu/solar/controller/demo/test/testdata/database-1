@@ -1,101 +1,68 @@
-Domain:    test
-Component: database
-Instance:  d0696163-16a3-4315-9a7c-4bfdf0387988
-Endpoints: []
-State:     active
-Instances:
-  d0696163-16a3-4315-9a7c-4bfdf0387988:
-    Version:       1.0.0
-    UUID:          d0696163-16a3-4315-9a7c-4bfdf0387988
-    Configuration: |
-      Name:     database
-      Template: |
-        database application within tenant: {{tenant}}
+Domain:                    "demo-domain"
+Solution:                  "demo-solution"
+Version:                   "V1.0.0"
+Element:                   "database"
+Cluster:                   "V1.0.0"
+Instance:                  "53c670b3-92b0-4153-be61-8d1b309f2911"
+DesignTimeConfiguration:   ""
+RuntimeConfiguration:      ""
+Elements:
+  "database":
+  #----------
+    Element:                 "database"
+    Component:               "Demo"
+    DesignTimeConfiguration: ""
+    RuntimeConfiguration:    ""
+    Endpoint:                ""
+    Clusters:
+      "V1.0.0":
+      #--------
+        Cluster:                 "V1.0.0"
+        State:                   "active"
+        Size:                    "1"
+        BaseConfiguration:       ""
+        DesignTimeConfiguration: ""
+        RuntimeConfiguration:    ""
+        Endpoint:                ""
+        Relationships:
+          "Parent":
+          #--------
+            Relationship:            "Parent"
+            Element:                 "Applications"
+            Version:                 "V1.0.0"
+            BaseConfiguration:       ""
+            DesignTimeConfiguration: ""
+            RuntimeConfiguration:    ""
+            Endpoint:                "path: /Tenant/Applications/.V1.0.0"
+          "Tenant":
+          #--------
+            Relationship:            "Tenant"
+            Element:                 "Tenant"
+            Version:                 "V1.0.0"
+            BaseConfiguration:       ""
+            DesignTimeConfiguration: ""
+            RuntimeConfiguration:    ""
+            Endpoint:                "path: /Tenant/.V1.0.0"
+          "Server":
+          #--------
+            Relationship:            "Server"
+            Element:                 "database-server"
+            Version:                 "V1.0.0"
+            BaseConfiguration:       ""
+            DesignTimeConfiguration: ""
+            RuntimeConfiguration:    ""
+            Endpoint:                "path: /Tenant/Servers/database-server/.V1.0.0"
+        Instances:
+          "53c670b3-92b0-4153-be61-8d1b309f2911":
+          #--------------------------------------
+            Instance:                "53c670b3-92b0-4153-be61-8d1b309f2911"
+            State:                   "active"
+            BaseConfiguration:       ""
+            DesignTimeConfiguration: |
+              Template: |
+                database application within tenant: {{Tenant}}
 
-        Host:
-        {{server}}
-    State:         active
-    Endpoint:      ""
-    Dependencies:
-      parent:
-        Name:      parent
-        Type:      context
-        Component: applications
-        Version:   1.0.0
-        Endpoint:  "path: '/tenant/applications'"
-      tenant:
-        Name:      tenant
-        Type:      service
-        Component: tenant
-        Version:   1.0.0
-        Endpoint:  "path: '/tenant'"
-      server:
-        Name:      server
-        Type:      service
-        Component: database-server
-        Version:   1.0.0
-        Endpoint:  "path: '/tenant/servers/database-server'"
-
-  53c670b3-92b0-4153-be61-8d1b309f2911:
-    Version:       1.0.0
-    UUID:          53c670b3-92b0-4153-be61-8d1b309f2911
-    Configuration: |
-      Name:     database
-      Template: |
-        database application within tenant: {{tenant}}
-
-        Host:
-        {{server}}
-    State:         active
-    Endpoint:      ""
-    Dependencies:
-      parent:
-        Name:      parent
-        Type:      context
-        Component: applications
-        Version:   1.0.0
-        Endpoint:  "path: '/tenant/applications'"
-      tenant:
-        Name:      tenant
-        Type:      service
-        Component: tenant
-        Version:   1.0.0
-        Endpoint:  "path: '/tenant'"
-      server:
-        Name:      server
-        Type:      service
-        Component: database-server
-        Version:   1.0.0
-        Endpoint:  "path: '/tenant/servers/database-server'"
-
-  bd3277d6-1f80-4a62-a630-330df39728ad:
-    Version:       1.0.0
-    UUID:          bd3277d6-1f80-4a62-a630-330df39728ad
-    Configuration: |
-      Name:     database
-      Template: |
-        database application within tenant: {{tenant}}
-
-        Host:
-        {{server}}
-    State:         active
-    Endpoint:      ""
-    Dependencies:
-      parent:
-        Name:      parent
-        Type:      context
-        Component: applications
-        Version:   1.0.0
-        Endpoint:  "path: '/tenant/applications'"
-      tenant:
-        Name:      tenant
-        Type:      service
-        Component: tenant
-        Version:   1.0.0
-        Endpoint:  "path: '/tenant'"
-      server:
-        Name:      server
-        Type:      service
-        Component: database-server
-        Version:   1.0.0
-        Endpoint:  "path: '/tenant/servers/database-server'"
+                Host:
+                {{Server}}
+            RuntimeConfiguration:    ""
+            Endpoint:                ""

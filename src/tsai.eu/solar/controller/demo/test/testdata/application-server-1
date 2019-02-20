@@ -1,151 +1,87 @@
-Domain:    test
-Component: application-server
-Instance:  efa37cc4-f394-4b2b-8326-2517713b8b7b
-Endpoints: []
-State:     active
-Instances:
-  efa37cc4-f394-4b2b-8326-2517713b8b7b:
-    Version:       1.0.0
-    UUID:          efa37cc4-f394-4b2b-8326-2517713b8b7b
-    Configuration: |
-      Name:     application-server
-      Template: |
-      Name:     application-server
-      Template: |
-        application server within tenant: {{tenant}}
-        interfaces:
-          management interface: {{oam}}
-          internal interface: {{m2m}}
-        
-        Makes use of:
-        {{database}}
-    State:         active
-    Endpoint:      ""
-    Dependencies:
-      parent:
-        Name:      parent
-        Type:      context
-        Component: servers
-        Version:   1.0.0
-        Endpoint:  "path: '/tenant/servers'"
-      tenant:
-        Name:      tenant
-        Type:      service
-        Component: tenant
-        Version:   1.0.0
-        Endpoint:  "path: '/tenant'"
-      oam:
-        Name:      oam
-        Type:      service
-        Component: oam
-        Version:   1.0.0
-        Endpoint:  "path: '/tenant/networks/oam'"
-      m2m:
-        Name:      m2m
-        Type:      service
-        Component: m2m
-        Version:   1.0.0
-        Endpoint:  "path: '/tenant/networks/m2m'"
-      database:
-        Name:      database
-        Type:      service
-        Component: database-server
-        Version:   1.0.0
-        Endpoint:  "path: '/tenant/servers/database-server'"
-
-  95184e36-42f5-4ca7-ad84-285450f90773:
-    Version:       1.0.0
-    UUID:          95184e36-42f5-4ca7-ad84-285450f90773
-    Configuration: |
-      Name:     application-server
-      Template: |
-      Name:     application-server
-      Template: |
-        application server within tenant: {{tenant}}
-        interfaces:
-          management interface: {{oam}}
-          internal interface: {{m2m}}
-
-        Makes use of:
-        {{database}}
-    Endpoint:      ""
-    Dependencies:
-      parent:
-        Name:      parent
-        Type:      context
-        Component: servers
-        Version:   1.0.0
-        Endpoint:  "path: '/tenant/servers'"
-      tenant:
-        Name:      tenant
-        Type:      service
-        Component: tenant
-        Version:   1.0.0
-        Endpoint:  "path: '/tenant'"
-      oam:
-        Name:      oam
-        Type:      service
-        Component: oam
-        Version:   1.0.0
-        Endpoint:  "path: '/tenant/networks/oam'"
-      m2m:
-        Name:      m2m
-        Type:      service
-        Component: m2m
-        Version:   1.0.0
-        Endpoint:  "path: '/tenant/networks/m2m'"
-      database:
-        Name:      database
-        Type:      service
-        Component: database-server
-        Version:   1.0.0
-        Endpoint:  "path: '/tenant/servers/database-server'"
-
-  b139467b-ebf2-4178-8319-7ee867e5dfb7:
-    Version:       1.0.0
-    UUID:          b139467b-ebf2-4178-8319-7ee867e5dfb7
-    Configuration: |
-      Name:     application-server
-      Template: |
-      Name:     application-server
-      Template: |
-        application server within tenant: {{tenant}}
-        interfaces:
-          management interface: {{oam}}
-          internal interface: {{m2m}}
-
-        Makes use of:
-        {{database}}
-    State:         active
-    Endpoint:      ""
-    Dependencies:
-      parent:
-        Name:      parent
-        Type:      context
-        Component: servers
-        Version:   1.0.0
-        Endpoint:  "path: '/tenant/servers'"
-      tenant:
-        Name:      tenant
-        Type:      service
-        Component: tenant
-        Version:   1.0.0
-        Endpoint:  "path: '/tenant'"
-      oam:
-        Name:      oam
-        Type:      service
-        Component: oam
-        Version:   1.0.0
-        Endpoint:  "path: '/tenant/networks/oam'"
-      m2m:
-        Name:      m2m
-        Type:      service
-        Component: m2m
-        Version:   1.0.0
-        Endpoint:  "path: '/tenant/networks/m2m'"
-      database:
-        Name:      database
-        Type:      service
-        Component: database-server
-        Version:   1.0.0
-        Endpoint:  "path: '/tenant/servers/database-server'"
+Domain:                    "demo-domain"
+Solution:                  "demo-solution"
+Version:                   "V1.0.0"
+Element:                   "application-server"
+Cluster:                   "V1.0.0"
+Instance:                  "efa37cc4-f394-4b2b-8326-2517713b8b7b"
+DesignTimeConfiguration:   ""
+RuntimeConfiguration:      ""
+Elements:
+  "application-server":
+  #--------------------
+    Element:                 "application-server"
+    Component:               "Demo"
+    DesignTimeConfiguration: ""
+    RuntimeConfiguration:    ""
+    Endpoint:                ""
+    Clusters:
+      "V1.0.0":
+      #--------
+        Cluster:                 "V1.0.0"
+        State:                   "active"
+        Size:                    "1"
+        BaseConfiguration:       ""
+        DesignTimeConfiguration: ""
+        RuntimeConfiguration:    ""
+        Endpoint:                ""
+        Relationships:
+          "Parent":
+          #--------
+            Relationship:            "Parent"
+            Element:                 "Servers"
+            Version:                 "V1.0.0"
+            BaseConfiguration:       ""
+            DesignTimeConfiguration: ""
+            RuntimeConfiguration:    ""
+            Endpoint:                "path: /Tenant/Servers/.V1.0.0"
+          "Tenant":
+          #--------
+            Relationship:            "Tenant"
+            Element:                 "Tenant"
+            Version:                 "V1.0.0"
+            BaseConfiguration:       ""
+            DesignTimeConfiguration: ""
+            RuntimeConfiguration:    ""
+            Endpoint:                "path: /Tenant/.V1.0.0"
+          "oam":
+          #-----
+            Relationship:            "oam"
+            Element:                 "oam"
+            Version:                 "V1.0.0"
+            BaseConfiguration:       ""
+            DesignTimeConfiguration: ""
+            RuntimeConfiguration:    ""
+            Endpoint:                "path: /Tenant/Networks/oam/.V1.0.0"
+          "m2m":
+          #-----
+            Relationship:            "m2m"
+            Element:                 "m2m"
+            Version:                 "V1.0.0"
+            BaseConfiguration:       ""
+            DesignTimeConfiguration: ""
+            RuntimeConfiguration:    ""
+            Endpoint:                "path: /Tenant/Networks/m2m/.V1.0.0"
+          "pub":
+          #-----
+            Relationship:            "pub"
+            Element:                 "pub"
+            Version:                 "V1.0.0"
+            BaseConfiguration:       ""
+            DesignTimeConfiguration: ""
+            RuntimeConfiguration:    ""
+            Endpoint:                "path: /Tenant/Networks/pub/.V1.0.0"
+        Instances:
+          "efa37cc4-f394-4b2b-8326-2517713b8b7b":
+          #--------------------------------------
+            Instance:                "efa37cc4-f394-4b2b-8326-2517713b8b7b"
+            State:                   "active"
+            BaseConfiguration:       ""
+            DesignTimeConfiguration: |
+              Template: |
+                application server within tenant: {{Tenant}}
+                interfaces:
+                  management interface: {{oam}}
+                  internal interface: {{m2m}}
+                  external interface: {{pub}}
+            RuntimeConfiguration:    ""
+            Endpoint:                ""

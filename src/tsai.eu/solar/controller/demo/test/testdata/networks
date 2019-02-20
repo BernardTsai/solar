@@ -1,27 +1,46 @@
-Domain:    test
-Component: networks
-Instance:  166912fa-a0f9-4ac7-a415-ae1bccd445b4
-Endpoints: []
-State:     active
-Instances:
-  166912fa-a0f9-4ac7-a415-ae1bccd445b4:
-    Version:       1.0.0
-    UUID:          166912fa-a0f9-4ac7-a415-ae1bccd445b4
-    Configuration: |
-      Name:     networks
-      Template: "Networks within tenant: '{{tenant}}'"
-    State:         active
-    Endpoint:      ""
-    Dependencies:
-      parent:
-        Name:      parent
-        Type:      context
-        Component: tenant
-        Version:   1.0.0
-        Endpoint:  "path: /tenant"
-      tenant:
-        Name:      tenant
-        Type:      service
-        Component: tenant
-        Version:   1.0.0
-        Endpoint:  "path: /tenant"
+Domain:                    "demo-domain"
+Solution:                  "demo-solution"
+Version:                   "V1.0.0"
+Element:                   "Networks"
+Cluster:                   "V1.0.0"
+Instance:                  "166912fa-a0f9-4ac7-a415-ae1bccd445b4"
+DesignTimeConfiguration:   ""
+RuntimeConfiguration:      ""
+Elements:
+  "Networks":
+  #----------
+    Element:                 "Networks"
+    Component:               "Demo"
+    DesignTimeConfiguration: ""
+    RuntimeConfiguration:    ""
+    Endpoint:                ""
+    Clusters:
+      "V1.0.0":
+      #--------
+        Cluster:                 "V1.0.0"
+        State:                   "active"
+        Size:                    "1"
+        BaseConfiguration:       ""
+        DesignTimeConfiguration: ""
+        RuntimeConfiguration:    ""
+        Endpoint:                ""
+        Relationships:
+          "Parent":
+          #--------
+            Relationship:            "Parent"
+            Element:                 "Tenant"
+            Version:                 "V1.0.0"
+            BaseConfiguration:       ""
+            DesignTimeConfiguration: ""
+            RuntimeConfiguration:    ""
+            Endpoint:                "path: /Tenant/.V1.0.0"
+        Instances:
+          "166912fa-a0f9-4ac7-a415-ae1bccd445b4":
+          #--------------------------------------
+            Instance:                "166912fa-a0f9-4ac7-a415-ae1bccd445b4"
+            State:                   "active"
+            BaseConfiguration:       ""
+            DesignTimeConfiguration: |
+              Template: "Networks within tenant: '{{Parent}}'"
+            RuntimeConfiguration:    ""
+            Endpoint:                ""

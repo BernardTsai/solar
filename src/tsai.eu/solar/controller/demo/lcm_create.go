@@ -3,7 +3,7 @@ package demo
 import (
 	"errors"
 	"os"
-	"fmt"
+	"path"
 
 	"tsai.eu/solar/model"
 )
@@ -15,7 +15,7 @@ func (c Controller) Create(setup *model.Setup) (status *model.Status, err error)
 	// get setups
 	elementSetup     := setup.Elements[setup.Element]
 	clusterSetup     := elementSetup.Clusters[setup.Cluster]
-	parentSetup      := clusterSetup.Relationships["parent"]
+	parentSetup      := clusterSetup.Relationships["Parent"]
 	instanceSetup    := clusterSetup.Instances[setup.Instance]
 
 	// get paths
@@ -23,7 +23,8 @@ func (c Controller) Create(setup *model.Setup) (status *model.Status, err error)
 	if parentSetup != nil {
 		parentEndpoint, _ := DecodeEndpoint(parentSetup.Endpoint)
 
-		parentPath = parentPath + parentEndpoint.Path + "/"
+		parentPath = parentPath + parentEndpoint.Path + "/../"
+		parentPath = path.Clean(parentPath)
 	}
 
 	elementPath := parentPath + "/" + elementSetup.Element
@@ -33,7 +34,6 @@ func (c Controller) Create(setup *model.Setup) (status *model.Status, err error)
 	// create path to element directory if it does not exist yet
 	if _, err = os.Stat(elementPath); os.IsNotExist(err) {
 		if err = os.Mkdir(elementPath, os.ModePerm); err != nil {
-			fmt.Println(err)
 			return nil, errors.New("unable to create element directory")
 		}
 	}
@@ -46,10 +46,12 @@ func (c Controller) Create(setup *model.Setup) (status *model.Status, err error)
 	}
 
 	// create instance information file
+	configuration, _ := DecodeConfiguration(instanceSetup.DesignTimeConfiguration)
+
 	information := Information{
 		State:        "inactive",
 		Path :        instancePath,
-		Template:     instanceSetup.DesignTimeConfiguration,
+		Template:     configuration.Template,
 		Refererences: map[string]string{},
 	}
 

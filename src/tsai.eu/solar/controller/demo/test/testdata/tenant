@@ -1,15 +1,37 @@
-Domain:    test
-Component: tenant
-Instance:  7c15fea7-63e6-4fff-88eb-f5e921aca23e
-Endpoints: []
-State:     active
-Instances:
-  7c15fea7-63e6-4fff-88eb-f5e921aca23e:
-    Version:       1.0.0
-    UUID:          7c15fea7-63e6-4fff-88eb-f5e921aca23e
-    Configuration: |
-      Name:     tenant
-      Template: "Demo-Datacenter"
-    State:         active
-    Endpoint:      ""
-    Dependencies:  {}
+Domain:                    "demo-domain"
+Solution:                  "demo-solution"
+Version:                   "V1.0.0"
+Element:                   "Tenant"
+Cluster:                   "V1.0.0"
+Instance:                  "7c15fea7-63e6-4fff-88eb-f5e921aca23e"
+DesignTimeConfiguration:   ""
+RuntimeConfiguration:      ""
+Elements:
+  "Tenant":
+  #--------
+    Element:                 "Tenant"
+    Component:               "Demo"
+    DesignTimeConfiguration: ""
+    RuntimeConfiguration:    ""
+    Endpoint:                ""
+    Clusters:
+      "V1.0.0":
+      #--------
+        Cluster:                 "V1.0.0"
+        State:                   "active"
+        Size:                    "1"
+        BaseConfiguration:       ""
+        DesignTimeConfiguration: ""
+        RuntimeConfiguration:    ""
+        Endpoint:                ""
+        Relationships:           []
+        Instances:
+          "7c15fea7-63e6-4fff-88eb-f5e921aca23e":
+          #--------------------------------------
+            Instance:                "7c15fea7-63e6-4fff-88eb-f5e921aca23e"
+            State:                   "active"
+            BaseConfiguration:       ""
+            DesignTimeConfiguration: |
+              Template: "Demo-Datacenter"
+            RuntimeConfiguration:    ""
+            Endpoint:                ""

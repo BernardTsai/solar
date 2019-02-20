@@ -2,6 +2,7 @@ package demo
 
 import (
 	"os"
+	"path"
 
 	"tsai.eu/solar/model"
 )
@@ -13,7 +14,7 @@ func (c Controller) Status(setup *model.Setup) (status *model.Status, err error)
 	// get setups
 	elementSetup     := setup.Elements[setup.Element]
 	clusterSetup     := elementSetup.Clusters[setup.Cluster]
-	parentSetup      := clusterSetup.Relationships["parent"]
+	parentSetup      := clusterSetup.Relationships["Parent"]
 	instanceSetup    := clusterSetup.Instances[setup.Instance]
 
 	// get paths
@@ -21,7 +22,8 @@ func (c Controller) Status(setup *model.Setup) (status *model.Status, err error)
 	if parentSetup != nil {
 		parentEndpoint, _ := DecodeEndpoint(parentSetup.Endpoint)
 
-		parentPath = parentPath + parentEndpoint.Path + "/"
+		parentPath = parentPath + parentEndpoint.Path + "/../"
+		parentPath = path.Clean(parentPath)
 	}
 
 	elementPath := parentPath + "/" + elementSetup.Element

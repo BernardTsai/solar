@@ -1,21 +1,46 @@
-Domain:    test
-Component: m2m
-Instance:  a3b2e146-ba54-4ef0-a6bc-8d35db34c4e1
-Endpoints: []
-State:     active
-Instances:
-  a3b2e146-ba54-4ef0-a6bc-8d35db34c4e1:
-    Version:       1.0.0
-    UUID:          a3b2e146-ba54-4ef0-a6bc-8d35db34c4e1
-    Configuration: |
-      Name:     m2m
-      Template: "m2m"
-    State:         active
-    Endpoint:      ""
-    Dependencies:
-      parent:
-        Name:      parent
-        Type:      context
-        Component: networks
-        Version:   1.0.0
-        Endpoint:  "path: '/tenant/networks'"
+Domain:                    "demo-domain"
+Solution:                  "demo-solution"
+Version:                   "V1.0.0"
+Element:                   "m2m"
+Cluster:                   "V1.0.0"
+Instance:                  "a3b2e146-ba54-4ef0-a6bc-8d35db34c4e1"
+DesignTimeConfiguration:   ""
+RuntimeConfiguration:      ""
+Elements:
+  "m2m":
+  #-----
+    Element:                 "m2m"
+    Component:               "Demo"
+    DesignTimeConfiguration: ""
+    RuntimeConfiguration:    ""
+    Endpoint:                ""
+    Clusters:
+      "V1.0.0":
+      #--------
+        Cluster:                 "V1.0.0"
+        State:                   "active"
+        Size:                    "1"
+        BaseConfiguration:       ""
+        DesignTimeConfiguration: ""
+        RuntimeConfiguration:    ""
+        Endpoint:                ""
+        Relationships:
+          "Parent":
+          #--------
+            Relationship:            "Parent"
+            Element:                 "Networks"
+            Version:                 "V1.0.0"
+            BaseConfiguration:       ""
+            DesignTimeConfiguration: ""
+            RuntimeConfiguration:    ""
+            Endpoint:                "path: /Tenant/Networks/.V1.0.0"
+        Instances:
+          "a3b2e146-ba54-4ef0-a6bc-8d35db34c4e1":
+          #--------------------------------------
+            Instance:                "a3b2e146-ba54-4ef0-a6bc-8d35db34c4e1"
+            State:                   "active"
+            BaseConfiguration:       ""
+            DesignTimeConfiguration: |
+              Template: "m2m"
+            RuntimeConfiguration:    ""
+            Endpoint:                ""
