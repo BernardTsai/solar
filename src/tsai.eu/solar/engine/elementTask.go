@@ -9,19 +9,19 @@ import (
 
 //------------------------------------------------------------------------------
 
-// ServiceSetup captures all required configurations for a service.
-type ServiceSetup struct {
-	Name     string
-	Versions map[string]VersionSetup
+// ElementSetup captures all required configurations for an element.
+type ElementSetup struct {
+	Element  string
+	Clusters map[string]ClusterSetup
 }
 
-// VersionSetup captures all required configurations for a version of a service.
-type VersionSetup struct {
-	Version string
+// ClusterSetup captures all required configurations for a cluster of an element.
+type ClusterSetup struct {
+	Cluster string
 	States  map[string]StateSetup
 }
 
-// StateSetup captures the sizing of a version of a service with a specific state.
+// StateSetup captures the sizing of a cluste of an element with a specific state.
 type StateSetup struct {
 	State     string
 	Instances map[string]string
@@ -29,16 +29,16 @@ type StateSetup struct {
 
 //------------------------------------------------------------------------------
 
-func determineCurrentSetup(domain string, service string) ServiceSetup {
-	// create ServiceSetup
-	serviceSetup := ServiceSetup{
-		Name:     service,
-		Versions: map[string]VersionSetup{},
+func determineCurrentSetup(domain string, element string) ElementSetup {
+	// create ElementSetup
+	elementSetup := ElementSetup{
+		Element:  element,
+		Clusters: map[string]ClusterSetup{},
 	}
 
 	// loop over all instances of a component/service
 	d, _ := model.GetModel().GetDomain(domain) // domain
-	c, _ := d.GetComponent(service)            // component
+	c, _ := d.GetElement(element)              // component
 	l, _ := c.ListInstances()                  // list of instances
 	for n := range l {
 		u := l[n]                // uuid
@@ -70,21 +70,23 @@ func determineCurrentSetup(domain string, service string) ServiceSetup {
 	return serviceSetup
 }
 
-func determineTargetSetup(domain string, architecture string, service string) ServiceSetup {
+//------------------------------------------------------------------------------
+
+func determineTargetSetup(domain string, architecture string, element string) ServiceSetup {
 	// create ServiceSetup
 	serviceSetup := ServiceSetup{
-		Name:     service,
+		Name:     element,
 		Versions: map[string]VersionSetup{},
 	}
 
 	// loop over all instances of a component/service
 	d, _ := model.GetModel().GetDomain(domain) // domain
 	a, _ := d.GetArchitecture(architecture)    // architecture
-	s, _ := a.GetService(service)              // service
-	l, _ := s.ListSetups()                     // list of setups
+	e, _ := a.GetElement(element)              // service
+	l, _ := e.ListClusters()                   // list of clusters
 	for i := range l {
-		n := l[i]             // setup name
-		t, _ := s.GetSetup(n) // setup
+		n := l[i]               // cluster name
+		t, _ := e.GetCluster(n) // cluster
 
 		// check if version exists
 		versionSetup, found := serviceSetup.Versions[t.Version]
@@ -114,6 +116,8 @@ func determineTargetSetup(domain string, architecture string, service string) Se
 	// success
 	return serviceSetup
 }
+
+//------------------------------------------------------------------------------
 
 func determineTasks(domain string, architecture string, service string) ([]model.Task, []model.Task, []model.Task) {
 	targetSetup := determineTargetSetup(domain, architecture, service)
@@ -210,26 +214,27 @@ func determineTasks(domain string, architecture string, service string) ([]model
 
 //------------------------------------------------------------------------------
 
-// NewServiceTask creates a new task
-func NewServiceTask(domain string, parent string, architecture string, component string) (model.Task, error) {
+// NewElementTask creates a new task
+func NewElementTask(domain string, parent string, architecture string, version string, element string) (model.Task, error) {
 	var task model.Task
 
 	// TODO: check parameters if context exists
-	task.Type = "ServiceTask"
-	task.Domain = domain
+	task.Type         = "ElementTask"
+	task.Domain       = domain
 	task.Architecture = architecture
-	task.Component = component
-	task.Version = ""
-	task.Instance = ""
-	task.State = ""
-	task.UUID = uuid.New().String()
-	task.Parent = parent
-	task.Status = model.TaskStatusInitial
-	task.Phase = 0
-	task.Subtasks = []string{}
+	task.Version      = version
+	task.Element      = element
+	task.Version      = ""
+	task.Instance     = ""
+	task.State        = ""
+	task.UUID         = uuid.New().String()
+	task.Parent       = parent
+	task.Status       = model.TaskStatusInitial
+	task.Phase        = 0
+	task.Subtasks     = []string{}
 
 	// add handlers
-	task.SetExecute(ExecuteServiceTask)
+	task.SetExecute(ExecuteElementTask)
 	task.SetTerminate(TerminateTask)
 	task.SetFailed(FailedTask)
 	task.SetTimeout(TimeoutTask)
@@ -253,8 +258,8 @@ func NewServiceTask(domain string, parent string, architecture string, component
 
 //------------------------------------------------------------------------------
 
-// ExecuteServiceTask is the main task execution routine.
-func ExecuteServiceTask(task *model.Task) {
+// ExecuteElementTask is the main task execution routine.
+func ExecuteElementTask(task *model.Task) {
 	// get event channel
 	channel := GetEventChannel()
 
@@ -271,7 +276,7 @@ func ExecuteServiceTask(task *model.Task) {
 		task.Status = model.TaskStatusExecuting
 
 		// determine required subtasks
-		updateTasks, createTasks, removeTasks := determineTasks(task.Domain, task.Architecture, task.Component)
+		updateTasks, createTasks, removeTasks := determineTasks(task.Domain, task.Architecture, task.Element)
 
 		// add tasks to domain
 
@@ -283,7 +288,7 @@ func ExecuteServiceTask(task *model.Task) {
 		updateTask, _ := NewParallelTask(task.Domain, mainTask.GetUUID(), []string{})
 		mainTask.AddSubtask(&updateTask)
 		for _, s := range updateTasks {
-			subTask, _ := NewInstanceTask(s.Domain, mainTask.GetUUID(), task.Architecture, s.Component, s.Version, s.Instance, s.State)
+			subTask, _ := NewInstanceTask(s.Domain, mainTask.GetUUID(), task.Architecture, s.Element, s.Cluster, s.Instance, s.State)
 
 			updateTask.AddSubtask(&subTask)
 		}
@@ -292,7 +297,7 @@ func ExecuteServiceTask(task *model.Task) {
 		createTask, _ := NewParallelTask(task.Domain, mainTask.GetUUID(), []string{})
 		mainTask.AddSubtask(&createTask)
 		for _, s := range createTasks {
-			subTask, _ := NewInstanceTask(s.Domain, mainTask.GetUUID(), task.Architecture, s.Component, s.Version, s.Instance, s.State)
+			subTask, _ := NewInstanceTask(s.Domain, mainTask.GetUUID(), task.Architecture, s.Element, s.Cluster, s.Instance, s.State)
 
 			createTask.AddSubtask(&subTask)
 		}
@@ -301,7 +306,7 @@ func ExecuteServiceTask(task *model.Task) {
 		removeTask, _ := NewParallelTask(task.Domain, mainTask.GetUUID(), []string{})
 		mainTask.AddSubtask(&removeTask)
 		for _, s := range removeTasks {
-			subTask, _ := NewInstanceTask(s.Domain, mainTask.GetUUID(), task.Architecture, s.Component, s.Version, s.Instance, s.State)
+			subTask, _ := NewInstanceTask(s.Domain, mainTask.GetUUID(), task.Architecture, s.Element, s.Cluster, s.Instance, s.State)
 
 			removeTask.AddSubtask(&subTask)
 		}

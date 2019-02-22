@@ -28,6 +28,8 @@ type Relationship struct {
 	Relationship  string  `yaml:"relationship"`  // name of the relationship
 	Element       string  `yaml:"element"`       // element to which this relationship refers to
 	Version       string  `yaml:"version"`       // version of the element to which this relationship refers to
+	Target        string  `yaml:"target"`        // target state of relationship
+	State         string  `yaml:"state"`         // current state of relationship
 	Configuration string  `yaml:"configuration"` // runtime configuration of the relationship
 	Endpoint      string  `yaml:"endpoint"`      // endpoint of the relationship
 }
@@ -38,11 +40,13 @@ type Relationship struct {
 func NewRelationship(name string, element string, version string, configuration string) (*Relationship, error) {
 	var relationship Relationship
 
-	relationship.Relationship = name
-	relationship.Element = element
-	relationship.Version = version
+	relationship.Relationship  = name
+	relationship.Element       = element
+	relationship.Version       = version
+	relationship.Target        = ActiveState
+	relationship.State         = InitialState
 	relationship.Configuration = configuration
-	relationship.Endpoint = ""
+	relationship.Endpoint      = ""
 
 	// success
 	return &relationship, nil

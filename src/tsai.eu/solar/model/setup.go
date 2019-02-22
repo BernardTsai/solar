@@ -5,6 +5,7 @@ package model
 // InstanceSetup object describes the setup for an instance of a cluster of a solution element.
 type InstanceSetup struct {
   Instance                string  `yaml:"Instance"`                // uuid of the instance
+  Target                  string  `yaml:"Target"`                  // target state of the instance
 	State                   string  `yaml:"State"`                   // state of the instance
   BaseConfiguration       string  `yaml:"BaseConfiguration"`       // runtime configuration of the instance
   DesignTimeConfiguration string  `yaml:"DesignTimeConfiguration"` // runtime configuration of the instance
@@ -17,6 +18,8 @@ type RelationshipSetup struct {
   Relationship            string  `yaml:"Relationship"`            // name of the relationship
 	Element                 string  `yaml:"Element"`                 // element to which this relationship refers to
 	Version                 string  `yaml:"Version"`                 // version of the element to which this relationship refers to
+  Target                  string  `yaml:"Target"`                  // target state of the relationship
+	State                   string  `yaml:"State"`                   // state of the relationship
   BaseConfiguration       string  `yaml:"BaseConfiguration"`       // runtime configuration of the relationship
   DesignTimeConfiguration string  `yaml:"DesignTimeConfiguration"` // runtime configuration of the relationship
 	RuntimeConfiguration    string  `yaml:"RuntimeConfiguration"`    // design time configuration of the relationship
@@ -26,7 +29,10 @@ type RelationshipSetup struct {
 // ClusterSetup object describes the setup for a cluster of a solution element.
 type ClusterSetup struct {
   Cluster                 string                        `yaml:"Cluster"`                 // version of the solution element cluster
+  Target                  string                        `yaml:"Target"`                  // target state of the cluster
 	State                   string                        `yaml:"State"`                   // state of the solution element cluster
+  Min                     int                           `yaml:"Min"`                     // min. size of the solution element cluster
+  Max                     int                           `yaml:"Max"`                     // max. size of the solution element cluster
 	Size                    int                           `yaml:"Size"`                    // size of the solution element cluster
   BaseConfiguration       string                        `yaml:"BaseConfiguration"`       // runtime configuration of the cluster
   DesignTimeConfiguration string                        `yaml:"DesignTimeConfiguration"` // runtime configuration of the cluster
@@ -40,6 +46,8 @@ type ClusterSetup struct {
 type ElementSetup struct {
   Element                 string                   `yaml:"Element"`                 // name of the solution element
 	Component               string                   `yaml:"Component"`               // type of the solution elmenent
+  Target                  string                   `yaml:"Target"`                  // target state of the element
+	State                   string                   `yaml:"State"`                   // state of the element
   DesignTimeConfiguration string                   `yaml:"DesignTimeConfiguration"` // runtime configuration of the cluster
 	RuntimeConfiguration    string                   `yaml:"RuntimeConfiguration"`    // design time configuration of the cluster
 	Endpoint                string                   `yaml:"Endpoint"`                // state of the solution element
@@ -54,6 +62,8 @@ type Setup struct {
   Element                 string                   `yaml:"Element"`                 // name of element
   Cluster                 string                   `yaml:"Cluster"`                 // name of cluster
   Instance                string                   `yaml:"Instance"`                // name of instance
+  Target                  string                   `yaml:"Target"`                  // target state of the solution
+	State                   string                   `yaml:"State"`                   // state of the solution
   DesignTimeConfiguration string                   `yaml:"DesignTimeConfiguration"` // runtime configuration of the solution
 	RuntimeConfiguration    string                   `yaml:"RuntimeConfiguration"`    // design time configuration of the solution
 	Elements                map[string]*ElementSetup `yaml:"Elements"`                // elements of solution
@@ -90,6 +100,8 @@ func GetSetup(domainName string, solutionName string,  solutionVersion string, e
   setup.Element                 = elementName
   setup.Cluster                 = clusterName
   setup.Instance                = instanceName
+  setup.Target                  = solution.Target
+  setup.State                   = solution.State
   setup.DesignTimeConfiguration = architecture.Configuration
   setup.RuntimeConfiguration    = solution.Configuration
   setup.Elements                = map[string]*ElementSetup{}
@@ -146,6 +158,8 @@ func GetElementSetup(setup *Setup, elementName string) (*ElementSetup, error){
   elementSetup.Element                 = elementName
   elementSetup.Component               = element.Component
   elementSetup.Endpoint                = element.Endpoint
+  elementSetup.Target                  = element.Target
+  elementSetup.State                   = element.State
   elementSetup.DesignTimeConfiguration = elementConfiguration.Configuration
   elementSetup.RuntimeConfiguration    = element.Configuration
   elementSetup.Clusters                = map[string]*ClusterSetup{}
@@ -219,7 +233,11 @@ func GetClusterSetup(setup *Setup, elementName string, clusterName string) (*Clu
   // set context information
   clusterSetup.Cluster                 = clusterName
   clusterSetup.State                   = cluster.State
+  clusterSetup.Min                     = cluster.Min
+  clusterSetup.Max                     = cluster.Max
   clusterSetup.Size                    = cluster.Size
+  clusterSetup.Target                  = cluster.Target
+  clusterSetup.State                   = cluster.State
   clusterSetup.Endpoint                = cluster.Endpoint
   clusterSetup.BaseConfiguration       = component.Configuration
   clusterSetup.DesignTimeConfiguration = clusterConfiguration.Configuration
@@ -321,6 +339,8 @@ func GetRelationshipSetup(setup *Setup, elementName string, clusterName string, 
   relationshipSetup.Relationship            = relationshipName
   relationshipSetup.Element                 = relationship.Element
   relationshipSetup.Version                 = relationship.Version
+  relationshipSetup.Target                  = relationship.Target
+  relationshipSetup.State                   = relationship.State
   relationshipSetup.Endpoint                = relationship.Endpoint
   relationshipSetup.BaseConfiguration       = dependency.Configuration
   relationshipSetup.DesignTimeConfiguration = relationshipConfiguration.Configuration
@@ -392,6 +412,7 @@ func GetInstanceSetup(setup *Setup, elementName string, clusterName string, inst
 
   // set context information
   instanceSetup.Instance                = instanceName
+  instanceSetup.Target                  = instance.Target
   instanceSetup.State                   = instance.State
   instanceSetup.Endpoint                = instance.Endpoint
   instanceSetup.BaseConfiguration       = component.Configuration
@@ -421,6 +442,27 @@ func SetSetup(setup *Setup) (error) {
 
 // SetElementSetup updates the element setup with the provided information.
 func SetElementSetup(setup *Setup, elementSetup *ElementSetup) (error) {
+  // determine domain context
+  domain, err := GetModel().GetDomain(setup.Domain)
+  if err != nil {
+    return nil
+  }
+
+  // determine solution context
+  solution, err := domain.GetSolution(setup.Solution)
+  if err != nil {
+    return nil
+  }
+
+  // determine element context
+  element, err := solution.GetElement(elementSetup.Element)
+  if err != nil {
+    return nil
+  }
+
+  // update runtime configuration
+  element.State = elementSetup.State
+
   // determine cluster context
   for _, clusterSetup := range elementSetup.Clusters {
     err := SetClusterSetup(setup, elementSetup, clusterSetup)
@@ -461,6 +503,7 @@ func SetClusterSetup(setup *Setup, elementSetup *ElementSetup, clusterSetup *Clu
   }
 
   // update runtime configuration
+  cluster.State         = clusterSetup.State
   cluster.Configuration = clusterSetup.RuntimeConfiguration
   cluster.Endpoint      = clusterSetup.Endpoint
   cluster.State         = clusterSetup.State
@@ -520,6 +563,7 @@ func SetRelationshipSetup(setup *Setup, elementSetup *ElementSetup, clusterSetup
   }
 
   // update runtime configuration
+  relationship.State         = relationshipSetup.State
   relationship.Configuration = relationshipSetup.RuntimeConfiguration
   relationship.Endpoint      = relationshipSetup.Endpoint
 

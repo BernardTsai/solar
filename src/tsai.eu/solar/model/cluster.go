@@ -2,7 +2,9 @@ package model
 
 import (
 	"sync"
+	"fmt"
 
+	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"tsai.eu/solar/util"
 )
@@ -40,7 +42,7 @@ import (
 
 // RelationshipMap is a synchronized map for a map of relationships
 type RelationshipMap struct {
-	sync.RWMutex `yaml:"mutex,omitempty"`              // mutex
+	*sync.RWMutex `yaml:"mutex,omitempty"`              // mutex
 	Map          map[string]*Relationship `yaml:"map"` // map of relationships
 }
 
@@ -67,7 +69,7 @@ func (m *RelationshipMap) UnmarshalYAML(unmarshal func(interface{}) error) error
 
 // InstanceMap is a synchronized map for a map of instances
 type InstanceMap struct {
-	sync.RWMutex `yaml:"mutex,omitempty"`              // mutex
+	*sync.RWMutex `yaml:"mutex,omitempty"`             // mutex
 	Map          map[string]*Instance     `yaml:"map"` // map of Relationship
 }
 
@@ -95,7 +97,10 @@ func (m *InstanceMap) UnmarshalYAML(unmarshal func(interface{}) error) error {
 // Cluster describes the runtime configuration of a solution element cluster within a domain.
 type Cluster struct {
 	Version       string          `yaml:"version"`       // version of the solution element cluster
+	Target        string          `yaml:"target"`        // target state of the solution element cluster
 	State         string          `yaml:"state"`         // state of the solution element cluster
+	Min           int             `yaml:"min"`           // min. size of the solution element cluster
+	Max           int             `yaml:"max"`           // max. size of the solution element cluster
 	Size          int             `yaml:"size"`          // size of the solution element cluster
 	Configuration string          `yaml:"configuration"` // runtime configuration of the solution element cluster
 	Endpoint      string          `yaml:"endpoint"`      // endpoint of the solution element cluster
@@ -106,16 +111,19 @@ type Cluster struct {
 //------------------------------------------------------------------------------
 
 // NewCluster creates a new cluster
-func NewCluster(version string, state string, size int, configuration string) (*Cluster, error) {
+func NewCluster(version string, state string, min int, max int, size int, configuration string) (*Cluster, error) {
 	var cluster Cluster
 
-	cluster.Version = version
-	cluster.State = state
-	cluster.Size = size
+	cluster.Version       = version
+	cluster.Target        = state
+	cluster.State         = InitialState
+	cluster.Min           = min
+	cluster.Max           = max
+	cluster.Size          = size
 	cluster.Configuration = configuration
-	cluster.Endpoint = ""
+	cluster.Endpoint      = ""
 	cluster.Relationships = RelationshipMap{Map: map[string]*Relationship{}}
-	cluster.Instances = InstanceMap{Map: map[string]*Instance{}}
+	cluster.Instances     = InstanceMap{Map: map[string]*Instance{}}
 
 	// success
 	return &cluster, nil
@@ -244,6 +252,53 @@ func (cluster *Cluster) DeleteInstance(uuid string) {
 	cluster.Instances.Lock()
 	delete(cluster.Instances.Map, uuid)
 	cluster.Instances.Unlock()
+}
+
+//------------------------------------------------------------------------------
+
+// Update instantiates/update a cluster based on a cluster configuration.
+func (cluster *Cluster) Update(clusterConfiguration *ClusterConfiguration) error {
+	// check if the names are compatible
+	if cluster.Version != clusterConfiguration.Version {
+		return errors.New("Version of cluster does match the version defined in the cluster configuration")
+	}
+
+	// check compatability of all relationships
+	relationshipNames, _ := clusterConfiguration.ListRelationships()
+	for _, relationshipName := range relationshipNames {
+
+		relationship, _              := cluster.GetRelationship(relationshipName)
+		relationshipConfiguration, _ := clusterConfiguration.GetRelationship(relationshipName)
+
+		// relationship already exists
+		if cluster != nil {
+			// check compatability of references
+			if relationship.Element != relationshipConfiguration.Element ||
+			   relationship.Version != relationshipConfiguration.Version {
+					 return fmt.Errorf("Incompatible relationship: '%s' of the cluster '%s'", relationshipName, cluster.Version)
+				 }
+		} else {
+			// relationship does not exist
+			// create new relationship
+			relationship, _ = NewRelationship(relationshipName, relationshipConfiguration.Element, relationshipConfiguration.Version, "")
+			cluster.AddRelationship(relationship)
+		}
+	}
+
+	// add missing instances
+	instanceNames, _ := cluster.ListInstances()
+	targetSize       := clusterConfiguration.Size
+	currentSize      := len(instanceNames)
+	for currentSize < targetSize {
+		// add new instance to cluster in its initial state
+		instance, _ := NewInstance(uuid.New().String(), InitialState, "")
+		cluster.AddInstance(instance)
+
+		currentSize = currentSize + 1
+	}
+
+	// success
+	return nil
 }
 
 //------------------------------------------------------------------------------

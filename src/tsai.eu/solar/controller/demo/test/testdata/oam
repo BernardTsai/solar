@@ -4,6 +4,8 @@ Version:                   "V1.0.0"
 Element:                   "oam"
 Cluster:                   "V1.0.0"
 Instance:                  "98028027-f92a-44df-937b-641002d29186"
+Target:                    "active"
+State:                     "active"
 DesignTimeConfiguration:   ""
 RuntimeConfiguration:      ""
 Elements:
@@ -11,6 +13,8 @@ Elements:
   #-----
     Element:                 "oam"
     Component:               "Demo"
+    Target:                  "active"
+    State:                   "active"
     DesignTimeConfiguration: ""
     RuntimeConfiguration:    ""
     Endpoint:                ""
@@ -18,8 +22,11 @@ Elements:
       "V1.0.0":
       #--------
         Cluster:                 "V1.0.0"
+        Target:                  "active"
         State:                   "active"
-        Size:                    "1"
+        Min:                     1
+        Max:                     1
+        Size:                    1
         BaseConfiguration:       ""
         DesignTimeConfiguration: ""
         RuntimeConfiguration:    ""

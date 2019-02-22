@@ -39,8 +39,9 @@ type Task struct {
 	Type         string     `yaml:"type"`         // type of task
 	Domain       string     `yaml:"domain"`       // domain of task
 	Architecture string     `yaml:"architecture"` // architecture of entity
-	Component    string     `yaml:"component"`    // component of entity
-	Version      string     `yaml:"version"`      // version of entity
+	Version      string     `yaml:"architecture"` // architecture version of entity
+	Element      string     `yaml:"element"`      // element of entity
+	Cluster      string     `yaml:"Cluster"`      // cluster of entity
 	Instance     string     `yaml:"instance"`     // instance of entity
 	State        string     `yaml:"state"`        // desired state of entity
 	UUID         string     `yaml:"uuid"`         // uuid of task
@@ -78,16 +79,23 @@ func (task *Task) GetArchitecture() string {
 
 //------------------------------------------------------------------------------
 
-// GetComponent delivers the component of the entity.
-func (task *Task) GetComponent() string {
-	return task.Component
+// GetVersion delivers the architecture version of the entity.
+func (task *Task) GetVersion() string {
+	return task.Version
 }
 
 //------------------------------------------------------------------------------
 
-// GetVersion delivers the version of the entity.
-func (task *Task) GetVersion() string {
-	return task.Version
+// GetElement delivers the element of the entity.
+func (task *Task) GetElement() string {
+	return task.Element
+}
+
+//------------------------------------------------------------------------------
+
+// GetCluster delivers the cluster of the entity.
+func (task *Task) GetCluster() string {
+	return task.Cluster
 }
 
 //------------------------------------------------------------------------------

@@ -2,6 +2,7 @@ package model
 
 import (
 	"sync"
+	"fmt"
 
 	"github.com/pkg/errors"
 	"tsai.eu/solar/util"
@@ -109,7 +110,7 @@ func GetTransition(currentState string, targetState string) (string, error) {
 
 // ElementMap is a synchronized map for a map of elements
 type ElementMap struct {
-	sync.RWMutex `yaml:"mutex,omitempty"` // mutex
+	*sync.RWMutex `yaml:"mutex,omitempty"` // mutex
 	Map          map[string]*Element     `yaml:"map"` // map of events
 }
 
@@ -138,6 +139,8 @@ func (m *ElementMap) UnmarshalYAML(unmarshal func(interface{}) error) error {
 type Solution struct {
 	Solution      string     `yaml:"solution"`       // name of solution
 	Version       string     `yaml:"version"`        // version of solution
+	Target        string     `yaml:"target"`         // target state of solution
+	State         string     `yaml:"state"`          // current state of solution
 	Configuration string     `yaml:"configuration"`  // configuration of solution
 	Elements      ElementMap `yaml:"elements"`       // elements of solution
 }
@@ -252,6 +255,47 @@ func (solution *Solution) DeleteElement(uuid string) error {
 	solution.Elements.Lock()
 	delete(solution.Elements.Map, uuid)
 	solution.Elements.Unlock()
+
+	// success
+	return nil
+}
+
+//------------------------------------------------------------------------------
+
+// Update instantiates/update a solution based on an architecture.
+func (solution *Solution) Update(architecture *Architecture) error {
+	// check if the names are compatible
+	if solution.Solution != architecture.Architecture {
+		return errors.New("Name of solution does match the name of the architecture")
+	}
+
+	// update version
+	solution.Version = architecture.Version
+
+	// update all elements defined in the architecture
+	elementNames, _ := architecture.ListElements()
+	for _, elementName := range elementNames {
+
+		element, _              := solution.GetElement(elementName)
+		elementConfiguration, _ := architecture.GetElement(elementName)
+
+		// element already exists
+		if element != nil {
+			if err := element.Update(elementConfiguration); err != nil {
+				return fmt.Errorf("Unable to update element: '%s' of the solution: '%s'\n%s", elementName, solution.Solution, err)
+			}
+		} else {
+			// element does not exist
+			// create new element
+			element, _ = NewElement(elementName, elementConfiguration.Component, "")
+			solution.AddElement(element)
+
+			// update the element with the configuration information
+			if err := element.Update(elementConfiguration); err != nil {
+				return fmt.Errorf("Unable to update element: '%s' of the solution: '%s'\n%s", elementName, solution.Solution, err)
+			}
+		}
+	}
 
 	// success
 	return nil

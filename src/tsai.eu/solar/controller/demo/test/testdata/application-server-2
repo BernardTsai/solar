@@ -4,6 +4,8 @@ Version:                   "V1.0.0"
 Element:                   "application-server"
 Cluster:                   "V1.0.0"
 Instance:                  "b139467b-ebf2-4178-8319-7ee867e5dfb7"
+Target:                    "active"
+State:                     "active"
 DesignTimeConfiguration:   ""
 RuntimeConfiguration:      ""
 Elements:
@@ -11,6 +13,8 @@ Elements:
   #--------------------
     Element:                 "application-server"
     Component:               "Demo"
+    Target:                  "active"
+    State:                   "active"
     DesignTimeConfiguration: ""
     RuntimeConfiguration:    ""
     Endpoint:                ""
@@ -18,8 +22,11 @@ Elements:
       "V1.0.0":
       #--------
         Cluster:                 "V1.0.0"
+        Target:                  "active"
         State:                   "active"
-        Size:                    "1"
+        Min:                     1
+        Max:                     1
+        Size:                    1
         BaseConfiguration:       ""
         DesignTimeConfiguration: ""
         RuntimeConfiguration:    ""
@@ -30,6 +37,8 @@ Elements:
             Relationship:            "Parent"
             Element:                 "Servers"
             Version:                 "V1.0.0"
+            Target:                  "active"
+            State:                   "active"
             BaseConfiguration:       ""
             DesignTimeConfiguration: ""
             RuntimeConfiguration:    ""
@@ -39,6 +48,8 @@ Elements:
             Relationship:            "Tenant"
             Element:                 "Tenant"
             Version:                 "V1.0.0"
+            Target:                  "active"
+            State:                   "active"
             BaseConfiguration:       ""
             DesignTimeConfiguration: ""
             RuntimeConfiguration:    ""
@@ -48,6 +59,8 @@ Elements:
             Relationship:            "oam"
             Element:                 "oam"
             Version:                 "V1.0.0"
+            Target:                  "active"
+            State:                   "active"
             BaseConfiguration:       ""
             DesignTimeConfiguration: ""
             RuntimeConfiguration:    ""
@@ -57,6 +70,8 @@ Elements:
             Relationship:            "m2m"
             Element:                 "m2m"
             Version:                 "V1.0.0"
+            Target:                  "active"
+            State:                   "active"
             BaseConfiguration:       ""
             DesignTimeConfiguration: ""
             RuntimeConfiguration:    ""
@@ -66,6 +81,8 @@ Elements:
             Relationship:            "pub"
             Element:                 "pub"
             Version:                 "V1.0.0"
+            Target:                  "active"
+            State:                   "active"
             BaseConfiguration:       ""
             DesignTimeConfiguration: ""
             RuntimeConfiguration:    ""
@@ -74,6 +91,7 @@ Elements:
           "b139467b-ebf2-4178-8319-7ee867e5dfb7":
           #--------------------------------------
             Instance:                "b139467b-ebf2-4178-8319-7ee867e5dfb7"
+            Target:                  "active"
             State:                   "active"
             BaseConfiguration:       ""
             DesignTimeConfiguration: |

@@ -2,6 +2,7 @@ package model
 
 import (
 	"sync"
+	"fmt"
 
 	"github.com/pkg/errors"
 	"tsai.eu/solar/util"
@@ -33,7 +34,7 @@ import (
 
 // ClusterMap is a synchronized map for a map of clusters
 type ClusterMap struct {
-	sync.RWMutex `yaml:"mutex,omitempty"`              // mutex
+	*sync.RWMutex `yaml:"mutex,omitempty"`              // mutex
 	Map          map[string]*Cluster      `yaml:"map"` // map of clusters
 }
 
@@ -62,6 +63,8 @@ func (m *ClusterMap) UnmarshalYAML(unmarshal func(interface{}) error) error {
 type Element struct {
 	Element       string      `yaml:"element"`       // name of the solution element
 	Component     string      `yaml:"component"`     // type of the solution elmenent
+	Target        string      `yaml:"target"`        // target state of element
+	State         string      `yaml:"state"`         // current state of element
 	Configuration string      `yaml:"configuration"` // runtime configuration of the solution element
 	Endpoint      string      `yaml:"endpoint"`      // state of the solution element
 	Clusters      ClusterMap  `yaml:"clusters"`      // clusters of the solution element
@@ -154,6 +157,49 @@ func (element *Element) DeleteCluster(version string) {
 	element.Clusters.Lock()
 	delete(element.Clusters.Map, version)
 	element.Clusters.Unlock()
+}
+
+//------------------------------------------------------------------------------
+
+// Update instantiates/update an element based on an element configuration.
+func (element *Element) Update(elementConfiguration *ElementConfiguration) error {
+	// check if the names are compatible
+	if element.Element != elementConfiguration.Element {
+		return errors.New("Name of element does match the name of the element configuration")
+	}
+
+	// check if the components are compatible
+	if element.Component != elementConfiguration.Component {
+		return errors.New("Type of element does match the type defined in the element configuration")
+	}
+
+	// update all clusters defined in the element configuration
+	clusterNames, _ := elementConfiguration.ListClusters()
+	for _, clusterName := range clusterNames {
+
+		cluster, _              := element.GetCluster(clusterName)
+		clusterConfiguration, _ := elementConfiguration.GetCluster(clusterName)
+
+		// cluster already exists
+		if cluster != nil {
+			if err := cluster.Update(clusterConfiguration); err != nil {
+				return fmt.Errorf("Unable to update cluster: '%s' of the element '%s'\n%s", clusterName, element.Element, err)
+			}
+		} else {
+			// cluster does not exist
+			// create new cluster
+			cluster, _ = NewCluster(clusterName, clusterConfiguration.State, clusterConfiguration.Min, clusterConfiguration.Max, clusterConfiguration.Size, "")
+			element.AddCluster(cluster)
+
+			// update the element with the configuration information
+			if err := cluster.Update(clusterConfiguration); err != nil {
+				return fmt.Errorf("Unable to update cluster: '%s' of the element: '%s'\n%s", clusterName, element.Element, err)
+			}
+		}
+	}
+
+	// success
+	return nil
 }
 
 //------------------------------------------------------------------------------

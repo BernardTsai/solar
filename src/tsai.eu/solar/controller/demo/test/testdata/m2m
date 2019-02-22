@@ -4,6 +4,8 @@ Version:                   "V1.0.0"
 Element:                   "m2m"
 Cluster:                   "V1.0.0"
 Instance:                  "a3b2e146-ba54-4ef0-a6bc-8d35db34c4e1"
+Target:                    "active"
+State:                     "active"
 DesignTimeConfiguration:   ""
 RuntimeConfiguration:      ""
 Elements:
@@ -11,6 +13,8 @@ Elements:
   #-----
     Element:                 "m2m"
     Component:               "Demo"
+    Target:                  "active"
+    State:                   "active"
     DesignTimeConfiguration: ""
     RuntimeConfiguration:    ""
     Endpoint:                ""
@@ -18,8 +22,11 @@ Elements:
       "V1.0.0":
       #--------
         Cluster:                 "V1.0.0"
+        Target:                  "active"
         State:                   "active"
-        Size:                    "1"
+        Min:                     1
+        Max:                     1
+        Size:                    1
         BaseConfiguration:       ""
         DesignTimeConfiguration: ""
         RuntimeConfiguration:    ""
@@ -30,6 +37,8 @@ Elements:
             Relationship:            "Parent"
             Element:                 "Networks"
             Version:                 "V1.0.0"
+            Target:                  "active"
+            State:                   "active"
             BaseConfiguration:       ""
             DesignTimeConfiguration: ""
             RuntimeConfiguration:    ""
@@ -38,6 +47,7 @@ Elements:
           "a3b2e146-ba54-4ef0-a6bc-8d35db34c4e1":
           #--------------------------------------
             Instance:                "a3b2e146-ba54-4ef0-a6bc-8d35db34c4e1"
+            Target:                  "active"
             State:                   "active"
             BaseConfiguration:       ""
             DesignTimeConfiguration: |

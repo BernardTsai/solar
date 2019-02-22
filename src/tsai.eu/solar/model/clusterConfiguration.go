@@ -62,6 +62,8 @@ func (m *RelationshipConfigurationMap) UnmarshalYAML(unmarshal func(interface{})
 type ClusterConfiguration struct {
 	Version       string                       `yaml:"version"`       // version of the solution element cluster
 	State         string                       `yaml:"state"`         // state of the solution element cluster
+	Min           int                          `yaml:"min"`           // min. size of the solution element cluster
+	Max           int                          `yaml:"max"`           // max. size of the solution element cluster
 	Size          int                          `yaml:"size"`          // size of the solution element cluster
 	Configuration string                       `yaml:"configuration"` // runtime configuration of the solution element cluster
 	Relationships RelationshipConfigurationMap `yaml:"relationships"` // relationships of the solution element cluster
@@ -70,12 +72,14 @@ type ClusterConfiguration struct {
 //------------------------------------------------------------------------------
 
 // NewClusterConfiguration creates a new cluster configuration
-func NewClusterConfiguration(version string, state string, size int, configuration string) (*ClusterConfiguration, error) {
+func NewClusterConfiguration(version string, state string, min int, max int, size int, configuration string) (*ClusterConfiguration, error) {
 	var clusterConfiguration ClusterConfiguration
 
-	clusterConfiguration.Version = version
-	clusterConfiguration.State = state
-	clusterConfiguration.Size = size
+	clusterConfiguration.Version       = version
+	clusterConfiguration.State         = state
+	clusterConfiguration.Min           = min
+	clusterConfiguration.Max           = max
+	clusterConfiguration.Size          = size
 	clusterConfiguration.Configuration = configuration
 	clusterConfiguration.Relationships = RelationshipConfigurationMap{Map: map[string]*RelationshipConfiguration{}}
 

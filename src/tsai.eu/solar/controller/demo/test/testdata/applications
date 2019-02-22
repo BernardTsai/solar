@@ -4,6 +4,8 @@ Version:                   "V1.0.0"
 Element:                   "Applications"
 Cluster:                   "V1.0.0"
 Instance:                  "51547790-4337-4516-9e55-e2e9f1b5c8ce"
+Target:                    "active"
+State:                     "active"
 DesignTimeConfiguration:   ""
 RuntimeConfiguration:      ""
 Elements:
@@ -11,6 +13,8 @@ Elements:
   #--------------
     Element:                 "Applications"
     Component:               "Demo"
+    Target:                  "active"
+    State:                   "active"
     DesignTimeConfiguration: ""
     RuntimeConfiguration:    ""
     Endpoint:                ""
@@ -18,8 +22,11 @@ Elements:
       "V1.0.0":
       #--------
         Cluster:                 "V1.0.0"
+        Target:                  "active"
         State:                   "active"
-        Size:                    "1"
+        Min:                     1
+        Max:                     1
+        Size:                    1
         BaseConfiguration:       ""
         DesignTimeConfiguration: ""
         RuntimeConfiguration:    ""
@@ -30,6 +37,8 @@ Elements:
             Relationship:            "Parent"
             Element:                 "Tenant"
             Version:                 "V1.0.0"
+            Target:                  "active"
+            State:                   "active"
             BaseConfiguration:       ""
             DesignTimeConfiguration: ""
             RuntimeConfiguration:    ""
@@ -38,6 +47,7 @@ Elements:
           "51547790-4337-4516-9e55-e2e9f1b5c8ce":
           #--------------------------------------
             Instance:                "51547790-4337-4516-9e55-e2e9f1b5c8ce"
+            Target:                  "active"
             State:                   "active"
             BaseConfiguration:       ""
             DesignTimeConfiguration: |

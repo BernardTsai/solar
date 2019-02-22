@@ -25,6 +25,7 @@ import (
 // Instance describes the runtime configuration of an solution element cluster instance within a domain.
 type Instance struct {
 	UUID          string  `yaml:"uuid"`          // uuid of the instance
+	Target        string  `yaml:"target"`        // target state of the instance
 	State         string  `yaml:"state"`         // state of the instance
 	Configuration string  `yaml:"configuration"` // runtime configuration of the instance
 	Endpoint      string  `yaml:"endpoint"`      // endpoint of the instance
@@ -36,10 +37,11 @@ type Instance struct {
 func NewInstance(uuid string, state string, configuration string) (*Instance, error) {
 	var instance Instance
 
-	instance.UUID = uuid
-	instance.State = state
+	instance.UUID          = uuid
+	instance.Target        = state
+	instance.State         = InitialState
 	instance.Configuration = configuration
-	instance.Endpoint = ""
+	instance.Endpoint      = ""
 
 	// success
 	return &instance, nil
