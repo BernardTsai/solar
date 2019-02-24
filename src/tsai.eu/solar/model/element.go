@@ -15,6 +15,8 @@ import (
 // Attributes:
 //   - Element
 //   - Component
+//   - Target
+//   - State
 //   - Configuration
 //   - Endpoint
 //   - Clusters
@@ -25,6 +27,9 @@ import (
 //   - element.Show
 //   - element.Load
 //   - element.Save
+//   - element.Update
+//   - element.Reset
+//   - element.OK
 //
 //   - element.ListClusters
 //   - element.GetCluster
@@ -162,7 +167,7 @@ func (element *Element) DeleteCluster(version string) {
 //------------------------------------------------------------------------------
 
 // Update instantiates/update an element based on an element configuration.
-func (element *Element) Update(elementConfiguration *ElementConfiguration) error {
+func (element *Element) Update(domainName string, solutionName string, elementConfiguration *ElementConfiguration) error {
 	// check if the names are compatible
 	if element.Element != elementConfiguration.Element {
 		return errors.New("Name of element does match the name of the element configuration")
@@ -173,6 +178,9 @@ func (element *Element) Update(elementConfiguration *ElementConfiguration) error
 		return errors.New("Type of element does match the type defined in the element configuration")
 	}
 
+	// update target state
+	element.Target = ActiveState
+
 	// update all clusters defined in the element configuration
 	clusterNames, _ := elementConfiguration.ListClusters()
 	for _, clusterName := range clusterNames {
@@ -182,7 +190,7 @@ func (element *Element) Update(elementConfiguration *ElementConfiguration) error
 
 		// cluster already exists
 		if cluster != nil {
-			if err := cluster.Update(clusterConfiguration); err != nil {
+			if err := cluster.Update(domainName, solutionName, element.Element, clusterConfiguration); err != nil {
 				return fmt.Errorf("Unable to update cluster: '%s' of the element '%s'\n%s", clusterName, element.Element, err)
 			}
 		} else {
@@ -192,14 +200,59 @@ func (element *Element) Update(elementConfiguration *ElementConfiguration) error
 			element.AddCluster(cluster)
 
 			// update the element with the configuration information
-			if err := cluster.Update(clusterConfiguration); err != nil {
-				return fmt.Errorf("Unable to update cluster: '%s' of the element: '%s'\n%s", clusterName, element.Element, err)
+			if err := cluster.Update(domainName, solutionName, element.Element, clusterConfiguration); err != nil {
+				return fmt.Errorf("Unable to create cluster: '%s' of the element: '%s'\n%s", clusterName, element.Element, err)
 			}
+		}
+	}
+
+	// delete all clusters not defined in the element configuration
+	clusterNames, _ = element.ListClusters()
+	for _, clusterName := range clusterNames {
+		cluster, _              := element.GetCluster(clusterName)
+		clusterConfiguration, _ := elementConfiguration.GetCluster(clusterName)
+
+		// cluster is not defined in the element configuration
+		if clusterConfiguration == nil {
+			cluster.Reset()
 		}
 	}
 
 	// success
 	return nil
+}
+
+//------------------------------------------------------------------------------
+
+// Reset state of element
+func (element *Element) Reset() {
+	element.Target = InitialState
+
+	// reset all clusters
+	clusterNames, _ := element.ListClusters()
+	for _, clusterName := range clusterNames {
+		cluster, _ := element.GetCluster(clusterName)
+
+		cluster.Reset()
+	}
+}
+
+//------------------------------------------------------------------------------
+
+// OK checks if the element has converged to the desired state
+func (element *Element) OK() bool {
+	// check each cluster
+	clusterNames, _ := element.ListClusters()
+	for _, clusterName := range clusterNames {
+		cluster, _ := element.GetCluster(clusterName)
+
+		if !cluster.OK() {
+			return false
+		}
+	}
+
+	// element is ok
+	return true
 }
 
 //------------------------------------------------------------------------------

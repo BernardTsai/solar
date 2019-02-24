@@ -1,13 +1,12 @@
 package util
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"runtime"
 	"strconv"
 
+	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v2"
 )
@@ -226,13 +225,9 @@ func AreEqual(a interface{}, b interface{}) bool {
 
 //------------------------------------------------------------------------------
 
-func GID() uint64 {
-	b := make([]byte, 64)
-	b = b[:runtime.Stack(b, false)]
-	b = bytes.TrimPrefix(b, []byte("goroutine "))
-	b = b[:bytes.IndexByte(b, ' ')]
-	n, _ := strconv.ParseUint(string(b), 10, 64)
-	return n
+// UUID creates a universal unique id
+func UUID() string {
+	return uuid.New().String()
 }
 
 //------------------------------------------------------------------------------

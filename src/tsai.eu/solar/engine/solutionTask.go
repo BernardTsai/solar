@@ -3,22 +3,22 @@ package engine
 import (
 	"errors"
 
-	"tsai.eu/solar/util"
 	"tsai.eu/solar/model"
+	"tsai.eu/solar/util"
 )
 
 //------------------------------------------------------------------------------
 
-// NewElementTask creates a new task
-func NewElementTask(domain string, parent string, solution string, version string, element string) (model.Task, error) {
+// NewSolutionTask creates a new task
+func NewSolutionTask(domain string, parent string, solution *model.Solution) (model.Task, error) {
 	var task model.Task
 
 	// TODO: check parameters if context exists
-	task.Type         = "ElementTask"
+	task.Type         = "SolutionTask"
 	task.Domain       = domain
-	task.Solution     = solution
-	task.Version      = version
-	task.Element      = element
+	task.Solution     = solution.Solution
+	task.Version      = solution.Version
+	task.Element      = ""
 	task.Cluster      = ""
 	task.Instance     = ""
 	task.State        = ""
@@ -29,14 +29,14 @@ func NewElementTask(domain string, parent string, solution string, version strin
 	task.Subtasks     = []string{}
 
 	// add handlers
-	task.SetExecute(ExecuteElementTask)
+	task.SetExecute(ExecuteSolutionTask)
 	task.SetTerminate(TerminateTask)
 	task.SetFailed(FailedTask)
 	task.SetTimeout(TimeoutTask)
 	task.SetCompleted(CompletedTask)
 
 	// get domain
-	d, err := model.GetModel().GetDomain(domain)
+	d, err := model.GetDomain(domain)
 	if err != nil {
 		return task, errors.New("unknown domain")
 	}
@@ -46,15 +46,14 @@ func NewElementTask(domain string, parent string, solution string, version strin
 	if err != nil {
 		return task, err
 	}
-
 	// success
 	return task, nil
 }
 
 //------------------------------------------------------------------------------
 
-// ExecuteElementTask is the main task execution routine.
-func ExecuteElementTask(task *model.Task) {
+// ExecuteSolutionTask is the main task execution routine.
+func ExecuteSolutionTask(task *model.Task) {
 	// get event channel
 	channel := GetEventChannel()
 
@@ -66,17 +65,17 @@ func ExecuteElementTask(task *model.Task) {
 	}
 
 	// determine context
-	element, _ := model.GetElement(task.Domain, task.Solution, task.Element)
+	solution, _ := model.GetSolution(task.Domain, task.Solution)
 
-	// one by one identify the cluster which may need to be changed
-	clusterNames, _ := element.ListClusters()
-	for _, clusterName := range clusterNames {
-		cluster, _ := element.GetCluster(clusterName)
+	// one by one identify the element which may need to be changed
+	elementNames, _ := solution.ListElements()
+	for _, elementName := range elementNames {
+		element, _ := solution.GetElement(elementName)
 
-		// check if the cluster needs to be updated
-		if !cluster.OK() {
-			// create task to update the cluster
-			subtask, _ := NewClusterTask(task.Domain, task.UUID, task.Solution, task.Version,task.Element, task.Cluster)
+		// check if the element needs to be updated
+		if !element.OK() {
+			// create task to update the element
+			subtask, _ := NewElementTask(task.Domain, task.UUID, task.Solution, task.Version, elementName)
 			task.AddSubtask(&subtask)
 
 			// trigger the task

@@ -36,3 +36,11 @@ const ConfiguringState string = "configuring"
 const ResettingState string = "resetting"
 
 //------------------------------------------------------------------------------
+
+// ContextRelationship indicates that the relationship refers to a runtime context dependency.
+const ContextRelationship string = "context"
+
+// ServiceRelationship indicates that the relationship refers to a client/service dependency.
+const ServiceRelationship string = "service"
+
+//------------------------------------------------------------------------------

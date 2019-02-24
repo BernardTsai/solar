@@ -30,16 +30,9 @@ func Run(m *model.Model) {
 			OutputUsage(true, c)
 			ModelUsage(true, c)
 			DomainUsage(false, c)
-			TemplateUsage(false, c)
-			VariantUsage(false, c)
-			DependencyUsage(false, c)
-			ArchitectureUsage(false, c)
-			ServiceUsage(false, c)
-			SetupUsage(false, c)
 			ComponentUsage(false, c)
-			InstanceUsage(false, c)
-			TaskUsage(false, c)
-			EventUsage(false, c)
+			ArchitectureUsage(false, c)
+			SolutionUsage(false, c)
 		},
 	})
 
@@ -64,25 +57,11 @@ func Run(m *model.Model) {
 		Func: func(c *ishell.Context) { DomainCommand(c, m) },
 	})
 
-	// register a function for the "template" command.
+	// register a function for the "component" command.
 	shell.AddCmd(&ishell.Cmd{
-		Name: "template",
-		Help: "template commands",
-		Func: func(c *ishell.Context) { TemplateCommand(c, m) },
-	})
-
-	// register a function for the "variant" command.
-	shell.AddCmd(&ishell.Cmd{
-		Name: "variant",
-		Help: "variant commands",
-		Func: func(c *ishell.Context) { VariantCommand(c, m) },
-	})
-
-	// register a function for the "dependency" command.
-	shell.AddCmd(&ishell.Cmd{
-		Name: "dependency",
-		Help: "dependency commands",
-		Func: func(c *ishell.Context) { DependencyCommand(c, m) },
+		Name: "component",
+		Help: "component commands",
+		Func: func(c *ishell.Context) { ComponentCommand(c, m) },
 	})
 
 	// register a function for the "architecture" command.
@@ -92,46 +71,11 @@ func Run(m *model.Model) {
 		Func: func(c *ishell.Context) { ArchitectureCommand(c, m) },
 	})
 
-	// register a function for the "service" command.
+	// register a function for the "solution" command.
 	shell.AddCmd(&ishell.Cmd{
-		Name: "service",
-		Help: "service commands",
-		Func: func(c *ishell.Context) { ServiceCommand(c, m) },
-	})
-
-	// register a function for the "setup" command.
-	shell.AddCmd(&ishell.Cmd{
-		Name: "setup",
-		Help: "setup commands",
-		Func: func(c *ishell.Context) { SetupCommand(c, m) },
-	})
-
-	// register a function for the "component" command.
-	shell.AddCmd(&ishell.Cmd{
-		Name: "component",
-		Help: "component commands",
-		Func: func(c *ishell.Context) { ComponentCommand(c, m) },
-	})
-
-	// register a function for the "instance" command.
-	shell.AddCmd(&ishell.Cmd{
-		Name: "instance",
-		Help: "instance commands",
-		Func: func(c *ishell.Context) { InstanceCommand(c, m) },
-	})
-
-	// register a function for the "task" command.
-	shell.AddCmd(&ishell.Cmd{
-		Name: "task",
-		Help: "task commands",
-		Func: func(c *ishell.Context) { TaskCommand(c, m) },
-	})
-
-	// register a function for the "event" command.
-	shell.AddCmd(&ishell.Cmd{
-		Name: "event",
-		Help: "event commands",
-		Func: func(c *ishell.Context) { EventCommand(c, m) },
+		Name: "solution",
+		Help: "solution commands",
+		Func: func(c *ishell.Context) { SolutionCommand(c, m) },
 	})
 
 	// register a function for "#" command.

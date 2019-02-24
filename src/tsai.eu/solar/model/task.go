@@ -38,8 +38,8 @@ type TaskHandler func(task *Task)
 type Task struct {
 	Type         string     `yaml:"type"`         // type of task
 	Domain       string     `yaml:"domain"`       // domain of task
-	Architecture string     `yaml:"architecture"` // architecture of entity
-	Version      string     `yaml:"architecture"` // architecture version of entity
+	Solution     string     `yaml:"solution"`     // architecture of entity
+	Version      string     `yaml:"version"`      // architecture version of entity
 	Element      string     `yaml:"element"`      // element of entity
 	Cluster      string     `yaml:"Cluster"`      // cluster of entity
 	Instance     string     `yaml:"instance"`     // instance of entity
@@ -72,9 +72,9 @@ func (task *Task) GetDomain() string {
 
 //------------------------------------------------------------------------------
 
-// GetArchitecture delivers the architecture of the entity.
-func (task *Task) GetArchitecture() string {
-	return task.Architecture
+// GetSolution delivers the architecture of the entity.
+func (task *Task) GetSolution() string {
+	return task.Solution
 }
 
 //------------------------------------------------------------------------------

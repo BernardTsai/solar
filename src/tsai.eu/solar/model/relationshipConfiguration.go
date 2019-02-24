@@ -10,6 +10,8 @@ import (
 //
 // Attributes:
 //   - Relationship
+//   - Dependency
+//   - Type
 //   - Element
 //   - Version
 //   - Configuration
@@ -22,9 +24,11 @@ import (
 //   - relationship.Save
 //------------------------------------------------------------------------------
 
-// Relationship describes the design time configuration of a relationship between clusters within a domain.
+// RelationshipConfiguration describes the design time configuration of a relationship between clusters within a domain.
 type RelationshipConfiguration struct {
 	Relationship  string  `yaml:"relationship"`  // name of the relationship
+	Dependency    string  `yaml:"dependency"`    // name of the dependency
+	Type          string  `yaml:"type"`          // type of dependency
 	Element       string  `yaml:"element"`       // element to which this relationship refers to
 	Version       string  `yaml:"version"`       // version of the element to which this relationship refers to
 	Configuration string  `yaml:"configuration"` // design time configuration of the relationship
@@ -33,12 +37,14 @@ type RelationshipConfiguration struct {
 //------------------------------------------------------------------------------
 
 // NewRelationshipConfiguration creates a new relationship configuration
-func NewRelationshipConfiguration(name string, element string, version string, configuration string) (*RelationshipConfiguration, error) {
+func NewRelationshipConfiguration(name string, dependency string, dependencyType string, element string, version string, configuration string) (*RelationshipConfiguration, error) {
 	var relationshipConfiguration RelationshipConfiguration
 
-	relationshipConfiguration.Relationship = name
-	relationshipConfiguration.Element = element
-	relationshipConfiguration.Version = version
+	relationshipConfiguration.Relationship  = name
+	relationshipConfiguration.Dependency    = dependency
+	relationshipConfiguration.Type          = dependencyType
+	relationshipConfiguration.Element       = element
+	relationshipConfiguration.Version       = version
 	relationshipConfiguration.Configuration = configuration
 
 	// success

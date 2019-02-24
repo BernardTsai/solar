@@ -8,16 +8,6 @@ import (
 
 //------------------------------------------------------------------------------
 
-// ComponentVersion refers to a specific version of a component in a domain.
-type ComponentVersion struct {
-	Domain string
-	Component string
-	Version string
-}
-
-//------------------------------------------------------------------------------
-
-
 // ComponentCommand executes the component related subcommands
 func ComponentCommand(context *ishell.Context, m *model.Model) {
 	// check if the action has been defined
@@ -34,68 +24,49 @@ func ComponentCommand(context *ishell.Context, m *model.Model) {
 	case "?":
 		ComponentUsage(true, context)
 	case _list:
-		// set default filter criteria
-		domainName := ""
-		componentName := ""
-		versionName := ""
-
-		// initialise result
-		var result []ComponentVersion
-
 		// check availability of arguments
 		if len(context.Args) < 2 || 4 < len(context.Args) {
 			ComponentUsage(true, context)
 			return
 		}
-		if len(context.Args) >= 2 {
-			domainName = context.Args[1]
-		}
+
+		// set domain name filter
+		domainName := context.Args[1]
+
+		// set component name filter
+		componentName := ""
 		if len(context.Args) >= 3 {
-			versionName = context.Args[2]
+			componentName = context.Args[2]
 		}
+
+		// set version filter
+		versionName   := ""
 		if len(context.Args) == 4 {
 			versionName = context.Args[3]
 		}
 
-		// loop over all domains
-		for dName, d in range m.Domains {
-			// filter by domain
-			if domainName == "" || domainName == dName {
-
-				// loop over all components
-				for cName, c in range d.Components {
-					// filter by component
-					if componentName == "" || componentName == cName {
-
-						// loop over all versions
-						for vName, v in range c.Components {
-							// filter by component
-							if componentName == "" || componentName == cName {
-
-
-
-
-
-
-							}
-						}
-					}
-				}
-			}
-		}
-
-		// execute command
-		domain, err := m.GetDomain(context.Args[1])
-
+		// determine domain
+		domain, err := model.GetDomain(domainName)
 		if err != nil {
 			handleResult(context, err, "domain can not be identified", "")
 			return
 		}
 
-		components, _ := domain.ListComponents()
+		// determine list of component names
+		components := []string{}
+
+		cNames, _ := domain.ListComponents()
+		for _, cName := range cNames {
+			component, _ := domain.GetComponent(cName)
+
+			if (componentName == "" || componentName == component.Component) &&
+			   (versionName   == "" || versionName   == component.Version) {
+				components = append(components, cName)
+			}
+		}
+
 		result, err := util.ConvertToJSON(components)
 		handleResult(context, err, "components could not be listed", result)
-
 	case _set:
 		// check availability of arguments
 		if len(context.Args) != 3 {
@@ -112,7 +83,7 @@ func ComponentCommand(context *ishell.Context, m *model.Model) {
 		}
 
 		// create new component
-		component, _ := model.NewComponent("", "")
+		component, _ := model.NewComponent("", "", "")
 
 		// load component
 		err = component.Load(context.Args[2])
@@ -131,16 +102,8 @@ func ComponentCommand(context *ishell.Context, m *model.Model) {
 			return
 		}
 
-		// determine domain
-		domain, err := m.GetDomain(context.Args[1])
-
-		if err != nil {
-			handleResult(context, err, "domain can not be identified", "")
-			return
-		}
-
 		// determine component
-		t, err := domain.GetComponent(context.Args[2])
+		component, err := model.GetComponent(context.Args[1], context.Args[2])
 
 		if err != nil {
 			handleResult(context, err, "component can not be identified", "")
@@ -148,7 +111,7 @@ func ComponentCommand(context *ishell.Context, m *model.Model) {
 		}
 
 		// execute the command
-		result, err := t.Show()
+		result, err := component.Show()
 		handleResult(context, err, "component can not be displayed", result)
 	case _delete:
 		// check availability of arguments

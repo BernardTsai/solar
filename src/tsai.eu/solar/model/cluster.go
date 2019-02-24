@@ -4,7 +4,6 @@ import (
 	"sync"
 	"fmt"
 
-	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"tsai.eu/solar/util"
 )
@@ -15,7 +14,10 @@ import (
 //
 // Attributes:
 //   - Version
+//   - Target
 //   - State
+//   - Min
+//   - Max
 //   - Size
 //   - Configuration
 //   - Endpoint
@@ -28,6 +30,9 @@ import (
 //   - cluster.Show
 //   - cluster.Load
 //   - cluster.Save
+//   - cluster.Update
+//   - cluster.Reset
+//   - cluster.OK
 //
 //   - cluster.ListRelationships
 //   - cluster.GetRelationship
@@ -257,11 +262,17 @@ func (cluster *Cluster) DeleteInstance(uuid string) {
 //------------------------------------------------------------------------------
 
 // Update instantiates/update a cluster based on a cluster configuration.
-func (cluster *Cluster) Update(clusterConfiguration *ClusterConfiguration) error {
+func (cluster *Cluster) Update(domainName string, solutionName string, elementName string, clusterConfiguration *ClusterConfiguration) error {
 	// check if the names are compatible
 	if cluster.Version != clusterConfiguration.Version {
 		return errors.New("Version of cluster does match the version defined in the cluster configuration")
 	}
+
+	// update target state and sizes
+	cluster.Target = clusterConfiguration.State
+	cluster.Min    = clusterConfiguration.Min
+	cluster.Max    = clusterConfiguration.Max
+	cluster.Size   = clusterConfiguration.Size
 
 	// check compatability of all relationships
 	relationshipNames, _ := clusterConfiguration.ListRelationships()
@@ -280,18 +291,25 @@ func (cluster *Cluster) Update(clusterConfiguration *ClusterConfiguration) error
 		} else {
 			// relationship does not exist
 			// create new relationship
-			relationship, _ = NewRelationship(relationshipName, relationshipConfiguration.Element, relationshipConfiguration.Version, "")
+			relationship, _ = NewRelationship(relationshipName,
+				                                relationshipConfiguration.Dependency,
+																				relationshipConfiguration.Type,
+																				domainName,
+																				solutionName,
+																				relationshipConfiguration.Element,
+																				relationshipConfiguration.Version,
+																				"")
 			cluster.AddRelationship(relationship)
 		}
 	}
 
 	// add missing instances
 	instanceNames, _ := cluster.ListInstances()
-	targetSize       := clusterConfiguration.Size
+	targetSize       := clusterConfiguration.Max
 	currentSize      := len(instanceNames)
 	for currentSize < targetSize {
 		// add new instance to cluster in its initial state
-		instance, _ := NewInstance(uuid.New().String(), InitialState, "")
+		instance, _ := NewInstance(util.UUID(), InitialState, "")
 		cluster.AddInstance(instance)
 
 		currentSize = currentSize + 1
@@ -299,6 +317,83 @@ func (cluster *Cluster) Update(clusterConfiguration *ClusterConfiguration) error
 
 	// success
 	return nil
+}
+
+//------------------------------------------------------------------------------
+
+// Reset state of cluster
+func (cluster *Cluster) Reset() {
+	cluster.Target = InitialState
+
+	// reset all relationships
+	relationshipNames, _ := cluster.ListRelationships()
+	for _, relationshipName := range relationshipNames {
+		relationship, _ := cluster.GetRelationship(relationshipName)
+
+		relationship.Reset()
+	}
+
+	// reset all instances
+	instanceNames, _ := cluster.ListInstances()
+	for _, instanceName := range instanceNames {
+		instance, _ := cluster.GetInstance(instanceName)
+
+		instance.Reset()
+	}
+}
+
+//------------------------------------------------------------------------------
+
+// OK checks if the cluster has converged to the target state
+func (cluster *Cluster) OK() bool {
+	// check state
+	if cluster.Target != cluster.State {
+		return false
+	}
+
+	// check size
+	instanceNames, _ := cluster.ListInstances()
+	instances := len(instanceNames)
+	if instances != cluster.Size {
+		return false
+	}
+
+	// check relationships
+	switch cluster.State {
+	case InactiveState:
+		// check if all context relationships are active
+		relationshipNames, _ := cluster.ListRelationships()
+		for _, relationshipName := range relationshipNames {
+			relationship, _ := cluster.GetRelationship(relationshipName)
+
+			if relationship.Type != ContextRelationship {
+				continue
+			}
+
+			refCluster, _ := GetCluster(relationship.Domain, relationship.Solution, relationship.Element, relationship.Version)
+			if refCluster.State != ActiveState	{
+				return false
+			}
+		}
+	case ActiveState:
+		// check if all service and context relationships are active
+		relationshipNames, _ := cluster.ListRelationships()
+		for _, relationshipName := range relationshipNames {
+			relationship, _ := cluster.GetRelationship(relationshipName)
+
+			if relationship.Type != ContextRelationship && relationship.Type != ServiceRelationship {
+				continue
+			}
+
+			refCluster, _ := GetCluster(relationship.Domain, relationship.Solution, relationship.Element, relationship.Version)
+			if refCluster.State != ActiveState	{
+				return false
+			}
+		}
+	}
+
+	// cluster is ok
+	return true
 }
 
 //------------------------------------------------------------------------------

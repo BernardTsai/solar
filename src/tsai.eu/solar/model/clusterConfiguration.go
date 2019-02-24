@@ -33,7 +33,7 @@ import (
 
 // RelationshipConfigurationMap is a synchronized map for a map of relationship configurations
 type RelationshipConfigurationMap struct {
-	sync.RWMutex                              `yaml:"mutex,omitempty"` // mutex
+	*sync.RWMutex                             `yaml:"mutex,omitempty"` // mutex
 	Map map[string]*RelationshipConfiguration `yaml:"map"`             // map of relationships
 }
 

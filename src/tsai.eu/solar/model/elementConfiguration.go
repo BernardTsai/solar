@@ -32,7 +32,7 @@ import (
 
 // ClusterConfigurationMap is a synchronized map for a map of cluster configurations
 type ClusterConfigurationMap struct {
-	sync.RWMutex                         `yaml:"mutex,omitempty"`    // mutex
+	*sync.RWMutex                        `yaml:"mutex,omitempty"`    // mutex
 	Map map[string]*ClusterConfiguration `yaml:"map"`                // map of cluster configurations
 }
 

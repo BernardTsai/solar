@@ -32,7 +32,7 @@ import (
 
 // DependencyMap is a synchronized map for a map of dependencies
 type DependencyMap struct {
-	sync.RWMutex                         `yaml:"mutex,omitempty"` // mutex
+	*sync.RWMutex                        `yaml:"mutex,omitempty"` // mutex
 	Map          map[string]*Dependency  `yaml:"map"`             // map of dependencies
 }
 

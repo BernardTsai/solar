@@ -18,7 +18,17 @@ import (
 //
 // Functions:
 //   - GetModel
+//   - GetDomain
+//   - GetComponent
+//   - GetArchitecture
+//   - GetSolution
+//   - GetElement
+//   - GetCluster
+//   - GetComponent2
+//   - GetInstance
+//   - GetRelationship
 //   - NewModel
+//
 //   - model.Show
 //   - model.Load
 //   - model.Save
@@ -27,13 +37,12 @@ import (
 //   - model.GetDomain
 //   - model.AddDomain
 //   - model.DeleteDomain
-//
 //------------------------------------------------------------------------------
 
 // DomainMap is a synchronized map for a map of domains
 type DomainMap struct {
-	sync.RWMutex `yaml:"mutex,omitempty"` // mutex
-	Map          map[string]*Domain       `yaml:"map"` // map of domains
+	*sync.RWMutex            `yaml:"mutex,omitempty"` // mutex
+	Map  map[string]*Domain  `yaml:"map"`             // map of domains
 }
 
 // MarshalYAML marshals a EventMap into yaml
@@ -196,6 +205,223 @@ func (model *Model) DeleteDomain(name string) error {
 
 	// success
 	return nil
+}
+
+//------------------------------------------------------------------------------
+
+// GetDomain get a domain by name
+func GetDomain(domainName string) (*Domain, error) {
+	domain, err := GetModel().GetDomain(domainName)
+	if err != nil {
+		return nil, errors.New("domain not found")
+	}
+
+	// success
+	return domain, nil
+}
+
+//------------------------------------------------------------------------------
+
+// GetComponent get an component by name
+func GetComponent(domainName string, componentName string) (*Component, error) {
+	domain, err := GetModel().GetDomain(domainName)
+	if err != nil {
+		return nil, errors.New("domain not found")
+	}
+
+	component, err := domain.GetComponent(componentName)
+	if err != nil {
+		return nil, errors.New("component not found")
+	}
+
+	// success
+	return component, nil
+}
+
+//------------------------------------------------------------------------------
+
+// GetArchitecture get an architecture by name
+func GetArchitecture(domainName string, architectureName string) (*Architecture, error) {
+	domain, err := GetModel().GetDomain(domainName)
+	if err != nil {
+		return nil, errors.New("domain not found")
+	}
+
+	architecture, err := domain.GetArchitecture(architectureName)
+	if err != nil {
+		return nil, errors.New("architecture not found")
+	}
+
+	// success
+	return architecture, nil
+}
+
+//------------------------------------------------------------------------------
+
+// GetSolution get a solution by name
+func GetSolution(domainName string, solutionName string) (*Solution, error) {
+	domain, err := GetModel().GetDomain(domainName)
+	if err != nil {
+		return nil, errors.New("domain not found")
+	}
+
+	solution, err := domain.GetSolution(solutionName)
+	if err != nil {
+		return nil, errors.New("solution not found")
+	}
+
+	// success
+	return solution, nil
+}
+
+//------------------------------------------------------------------------------
+
+// GetElement get an element by name
+func GetElement(domainName string, solutionName string, elementName string) (*Element, error) {
+	domain, err := GetModel().GetDomain(domainName)
+	if err != nil {
+		return nil, errors.New("domain not found")
+	}
+
+	solution, err := domain.GetSolution(solutionName)
+	if err != nil {
+		return nil, errors.New("solution not found")
+	}
+
+	element, err := solution.GetElement(elementName)
+	if err != nil {
+		return nil, errors.New("element not found")
+	}
+
+	// success
+	return element, nil
+}
+
+//------------------------------------------------------------------------------
+
+// GetCluster get a cluster by name
+func GetCluster(domainName string, solutionName string, elementName string, clusterName string) (*Cluster, error) {
+	domain, err := GetModel().GetDomain(domainName)
+	if err != nil {
+		return nil, errors.New("domain not found")
+	}
+
+	solution, err := domain.GetSolution(solutionName)
+	if err != nil {
+		return nil, errors.New("solution not found")
+	}
+
+	element, err := solution.GetElement(elementName)
+	if err != nil {
+		return nil, errors.New("element not found")
+	}
+
+	cluster, err := element.GetCluster(clusterName)
+	if err != nil {
+		return nil, errors.New("cluster not found")
+	}
+
+	// success
+	return cluster, nil
+}
+
+//------------------------------------------------------------------------------
+
+// GetComponent2 get the component related to a cluster
+func GetComponent2(domainName string, solutionName string, elementName string, clusterName string) (*Component, error) {
+	domain, err := GetModel().GetDomain(domainName)
+	if err != nil {
+		return nil, errors.New("domain not found")
+	}
+
+	solution, err := domain.GetSolution(solutionName)
+	if err != nil {
+		return nil, errors.New("solution not found")
+	}
+
+	element, err := solution.GetElement(elementName)
+	if err != nil {
+		return nil, errors.New("element not found")
+	}
+
+	cluster, err := element.GetCluster(clusterName)
+	if err != nil {
+		return nil, errors.New("cluster not found")
+	}
+
+	component, err := domain.GetComponent(element.Element + " - " + cluster.Version)
+	if err != nil {
+		return nil, errors.New("component not found")
+	}
+
+	// success
+	return component, nil
+}
+
+//------------------------------------------------------------------------------
+
+// GetInstance get an instance by name
+func GetInstance(domainName string, solutionName string, elementName string, clusterName string, instanceName string) (*Instance, error) {
+	domain, err := GetModel().GetDomain(domainName)
+	if err != nil {
+		return nil, errors.New("domain not found")
+	}
+
+	solution, err := domain.GetSolution(solutionName)
+	if err != nil {
+		return nil, errors.New("solution not found")
+	}
+
+	element, err := solution.GetElement(elementName)
+	if err != nil {
+		return nil, errors.New("element not found")
+	}
+
+	cluster, err := element.GetCluster(clusterName)
+	if err != nil {
+		return nil, errors.New("cluster not found")
+	}
+
+	instance, err := cluster.GetInstance(instanceName)
+	if err != nil {
+		return nil, errors.New("instance not found")
+	}
+
+	// success
+	return instance, nil
+}
+
+//------------------------------------------------------------------------------
+
+// GetRelationship get a relationship by name
+func GetRelationship(domainName string, solutionName string, elementName string, clusterName string, relationshipName string) (*Relationship, error) {
+	domain, err := GetModel().GetDomain(domainName)
+	if err != nil {
+		return nil, errors.New("domain not found")
+	}
+
+	solution, err := domain.GetSolution(solutionName)
+	if err != nil {
+		return nil, errors.New("solution not found")
+	}
+
+	element, err := solution.GetElement(elementName)
+	if err != nil {
+		return nil, errors.New("element not found")
+	}
+
+	cluster, err := element.GetCluster(clusterName)
+	if err != nil {
+		return nil, errors.New("cluster not found")
+	}
+
+	relationship, err := cluster.GetRelationship(relationshipName)
+	if err != nil {
+		return nil, errors.New("relationship not found")
+	}
+
+	// success
+	return relationship, nil
 }
 
 //------------------------------------------------------------------------------

@@ -32,7 +32,7 @@ import (
 
 // ElementConfigurationMap is a synchronized map for a map of element configurations
 type ElementConfigurationMap struct {
-	sync.RWMutex                         `yaml:"mutex,omitempty"` // mutex
+	*sync.RWMutex                        `yaml:"mutex,omitempty"` // mutex
 	Map map[string]*ElementConfiguration `yaml:"map"`             // map of element configurations
 }
 

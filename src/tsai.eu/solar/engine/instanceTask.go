@@ -3,7 +3,6 @@ package engine
 import (
 	"errors"
 
-	"github.com/google/uuid"
 	ctrl "tsai.eu/solar/controller"
 	"tsai.eu/solar/model"
 	"tsai.eu/solar/util"
@@ -12,21 +11,22 @@ import (
 //------------------------------------------------------------------------------
 
 // NewInstanceTask creates a new instance task
-func NewInstanceTask(domain string, parent string, architecture string, component string, version string, instance string, state string) (model.Task, error) {
+func NewInstanceTask(domain string, parent string, solution string, version string, element string, cluster string, instance string, state string) (model.Task, error) {
 	var task model.Task
 
 	// TODO: check parameters if context exists
-	task.Type = "InstanceTask"
-	task.Domain = domain
-	task.Architecture = architecture
-	task.Component = component
-	task.Version = version
+	task.Type     = "InstanceTask"
+	task.Domain   = domain
+	task.Solution = solution
+	task.Version  = version
+	task.Element  = element
+	task.Cluster  = cluster
 	task.Instance = instance
-	task.State = state
-	task.UUID = uuid.New().String()
-	task.Parent = parent
-	task.Status = model.TaskStatusInitial
-	task.Phase = 0
+	task.State    = state
+	task.UUID     = util.UUID()
+	task.Parent   = parent
+	task.Status   = model.TaskStatusInitial
+	task.Phase    = 0
 	task.Subtasks = []string{}
 
 	// add handlers
@@ -81,58 +81,58 @@ func ExecuteInstanceTask(task *model.Task) {
 	// - trigger new execution
 	// - in case of error trigger failure
 
-	// collect relevant information
-	domain, _ := model.GetModel().GetDomain(task.Domain)
-	component, _ := domain.GetComponent(task.Component)
-	instance, _ := component.GetInstance(task.Instance)
-	controller, _ := ctrl.GetController(component.Type)
-	configuration, _ := model.GetConfiguration(domain.Name, component.Name, instance.UUID)
+	// determine context
+	instance, _  := model.GetInstance(task.Domain, task.Solution, task.Element, task.Cluster, task.Instance)
+	component, _ := model.GetComponent2(task.Domain, task.Solution, task.Element, task.Cluster)
 
-	// determine current state and target state of instance and derive the required transition
-	currentState, _ := controller.Status(configuration)
-	targetState := task.State
-	transition, err := model.GetTransition(currentState.InstanceState, targetState)
+	// check if the target state has been reached
+	if instance.State == task.State {
+		channel <- model.NewEvent(task.Domain, task.UUID, model.EventTypeTaskCompletion, task.UUID)
+	}
 
-	// check for invalid states
+	// determine required transition
+	transition, err := model.GetTransition(instance.State, task.State)
 	if err != nil {
 		channel <- model.NewEvent(task.Domain, task.UUID, model.EventTypeTaskFailure, task.UUID)
 	}
 
-	// check if reconfiguration is required
-	newDependencies := model.DetermineDependencies(domain, component, instance)
-	oldDependencies := instance.GetDependencies()
+
+	// determine setup
+	setup, _ := model.GetSetup(task.GetDomain(),
+	                           task.GetSolution(),
+										      	 task.GetVersion(),
+										      	 task.GetElement(),
+										      	 task.GetCluster(),
+										      	 task.GetInstance() )
+
+	// determine the required controller
+
+	controller, err := ctrl.GetController(component.Component)
+	if err != nil {
+		channel <- model.NewEvent(task.Domain, task.UUID, model.EventTypeTaskFailure, task.UUID)
+	}
 
 	// execute the required transition
 	switch transition {
 	case "create":
-		instance.SetDependencies(newDependencies)
-		_, err = controller.Create(configuration)
+		_, err = controller.Create(setup)
 	case "start":
-		instance.SetDependencies(newDependencies)
-		_, err = controller.Start(configuration)
+		_, err = controller.Start(setup)
 	case "stop":
-		instance.SetDependencies(newDependencies)
-		_, err = controller.Stop(configuration)
+		_, err = controller.Stop(setup)
 	case "destroy":
-		instance.SetDependencies(newDependencies)
-		_, err = controller.Destroy(configuration)
+		_, err = controller.Destroy(setup)
 	case "reset":
-		instance.SetDependencies(newDependencies)
-		_, err = controller.Reset(configuration)
+		_, err = controller.Reset(setup)
 	case "configure":
-		instance.SetDependencies(newDependencies)
-		_, err = controller.Configure(configuration)
-	case "none":
-		if !util.AreEqual(oldDependencies, newDependencies) {
-			_, err = controller.Configure(configuration)
-		}
+		_, err = controller.Configure(setup)
 	}
 
-	// check for errors
+	// check for errors and reexecute the task until the desired state has been reached
 	if err != nil {
 		channel <- model.NewEvent(task.Domain, task.UUID, model.EventTypeTaskFailure, task.UUID)
 	} else {
-		channel <- model.NewEvent(task.Domain, task.UUID, model.EventTypeTaskCompletion, task.UUID)
+		channel <- model.NewEvent(task.Domain, task.UUID, model.EventTypeTaskExecution, task.UUID)
 	}
 }
 

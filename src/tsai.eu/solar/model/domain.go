@@ -54,7 +54,7 @@ import (
 
 // ComponentMap is a synchronized map for a map of components
 type ComponentMap struct {
-	sync.RWMutex              `yaml:"mutex,omitempty"` // mutex
+	*sync.RWMutex             `yaml:"mutex,omitempty"` // mutex
 	Map map[string]*Component `yaml:"map"`             // map of components
 }
 
@@ -81,8 +81,8 @@ func (m *ComponentMap) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 // ArchitectureMap is a synchronized map for a map of architectures
 type ArchitectureMap struct {
-	sync.RWMutex `yaml:"mutex,omitempty"` // mutex
-	Map          map[string]*Architecture `yaml:"map"` // map of architectures
+	*sync.RWMutex                `yaml:"mutex,omitempty"` // mutex
+	Map map[string]*Architecture `yaml:"map"`             // map of architectures
 }
 
 // MarshalYAML marshals a ArchitectureMap into yaml
@@ -94,8 +94,8 @@ func (m ArchitectureMap) MarshalYAML() (interface{}, error) {
 
 // SolutionMap is a synchronized map for a map of solutions
 type SolutionMap struct {
-	sync.RWMutex `yaml:"mutex,omitempty"`             // mutex
-	Map          map[string]*Solution    `yaml:"map"` // map of solutions
+	*sync.RWMutex             `yaml:"mutex,omitempty"` // mutex
+	Map map[string]*Solution  `yaml:"map"`             // map of solutions
 }
 
 // MarshalYAML marshals a SolutionMap into yaml
@@ -121,8 +121,8 @@ func (m *SolutionMap) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 // TaskMap is a synchronized map for a map of tasks
 type TaskMap struct {
-	sync.RWMutex `yaml:"mutex,omitempty"` // mutex
-	Map          map[string]*Task         `yaml:"map"` // map of tasks
+	*sync.RWMutex         `yaml:"mutex,omitempty"` // mutex
+	Map map[string]*Task  `yaml:"map"`             // map of tasks
 }
 
 // MarshalYAML marshals a TaskMap into yaml
@@ -134,8 +134,8 @@ func (m TaskMap) MarshalYAML() (interface{}, error) {
 
 // EventMap is a synchronized map for a map of events
 type EventMap struct {
-	sync.RWMutex `yaml:"mutex,omitempty"` // mutex
-	Map          map[string]*Event        `yaml:"map"` // map of events
+	*sync.RWMutex         `yaml:"mutex,omitempty"` // mutex
+	Map map[string]*Event `yaml:"map"`             // map of events
 }
 
 // MarshalYAML marshals a EventMap into yaml

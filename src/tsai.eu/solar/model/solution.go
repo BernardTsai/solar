@@ -92,6 +92,8 @@ func GetTransition(currentState string, targetState string) (string, error) {
 // Attributes:
 //   - Solution
 //   - Version
+//   - Target
+//   - State
 //   - Configuration
 //   - Elements
 //
@@ -101,6 +103,8 @@ func GetTransition(currentState string, targetState string) (string, error) {
 //   - solution.Show
 //   - solution.Load
 //   - solution.Save
+//   - solution.Update
+//   - solution.OK
 //
 //   - solution.ListElements
 //   - solution.GetElement
@@ -153,6 +157,8 @@ func NewSolution(name string, version string, configuration string) (*Solution, 
 
 	solution.Solution      = name
 	solution.Version       = version
+	solution.Target        = InitialState
+	solution.State         = InitialState
 	solution.Configuration = configuration
 	solution.Elements      = ElementMap{Map: map[string]*Element{}}
 
@@ -263,14 +269,15 @@ func (solution *Solution) DeleteElement(uuid string) error {
 //------------------------------------------------------------------------------
 
 // Update instantiates/update a solution based on an architecture.
-func (solution *Solution) Update(architecture *Architecture) error {
+func (solution *Solution) Update(domainName string, architecture *Architecture) error {
 	// check if the names are compatible
 	if solution.Solution != architecture.Architecture {
 		return errors.New("Name of solution does match the name of the architecture")
 	}
 
-	// update version
+	// update version and target state
 	solution.Version = architecture.Version
+	solution.Target  = ActiveState
 
 	// update all elements defined in the architecture
 	elementNames, _ := architecture.ListElements()
@@ -281,7 +288,7 @@ func (solution *Solution) Update(architecture *Architecture) error {
 
 		// element already exists
 		if element != nil {
-			if err := element.Update(elementConfiguration); err != nil {
+			if err := element.Update(domainName, solution.Solution, elementConfiguration); err != nil {
 				return fmt.Errorf("Unable to update element: '%s' of the solution: '%s'\n%s", elementName, solution.Solution, err)
 			}
 		} else {
@@ -291,14 +298,44 @@ func (solution *Solution) Update(architecture *Architecture) error {
 			solution.AddElement(element)
 
 			// update the element with the configuration information
-			if err := element.Update(elementConfiguration); err != nil {
-				return fmt.Errorf("Unable to update element: '%s' of the solution: '%s'\n%s", elementName, solution.Solution, err)
+			if err := element.Update(domainName, solution.Solution, elementConfiguration); err != nil {
+				return fmt.Errorf("Unable to create element: '%s' of the solution: '%s'\n%s", elementName, solution.Solution, err)
 			}
+		}
+	}
+
+	// delete all elements not defined in the architecture
+	elementNames, _ = solution.ListElements()
+	for _, elementName := range elementNames {
+		element, _              := solution.GetElement(elementName)
+		elementConfiguration, _ := architecture.GetElement(elementName)
+
+		// element is not defined in the architecture
+		if elementConfiguration == nil {
+			element.Reset()
 		}
 	}
 
 	// success
 	return nil
+}
+
+//------------------------------------------------------------------------------
+
+// OK checks if the solution has converged to the desired state
+func (solution *Solution) OK() bool {
+	// check each cluster
+	elementNames, _ := solution.ListElements()
+	for _, elementName := range elementNames {
+		element, _ := solution.GetElement(elementName)
+
+		if !element.OK() {
+			return false
+		}
+	}
+
+	// solution is ok
+	return true
 }
 
 //------------------------------------------------------------------------------

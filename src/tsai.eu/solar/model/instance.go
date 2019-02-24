@@ -10,6 +10,7 @@ import (
 //
 // Attributes:
 //   - UUID
+//   - Target
 //   - State
 //   - Configuration
 //   - Endpoint
@@ -20,6 +21,8 @@ import (
 //   - instance.Show
 //   - instance.Load
 //   - instance.Save
+//   - instance.Reset
+//   - instance.OK
 //------------------------------------------------------------------------------
 
 // Instance describes the runtime configuration of an solution element cluster instance within a domain.
@@ -66,6 +69,24 @@ func (instance *Instance) Save(filename string) error {
 // Load reads the instance from a file
 func (instance *Instance) Load(filename string) error {
 	return util.LoadYAML(filename, instance)
+}
+
+//------------------------------------------------------------------------------
+
+// Reset state of instance
+func (instance *Instance) Reset() {
+	instance.Target = InitialState
+}
+
+//------------------------------------------------------------------------------
+
+// OK checks if the instance has converged to the target state
+func (instance *Instance) OK() bool {
+	if instance.Target == instance.State {
+		return true
+	}
+
+	return false
 }
 
 //------------------------------------------------------------------------------
