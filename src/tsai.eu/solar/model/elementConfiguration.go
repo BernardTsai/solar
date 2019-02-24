@@ -1,8 +1,6 @@
 package model
 
 import (
-	"sync"
-
 	"github.com/pkg/errors"
 	"tsai.eu/solar/util"
 )
@@ -32,7 +30,6 @@ import (
 
 // ClusterConfigurationMap is a synchronized map for a map of cluster configurations
 type ClusterConfigurationMap struct {
-	*sync.RWMutex                        `yaml:"mutex,omitempty"`    // mutex
 	Map map[string]*ClusterConfiguration `yaml:"map"`                // map of cluster configurations
 }
 
@@ -108,11 +105,9 @@ func (elementConfiguration *ElementConfiguration) ListClusters() ([]string, erro
 	// collect names
 	clusterConfigurations := []string{}
 
-	elementConfiguration.Clusters.RLock()
 	for clusterConfiguration := range elementConfiguration.Clusters.Map {
 		clusterConfigurations = append(clusterConfigurations, clusterConfiguration)
 	}
-	elementConfiguration.Clusters.RUnlock()
 
 	// success
 	return clusterConfigurations, nil
@@ -123,9 +118,7 @@ func (elementConfiguration *ElementConfiguration) ListClusters() ([]string, erro
 // GetCluster retrieves a cluster configuration by name
 func (elementConfiguration *ElementConfiguration) GetCluster(name string) (*ClusterConfiguration, error) {
 	// determine dependency
-	elementConfiguration.Clusters.RLock()
 	clusterConfiguration, ok := elementConfiguration.Clusters.Map[name]
-	elementConfiguration.Clusters.RUnlock()
 
 	if !ok {
 		return nil, errors.New("cluster configuration not found")
@@ -139,18 +132,14 @@ func (elementConfiguration *ElementConfiguration) GetCluster(name string) (*Clus
 
 // AddCluster adds a cluster configuration to an element
 func (elementConfiguration *ElementConfiguration) AddCluster(clusterConfiguration *ClusterConfiguration) {
-	elementConfiguration.Clusters.Lock()
 	elementConfiguration.Clusters.Map[clusterConfiguration.Version] = clusterConfiguration
-	elementConfiguration.Clusters.Unlock()
 }
 
 //------------------------------------------------------------------------------
 
 // DeleteCluster deletes a cluster configuration from an element
 func (elementConfiguration *ElementConfiguration) DeleteCluster(version string) {
-	elementConfiguration.Clusters.Lock()
 	delete(elementConfiguration.Clusters.Map, version)
-	elementConfiguration.Clusters.Unlock()
 }
 
 //------------------------------------------------------------------------------

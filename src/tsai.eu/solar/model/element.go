@@ -1,7 +1,6 @@
 package model
 
 import (
-	"sync"
 	"fmt"
 
 	"github.com/pkg/errors"
@@ -39,7 +38,6 @@ import (
 
 // ClusterMap is a synchronized map for a map of clusters
 type ClusterMap struct {
-	*sync.RWMutex `yaml:"mutex,omitempty"`              // mutex
 	Map          map[string]*Cluster      `yaml:"map"` // map of clusters
 }
 
@@ -119,11 +117,9 @@ func (element *Element) ListClusters() ([]string, error) {
 	// collect names
 	clusters := []string{}
 
-	element.Clusters.RLock()
 	for cluster := range element.Clusters.Map {
 		clusters = append(clusters, cluster)
 	}
-	element.Clusters.RUnlock()
 
 	// success
 	return clusters, nil
@@ -134,9 +130,7 @@ func (element *Element) ListClusters() ([]string, error) {
 // GetCluster retrieves a cluster by name
 func (element *Element) GetCluster(name string) (*Cluster, error) {
 	// determine dependency
-	element.Clusters.RLock()
 	cluster, ok := element.Clusters.Map[name]
-	element.Clusters.RUnlock()
 
 	if !ok {
 		return nil, errors.New("cluster not found")
@@ -150,18 +144,14 @@ func (element *Element) GetCluster(name string) (*Cluster, error) {
 
 // AddCluster adds a cluster to an element
 func (element *Element) AddCluster(cluster *Cluster) {
-	element.Clusters.Lock()
 	element.Clusters.Map[cluster.Version] = cluster
-	element.Clusters.Unlock()
 }
 
 //------------------------------------------------------------------------------
 
 // DeleteCluster deletes a cluster from an element
 func (element *Element) DeleteCluster(version string) {
-	element.Clusters.Lock()
 	delete(element.Clusters.Map, version)
-	element.Clusters.Unlock()
 }
 
 //------------------------------------------------------------------------------

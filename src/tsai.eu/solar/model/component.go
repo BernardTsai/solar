@@ -1,8 +1,6 @@
 package model
 
 import (
-	"sync"
-
 	"github.com/pkg/errors"
 	"tsai.eu/solar/util"
 )
@@ -32,7 +30,6 @@ import (
 
 // DependencyMap is a synchronized map for a map of dependencies
 type DependencyMap struct {
-	*sync.RWMutex                        `yaml:"mutex,omitempty"` // mutex
 	Map          map[string]*Dependency  `yaml:"map"`             // map of dependencies
 }
 
@@ -108,11 +105,9 @@ func (component *Component) ListDependencies() ([]string, error) {
 	// collect names
 	dependencies := []string{}
 
-	component.Dependencies.RLock()
 	for dependency := range component.Dependencies.Map {
 		dependencies = append(dependencies, dependency)
 	}
-	component.Dependencies.RUnlock()
 
 	// success
 	return dependencies, nil
@@ -123,9 +118,7 @@ func (component *Component) ListDependencies() ([]string, error) {
 // GetDependency retrieves a dependency by name
 func (component *Component) GetDependency(name string) (*Dependency, error) {
 	// determine dependency
-	component.Dependencies.RLock()
 	dependency, ok := component.Dependencies.Map[name]
-	component.Dependencies.RUnlock()
 
 	if !ok {
 		return nil, errors.New("dependency not found")
@@ -140,17 +133,13 @@ func (component *Component) GetDependency(name string) (*Dependency, error) {
 // AddDependency adds a dependency to a component
 func (component *Component) AddDependency(dependency *Dependency) error {
 	// check if dependency has already been defined
-	component.Dependencies.RLock()
 	_, ok := component.Dependencies.Map[dependency.Dependency]
-	component.Dependencies.Unlock()
 
 	if ok {
 		return errors.New("variant already exists")
 	}
 
-	component.Dependencies.Lock()
 	component.Dependencies.Map[dependency.Dependency] = dependency
-	component.Dependencies.Unlock()
 
 	// success
 	return nil
@@ -161,18 +150,14 @@ func (component *Component) AddDependency(dependency *Dependency) error {
 // DeleteDependency deletes a dependency
 func (component *Component) DeleteDependency(name string) error {
 	// determine dependency
-	component.Dependencies.RLock()
 	_, ok := component.Dependencies.Map[name]
-	component.Dependencies.RUnlock()
 
 	if !ok {
 		return errors.New("dependency not found")
 	}
 
 	// remove version
-	component.Dependencies.Lock()
 	delete(component.Dependencies.Map, name)
-	component.Dependencies.Unlock()
 
 	// success
 	return nil

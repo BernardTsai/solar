@@ -28,7 +28,7 @@ func Run(m *model.Model) {
 		Help: "usage command",
 		Func: func(c *ishell.Context) {
 			OutputUsage(true, c)
-			ModelUsage(true, c)
+			ModelUsage(false, c)
 			DomainUsage(false, c)
 			ComponentUsage(false, c)
 			ArchitectureUsage(false, c)

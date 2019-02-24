@@ -1,7 +1,6 @@
 package model
 
 import (
-	"sync"
 	"fmt"
 
 	"github.com/pkg/errors"
@@ -47,7 +46,6 @@ import (
 
 // RelationshipMap is a synchronized map for a map of relationships
 type RelationshipMap struct {
-	*sync.RWMutex `yaml:"mutex,omitempty"`              // mutex
 	Map          map[string]*Relationship `yaml:"map"` // map of relationships
 }
 
@@ -74,7 +72,6 @@ func (m *RelationshipMap) UnmarshalYAML(unmarshal func(interface{}) error) error
 
 // InstanceMap is a synchronized map for a map of instances
 type InstanceMap struct {
-	*sync.RWMutex `yaml:"mutex,omitempty"`             // mutex
 	Map          map[string]*Instance     `yaml:"map"` // map of Relationship
 }
 
@@ -162,11 +159,9 @@ func (cluster *Cluster) ListRelationships() ([]string, error) {
 	// collect names
 	relationships := []string{}
 
-	cluster.Relationships.RLock()
 	for relationship := range cluster.Relationships.Map {
 		relationships = append(relationships, relationship)
 	}
-	cluster.Relationships.RUnlock()
 
 	// success
 	return relationships, nil
@@ -177,9 +172,7 @@ func (cluster *Cluster) ListRelationships() ([]string, error) {
 // GetRelationship retrieves a relationship by name
 func (cluster *Cluster) GetRelationship(name string) (*Relationship, error) {
 	// determine relationship
-	cluster.Relationships.RLock()
 	relationship, ok := cluster.Relationships.Map[name]
-	cluster.Relationships.RUnlock()
 
 	if !ok {
 		return nil, errors.New("relationship not found")
@@ -193,18 +186,14 @@ func (cluster *Cluster) GetRelationship(name string) (*Relationship, error) {
 
 // AddRelationship adds a relationship to a cluster
 func (cluster *Cluster) AddRelationship(relationship *Relationship) {
-	cluster.Relationships.Lock()
 	cluster.Relationships.Map[relationship.Relationship] = relationship
-	cluster.Relationships.Unlock()
 }
 
 //------------------------------------------------------------------------------
 
 // DeleteRelationship deletes a relationship from a cluster
 func (cluster *Cluster) DeleteRelationship(name string) {
-	cluster.Relationships.Lock()
 	delete(cluster.Relationships.Map, name)
-	cluster.Relationships.Unlock()
 }
 
 //------------------------------------------------------------------------------
@@ -214,11 +203,9 @@ func (cluster *Cluster) ListInstances() ([]string, error) {
 	// collect names
 	instances := []string{}
 
-	cluster.Instances.RLock()
 	for instance := range cluster.Instances.Map {
 		instances = append(instances, instance)
 	}
-	cluster.Instances.RUnlock()
 
 	// success
 	return instances, nil
@@ -229,9 +216,7 @@ func (cluster *Cluster) ListInstances() ([]string, error) {
 // GetInstance retrieves an instance by uuid
 func (cluster *Cluster) GetInstance(uuid string) (*Instance, error) {
 	// determine instance
-	cluster.Instances.RLock()
 	instance, ok := cluster.Instances.Map[uuid]
-	cluster.Instances.RUnlock()
 
 	if !ok {
 		return nil, errors.New("instance not found")
@@ -245,18 +230,14 @@ func (cluster *Cluster) GetInstance(uuid string) (*Instance, error) {
 
 // AddInstance adds an instance to a cluster
 func (cluster *Cluster) AddInstance(instance *Instance) {
-	cluster.Instances.Lock()
 	cluster.Instances.Map[instance.UUID] = instance
-	cluster.Instances.Unlock()
 }
 
 //------------------------------------------------------------------------------
 
 // DeleteInstance deletes an instance from a cluster
 func (cluster *Cluster) DeleteInstance(uuid string) {
-	cluster.Instances.Lock()
 	delete(cluster.Instances.Map, uuid)
-	cluster.Instances.Unlock()
 }
 
 //------------------------------------------------------------------------------

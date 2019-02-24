@@ -114,7 +114,6 @@ func GetTransition(currentState string, targetState string) (string, error) {
 
 // ElementMap is a synchronized map for a map of elements
 type ElementMap struct {
-	*sync.RWMutex `yaml:"mutex,omitempty"` // mutex
 	Map          map[string]*Element     `yaml:"map"` // map of events
 }
 
@@ -195,11 +194,9 @@ func (solution *Solution) ListElements() ([]string, error) {
 	elements := []string{}
 
 	if solution != nil {
-		solution.Elements.RLock()
 		for element := range solution.Elements.Map {
 			elements = append(elements, element)
 		}
-		solution.Elements.RUnlock()
 	}
 
 	// success
@@ -211,9 +208,7 @@ func (solution *Solution) ListElements() ([]string, error) {
 // GetElement retrieves an element by name
 func (solution *Solution) GetElement(name string) (*Element, error) {
 	// determine instance
-	solution.Elements.RLock()
 	element, ok := solution.Elements.Map[name]
-	solution.Elements.RUnlock()
 
 	if !ok {
 		return nil, errors.New("element not found")
@@ -228,17 +223,13 @@ func (solution *Solution) GetElement(name string) (*Element, error) {
 // AddElement adds an element to a solution
 func (solution *Solution) AddElement(element *Element) error {
 	// check if instance has already been defined
-	solution.Elements.RLock()
 	_, ok := solution.Elements.Map[element.Element]
-	solution.Elements.RUnlock()
 
 	if ok {
 		return errors.New("element already exists")
 	}
 
-	solution.Elements.Lock()
 	solution.Elements.Map[element.Element] = element
-	solution.Elements.Unlock()
 
 	// success
 	return nil
@@ -249,18 +240,14 @@ func (solution *Solution) AddElement(element *Element) error {
 // DeleteElement deletes an element
 func (solution *Solution) DeleteElement(uuid string) error {
 	// determine element
-	solution.Elements.RLock()
 	_, ok := solution.Elements.Map[uuid]
-	solution.Elements.RUnlock()
 
 	if !ok {
 		return errors.New("element not found")
 	}
 
 	// remove element
-	solution.Elements.Lock()
 	delete(solution.Elements.Map, uuid)
-	solution.Elements.Unlock()
 
 	// success
 	return nil
