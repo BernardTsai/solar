@@ -60,14 +60,14 @@ func ExecuteInstanceTask(task *model.Task) {
 	channel := GetEventChannel()
 
 	// check status
-	status := task.GetStatus()
+	taskStatus := task.GetStatus()
 
-	if status != model.TaskStatusInitial && status != model.TaskStatusExecuting {
+	if taskStatus != model.TaskStatusInitial && taskStatus != model.TaskStatusExecuting {
 		return
 	}
 
 	// initialize if needed
-	if status == model.TaskStatusInitial {
+	if taskStatus == model.TaskStatusInitial {
 		// update status
 		task.Status = model.TaskStatusExecuting
 	}
@@ -113,19 +113,26 @@ func ExecuteInstanceTask(task *model.Task) {
 	}
 
 	// execute the required transition
+	var status *model.Status
+
 	switch transition {
 	case "create":
-		_, err = controller.Create(setup)
+		status, err = controller.Create(setup)
 	case "start":
-		_, err = controller.Start(setup)
+		status, err = controller.Start(setup)
 	case "stop":
-		_, err = controller.Stop(setup)
+		status, err = controller.Stop(setup)
 	case "destroy":
-		_, err = controller.Destroy(setup)
+		status, err = controller.Destroy(setup)
 	case "reset":
-		_, err = controller.Reset(setup)
+		status, err = controller.Reset(setup)
 	case "configure":
-		_, err = controller.Configure(setup)
+		status, err = controller.Configure(setup)
+	}
+
+	// update status
+	if status != nil {
+		model.SetStatus(status)
 	}
 
 	// check for errors and reexecute the task until the desired state has been reached

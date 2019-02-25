@@ -12,12 +12,13 @@ import (
 
 //------------------------------------------------------------------------------
 
-var output string
+var output        string
+var outputEnabled bool
 
 //------------------------------------------------------------------------------
 
-// Run executes the main shell event loop
-func Run(m *model.Model) {
+// Shell creates a command line interface which can be run.
+func Shell(m *model.Model) *ishell.Shell{
 	// create new shell which by default includes 'exit', 'help' and
 	// 'clear' commands
 	shell := ishell.New()
@@ -87,8 +88,12 @@ func Run(m *model.Model) {
 		},
 	})
 
-	// run shell
-	shell.Run()
+	// default setup
+	output        = ""
+	outputEnabled = true
+
+	// return shell
+	return shell
 }
 
 //------------------------------------------------------------------------------
@@ -118,6 +123,13 @@ func setOutput(filename string) {
 
 //------------------------------------------------------------------------------
 
+// setOutputEnabled defines the name of the output file.
+func setOutputEnabled(enabled bool) {
+	outputEnabled = enabled
+}
+
+//------------------------------------------------------------------------------
+
 // writeInfo prints information to the console.
 func writeInfo(context *ishell.Context, info string) {
 	context.Println(info)
@@ -134,6 +146,10 @@ func writeError(context *ishell.Context, info string) {
 
 // writeOutput writes the provided information to the console or a file.
 func writeOutput(context *ishell.Context, info string) error {
+	if !outputEnabled {
+		return nil
+	}
+
 	// check which channel to use
 	if output == "" {
 		context.Println(info)

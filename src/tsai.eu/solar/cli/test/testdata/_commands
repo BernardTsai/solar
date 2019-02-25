@@ -1,0 +1,4 @@
+output off
+model get
+domain create test
+model get

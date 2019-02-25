@@ -32,8 +32,10 @@ func main() {
 	// start the main event loop
 	engine.StartDispatcher(m)
 
-	// start the command line interface
-	cli.Run(m)
+	// get the command line interface
+	shell := cli.Shell(m)
+
+	shell.Run()
 }
 
 //------------------------------------------------------------------------------

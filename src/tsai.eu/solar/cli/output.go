@@ -22,7 +22,11 @@ func OutputCommand(context *ishell.Context, m *model.Model) {
 	switch filename {
 	case "?":
 		OutputUsage(true, context)
+	case "on":
+    setOutputEnabled(true)
 	case "off":
+    setOutputEnabled(false)
+	case "cmdline":
     setOutput("")
 	default:
 		setOutput(filename)
@@ -37,7 +41,9 @@ func OutputUsage(header bool, context *ishell.Context) {
 	if header {
 		info = "usage:\n"
 	}
-	info += "  output off\n"
+	info += "  output on\n"
+	info += "         off\n"
+	info += "         cmdline\n"
 	info += "         <filename>\n"
 
   writeInfo(context, info)
