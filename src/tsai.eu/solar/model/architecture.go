@@ -56,10 +56,10 @@ func (m *ElementConfigurationMap) UnmarshalYAML(unmarshal func(interface{}) erro
 
 // Architecture describes the design time configuration of a solution within a domain.
 type Architecture struct {
-	Architecture  string                  `yaml:"architecture"`   // name of architecture
-	Version       string                  `yaml:"type"`           // type of solution
-	Configuration string                  `yaml:"configuration"`  // configuration of the architecture
-	Elements      ElementConfigurationMap `yaml:"elements"`       // elements configurations of solution
+	Architecture  string                  `yaml:"Architecture"`   // name of architecture
+	Version       string                  `yaml:"Version"`        // type of solution
+	Configuration string                  `yaml:"Configuration"`  // configuration of the architecture
+	Elements      ElementConfigurationMap `yaml:"Elements"`       // elements configurations of solution
 }
 
 //------------------------------------------------------------------------------

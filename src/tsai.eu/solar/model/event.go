@@ -84,12 +84,12 @@ func String2EventType(eventType string) (EventType, error) {
 
 // Event describes a situation which may trigger further tasks.
 type Event struct {
-	Domain string    `yaml:"domain"` // domain of event
-	UUID   string    `yaml:"uuid"`   // uuid of event
-	Task   string    `yaml:"task"`   // uuid of task
-	Type   EventType `yaml:"type"`   // type of event: "execution", "completion", "failure"
-	Source string    `yaml:"source"` // source of the event (uuid of the task or "")
-	Time   int64     `yaml:"time"`   // time since 1.1.1970 in nsecs
+	Domain string    `yaml:"Domain"` // domain of event
+	UUID   string    `yaml:"UUID"`   // uuid of event
+	Task   string    `yaml:"Task"`   // uuid of task
+	Type   EventType `yaml:"Type"`   // type of event: "execution", "completion", "failure"
+	Source string    `yaml:"Source"` // source of the event (uuid of the task or "")
+	Time   int64     `yaml:"Time"`   // time since 1.1.1970 in nsecs
 }
 
 //------------------------------------------------------------------------------

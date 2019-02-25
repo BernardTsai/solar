@@ -64,13 +64,13 @@ func (m *ClusterMap) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 // Element describes the runtime configuration of a solution element within a domain.
 type Element struct {
-	Element       string      `yaml:"element"`       // name of the solution element
-	Component     string      `yaml:"component"`     // type of the solution elmenent
-	Target        string      `yaml:"target"`        // target state of element
-	State         string      `yaml:"state"`         // current state of element
-	Configuration string      `yaml:"configuration"` // runtime configuration of the solution element
-	Endpoint      string      `yaml:"endpoint"`      // state of the solution element
-	Clusters      ClusterMap  `yaml:"clusters"`      // clusters of the solution element
+	Element       string      `yaml:"Element"`       // name of the solution element
+	Component     string      `yaml:"Component"`     // type of the solution elmenent
+	Target        string      `yaml:"Target"`        // target state of element
+	State         string      `yaml:"State"`         // current state of element
+	Configuration string      `yaml:"Configuration"` // runtime configuration of the solution element
+	Endpoint      string      `yaml:"Endpoint"`      // state of the solution element
+	Clusters      ClusterMap  `yaml:"Clusters"`      // clusters of the solution element
 }
 
 //------------------------------------------------------------------------------

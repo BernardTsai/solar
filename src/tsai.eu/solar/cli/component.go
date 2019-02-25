@@ -83,18 +83,19 @@ func ComponentCommand(context *ishell.Context, m *model.Model) {
 		}
 
 		// create new component
-		component, _ := model.NewComponent("", "", "")
+		component, _ := model.NewComponent("A", "B", "C")
 
 		// load component
 		err = component.Load(context.Args[2])
 
 		if err != nil {
 			handleResult(context, err, "component could not be loaded", "")
+			return
 		}
 
 		// add component to domain
 		err = domain.AddComponent(component)
-		handleResult(context, err, "unable to load component", "component has been loaded")
+		handleResult(context, err, "unable to load component", "")
 	case _get:
 		// check availability of arguments
 		if len(context.Args) != 3 {

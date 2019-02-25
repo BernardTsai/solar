@@ -4,17 +4,17 @@ package model
 
 // Status object received from controller.
 type Status struct {
-	Domain           string `yaml:"domain"`           // name of the domain
-  Solution         string `yaml:"solution"`         // name of solution
-	Version          string `yaml:"version"`          // version of solution
-  Element          string `yaml:"element"`          // name of element
-	ElementEndpoint  string `yaml:"elementEndpoint"`  // endpoint of element
-  Cluster          string `yaml:"cluster"`          // name of cluster
-	ClusterEndpoint  string `yaml:"clusterEndpoint"`  // endpoint of cluster
-	ClusterState     string `yaml:"clusterState"`     // state of cluster
-  Instance         string `yaml:"instance"`         // name of instance
-	InstanceEndpoint string `yaml:"instanceEndpoint"` // endpoint of instance
-	InstanceState    string `yaml:"instanceState"`    // state of instance
+	Domain           string `yaml:"Domain"`           // name of the domain
+  Solution         string `yaml:"Solution"`         // name of solution
+	Version          string `yaml:"Version"`          // version of solution
+  Element          string `yaml:"Element"`          // name of element
+	ElementEndpoint  string `yaml:"ElementEndpoint"`  // endpoint of element
+  Cluster          string `yaml:"Cluster"`          // name of cluster
+	ClusterEndpoint  string `yaml:"ClusterEndpoint"`  // endpoint of cluster
+	ClusterState     string `yaml:"ClusterState"`     // state of cluster
+  Instance         string `yaml:"Instance"`         // name of instance
+	InstanceEndpoint string `yaml:"InstanceEndpoint"` // endpoint of instance
+	InstanceState    string `yaml:"InstanceState"`    // state of instance
 }
 
 //------------------------------------------------------------------------------

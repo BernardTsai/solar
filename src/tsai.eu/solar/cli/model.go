@@ -24,24 +24,13 @@ func ModelCommand(context *ishell.Context, m *model.Model) {
 		ModelUsage(true, context)
 	case _set:
 		err := m.Load(context.Args[1])
-		if err != nil {
-			handleResult(context, err, "model could not be loaded", "")
-		}
-
-		// display contents of model
-		result, err := m.Show()
-		handleResult(context, err, "model can not be displayed", result)
+		handleResult(context, err, "model could not be loaded", "")
 	case _get:
 		result, err := m.Show()
 		handleResult(context, err, "model can not be displayed", result)
 	case _reset:
 		err := m.Reset()
-		if err != nil {
-			handleResult(context, err, "model could not be reset", "")			
-		}
-
-		result, err := m.Show()
-		handleResult(context, err, "model can not be displayed", result)
+		handleResult(context, err, "model could not be reset", "")
 	default:
 		ModelUsage(true, context)
 	}

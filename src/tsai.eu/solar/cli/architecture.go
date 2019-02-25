@@ -91,11 +91,12 @@ func ArchitectureCommand(context *ishell.Context, m *model.Model) {
 
 		if err != nil {
 			handleResult(context, err, "architecture could not be loaded", "")
+			return
 		}
 
 		// add architecture to domain
 		err = domain.AddArchitecture(architecture)
-		handleResult(context, err, "architecture could not be loaded", "architecture has been loaded")
+		handleResult(context, err, "architecture could not be loaded", "")
 	case _get:
 		// check availability of arguments
 		if len(context.Args) != 3 {

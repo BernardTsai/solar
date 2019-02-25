@@ -37,13 +37,7 @@ func DomainCommand(context *ishell.Context, m *model.Model) {
 		// execute command
 		d, _ := model.NewDomain(context.Args[1])
 		err := m.AddDomain(d)
-		if err != nil {
-			handleResult(context, err, "unable to create domain", "")
-		}
-
-		// display domain
-		result, err := d.Show()
-		handleResult(context, err, "domain can not be displayed", result)
+    handleResult(context, err, "unable to create domain", "")
 	case _delete:
 		// check availability of arguments
 		if len(context.Args) < 2 {
@@ -53,11 +47,7 @@ func DomainCommand(context *ishell.Context, m *model.Model) {
 
 		// execute command
 		err := m.DeleteDomain(context.Args[1])
-		if err != nil {
-			handleResult(context, err, "domain can not be deleted", "")
-		}
-
-		// no output
+		handleResult(context, err, "domain can not be deleted", "")
 	case _set:
 		// check availability of arguments
 		if len(context.Args) < 2 {
@@ -78,9 +68,7 @@ func DomainCommand(context *ishell.Context, m *model.Model) {
 
 		// add domain to model
 		err = m.AddDomain(d)
-		if err != nil {
-			handleResult(context, err, "domain could not be loaded", "")
-		}
+		handleResult(context, err, "domain could not be loaded", "")
 	case _get:
 		// check availability of arguments
 		if len(context.Args) < 2 {
@@ -112,13 +100,7 @@ func DomainCommand(context *ishell.Context, m *model.Model) {
 		// execute create ommand
 		d, _ := model.NewDomain(context.Args[1])
 		err := m.AddDomain(d)
-		if err != nil {
-			handleResult(context, err, "unable to create domain", "")
-		}
-
-		// display domain
-		result, err := d.Show()
-		handleResult(context, err, "domain can not be displayed", result)
+		handleResult(context, err, "unable to reset domain", "")
 	default:
 		DomainUsage(true, context)
 	}

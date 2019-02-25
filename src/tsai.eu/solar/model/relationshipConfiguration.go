@@ -26,12 +26,12 @@ import (
 
 // RelationshipConfiguration describes the design time configuration of a relationship between clusters within a domain.
 type RelationshipConfiguration struct {
-	Relationship  string  `yaml:"relationship"`  // name of the relationship
-	Dependency    string  `yaml:"dependency"`    // name of the dependency
-	Type          string  `yaml:"type"`          // type of dependency
-	Element       string  `yaml:"element"`       // element to which this relationship refers to
-	Version       string  `yaml:"version"`       // version of the element to which this relationship refers to
-	Configuration string  `yaml:"configuration"` // design time configuration of the relationship
+	Relationship  string  `yaml:"Relationship"`  // name of the relationship
+	Dependency    string  `yaml:"Dependency"`    // name of the dependency
+	Type          string  `yaml:"Type"`          // type of dependency
+	Element       string  `yaml:"Element"`       // element to which this relationship refers to
+	Version       string  `yaml:"Version"`       // version of the element to which this relationship refers to
+	Configuration string  `yaml:"Configuration"` // design time configuration of the relationship
 }
 
 //------------------------------------------------------------------------------

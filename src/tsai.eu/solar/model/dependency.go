@@ -25,11 +25,11 @@ import (
 
 // Dependency describes what kind of dependency a component within a domain may have.
 type Dependency struct {
-	Dependency    string `yaml:"dependency"`    // name of the dependency
-	Type          string `yaml:"type"`          // type of dependency (service/context)
-	Component     string `yaml:"component"`     // component to which the dependency refers to
-	Version       string `yaml:"version"`       // version of the component to which the dependency refers to
-	Configuration string `yaml:"configuration"` // base configuration of the dependency
+	Dependency    string `yaml:"Dependency"`    // name of the dependency
+	Type          string `yaml:"Type"`          // type of dependency (service/context)
+	Component     string `yaml:"Component"`     // component to which the dependency refers to
+	Version       string `yaml:"Version"`       // version of the component to which the dependency refers to
+	Configuration string `yaml:"Configuration"` // base configuration of the dependency
 }
 
 //------------------------------------------------------------------------------
@@ -38,10 +38,10 @@ type Dependency struct {
 func NewDependency(name string, dtype string, component string, version string, configuration string ) (*Dependency, error) {
 	var dependency Dependency
 
-	dependency.Dependency = name
-	dependency.Type = dtype
-	dependency.Component = component
-	dependency.Version = version
+	dependency.Dependency    = name
+	dependency.Type          = dtype
+	dependency.Component     = component
+	dependency.Version       = version
 	dependency.Configuration = configuration
 
 	// success

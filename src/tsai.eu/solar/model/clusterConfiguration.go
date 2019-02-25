@@ -57,13 +57,13 @@ func (m *RelationshipConfigurationMap) UnmarshalYAML(unmarshal func(interface{})
 
 // ClusterConfiguration describes the design time configuration of a solution element cluster within a domain.
 type ClusterConfiguration struct {
-	Version       string                       `yaml:"version"`       // version of the solution element cluster
-	State         string                       `yaml:"state"`         // state of the solution element cluster
-	Min           int                          `yaml:"min"`           // min. size of the solution element cluster
-	Max           int                          `yaml:"max"`           // max. size of the solution element cluster
-	Size          int                          `yaml:"size"`          // size of the solution element cluster
-	Configuration string                       `yaml:"configuration"` // runtime configuration of the solution element cluster
-	Relationships RelationshipConfigurationMap `yaml:"relationships"` // relationships of the solution element cluster
+	Version       string                       `yaml:"Version"`       // version of the solution element cluster
+	State         string                       `yaml:"State"`         // state of the solution element cluster
+	Min           int                          `yaml:"Min"`           // min. size of the solution element cluster
+	Max           int                          `yaml:"Max"`           // max. size of the solution element cluster
+	Size          int                          `yaml:"Size"`          // size of the solution element cluster
+	Configuration string                       `yaml:"Configuration"` // runtime configuration of the solution element cluster
+	Relationships RelationshipConfigurationMap `yaml:"Relationships"` // relationships of the solution element cluster
 }
 
 //------------------------------------------------------------------------------

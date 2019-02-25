@@ -1,0 +1,10 @@
+schema: BT V1.0.0
+name: Model
+domains:
+  Test-Domain:
+    name: Test-Domain
+    components: {}
+    architectures: {}
+    solutions: {}
+    tasks: {}
+    events: {}

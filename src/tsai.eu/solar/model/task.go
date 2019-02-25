@@ -36,19 +36,19 @@ type TaskHandler func(task *Task)
 
 // Task specifies the basic behaviour of a task
 type Task struct {
-	Type         string     `yaml:"type"`         // type of task
-	Domain       string     `yaml:"domain"`       // domain of task
-	Solution     string     `yaml:"solution"`     // architecture of entity
-	Version      string     `yaml:"version"`      // architecture version of entity
-	Element      string     `yaml:"element"`      // element of entity
+	Type         string     `yaml:"Type"`         // type of task
+	Domain       string     `yaml:"Domain"`       // domain of task
+	Solution     string     `yaml:"Solution"`     // architecture of entity
+	Version      string     `yaml:"Version"`      // architecture version of entity
+	Element      string     `yaml:"Element"`      // element of entity
 	Cluster      string     `yaml:"Cluster"`      // cluster of entity
-	Instance     string     `yaml:"instance"`     // instance of entity
-	State        string     `yaml:"state"`        // desired state of entity
-	UUID         string     `yaml:"uuid"`         // uuid of task
-	Parent       string     `yaml:"parent"`       // uuid of parent task
-	Status       TaskStatus `yaml:"status"`       // status of task: (execution/completion/failure)
-	Phase        int        `yaml:"phase"`        // phase of task
-	Subtasks     []string   `yaml:"subtasks"`     // list of subtasks
+	Instance     string     `yaml:"Instance"`     // instance of entity
+	State        string     `yaml:"State"`        // desired state of entity
+	UUID         string     `yaml:"UUID"`         // uuid of task
+	Parent       string     `yaml:"Parent"`       // uuid of parent task
+	Status       TaskStatus `yaml:"Status"`       // status of task: (execution/completion/failure)
+	Phase        int        `yaml:"Phase"`        // phase of task
+	Subtasks     []string   `yaml:"Subtasks"`     // list of subtasks
 	execute      TaskHandler
 	terminate    TaskHandler
 	failed       TaskHandler

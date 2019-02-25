@@ -1,4 +1,6 @@
-output off
+output on
 model get
 domain create test
 model get
+model reset
+model set testdata/model_002.yaml

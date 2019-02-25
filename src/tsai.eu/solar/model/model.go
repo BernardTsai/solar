@@ -67,9 +67,9 @@ func (m *DomainMap) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 // Model describes all managed artefacts within a model.
 type Model struct {
-	Schema  string    `yaml:"schema"`  // schema of the model
-	Name    string    `yaml:"name"`    // name of the model
-	Domains DomainMap `yaml:"domains"` // map of domains
+	Schema  string    `yaml:"Schema"`  // schema of the model
+	Name    string    `yaml:"Name"`    // name of the model
+	Domains DomainMap `yaml:"Domains"` // map of domains
 }
 
 var theModel *Model

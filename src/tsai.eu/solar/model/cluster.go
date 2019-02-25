@@ -98,16 +98,16 @@ func (m *InstanceMap) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 // Cluster describes the runtime configuration of a solution element cluster within a domain.
 type Cluster struct {
-	Version       string          `yaml:"version"`       // version of the solution element cluster
-	Target        string          `yaml:"target"`        // target state of the solution element cluster
-	State         string          `yaml:"state"`         // state of the solution element cluster
-	Min           int             `yaml:"min"`           // min. size of the solution element cluster
-	Max           int             `yaml:"max"`           // max. size of the solution element cluster
-	Size          int             `yaml:"size"`          // size of the solution element cluster
-	Configuration string          `yaml:"configuration"` // runtime configuration of the solution element cluster
-	Endpoint      string          `yaml:"endpoint"`      // endpoint of the solution element cluster
-	Relationships RelationshipMap `yaml:"relationships"` // relationships of the solution element cluster
-	Instances     InstanceMap     `yaml:"instances"`     // instances of the solution element cluster
+	Version       string          `yaml:"Version"`       // version of the solution element cluster
+	Target        string          `yaml:"Target"`        // target state of the solution element cluster
+	State         string          `yaml:"State"`         // state of the solution element cluster
+	Min           int             `yaml:"Min"`           // min. size of the solution element cluster
+	Max           int             `yaml:"Max"`           // max. size of the solution element cluster
+	Size          int             `yaml:"Size"`          // size of the solution element cluster
+	Configuration string          `yaml:"Configuration"` // runtime configuration of the solution element cluster
+	Endpoint      string          `yaml:"Endpoint"`      // endpoint of the solution element cluster
+	Relationships RelationshipMap `yaml:"Relationships"` // relationships of the solution element cluster
+	Instances     InstanceMap     `yaml:"Instances"`     // instances of the solution element cluster
 }
 
 //------------------------------------------------------------------------------

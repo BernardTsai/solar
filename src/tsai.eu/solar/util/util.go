@@ -108,13 +108,23 @@ func SaveFile(filename string, data string) (err error) {
 //------------------------------------------------------------------------------
 
 // LoadYAML reads yaml from a file and transforms into the structure of the entity
-func LoadYAML(filename string, entity interface{}) error {
+func LoadYAML(filename string, entity interface{}) (err error) {
+	// handle panic errors
+	defer func() {
+		if r := recover(); r!= nil {
+			fmt.Println(r)
+			err = errors.New("invalid structure")
+		}
+	}()
+
 	// read file
 	yamlbytes, err := ioutil.ReadFile(filename)
 
 	if err != nil {
 		return errors.Wrap(err, "unable to load data")
 	}
+
+	err = errors.New("invalid structure")
 
 	// // unmarshal data
 	err = yaml.Unmarshal(yamlbytes, entity)
@@ -124,7 +134,7 @@ func LoadYAML(filename string, entity interface{}) error {
 	}
 
 	// success
-	return nil
+	return err
 }
 
 //------------------------------------------------------------------------------

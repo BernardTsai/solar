@@ -1,4 +1,4 @@
-File Component
+Demo Component
 ==============
 
 Functionality:

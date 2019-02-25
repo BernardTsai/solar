@@ -30,17 +30,17 @@ import (
 
 // Relationship describes the runtime configuration of a relationship between clusters within a domain.
 type Relationship struct {
-	Relationship  string  `yaml:"relationship"`  // name of the relationship
-	Dependency    string  `yaml:"dependency"`    // name of the dependency
-	Type          string  `yaml:"type"`          // type of dependency
-	Domain        string  `yaml:"domain"`        // domain to which this relationship refers to
-	Solution      string  `yaml:"solution"`      // solution to which this relationship refers to
-	Element       string  `yaml:"element"`       // element to which this relationship refers to
-	Version       string  `yaml:"version"`       // version of the element to which this relationship refers to
-	Target        string  `yaml:"target"`        // target state of relationship
-	State         string  `yaml:"state"`         // current state of relationship
-	Configuration string  `yaml:"configuration"` // runtime configuration of the relationship
-	Endpoint      string  `yaml:"endpoint"`      // endpoint of the relationship
+	Relationship  string  `yaml:"Relationship"`  // name of the relationship
+	Dependency    string  `yaml:"Dependency"`    // name of the dependency
+	Type          string  `yaml:"Type"`          // type of dependency
+	Domain        string  `yaml:"Domain"`        // domain to which this relationship refers to
+	Solution      string  `yaml:"Solution"`      // solution to which this relationship refers to
+	Element       string  `yaml:"Element"`       // element to which this relationship refers to
+	Version       string  `yaml:"Version"`       // version of the element to which this relationship refers to
+	Target        string  `yaml:"Target"`        // target state of relationship
+	State         string  `yaml:"State"`         // current state of relationship
+	Configuration string  `yaml:"Configuration"` // runtime configuration of the relationship
+	Endpoint      string  `yaml:"Endpoint"`      // endpoint of the relationship
 }
 
 //------------------------------------------------------------------------------

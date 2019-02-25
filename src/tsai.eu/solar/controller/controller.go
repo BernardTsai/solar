@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	"tsai.eu/solar/controller/demo"
+	"tsai.eu/solar/controller/dummy"
 	"tsai.eu/solar/model"
 )
 
@@ -35,7 +36,8 @@ func GetController(componentType string) (Controller, error) {
 	once.Do(func() {
 		controllers = map[string]Controller{}
 
-		controllers["demo"] = demo.NewController()
+		controllers["Demo"]  = demo.NewController()
+		controllers["Dummy"] = dummy.NewController()
 	})
 
 	// determine controller

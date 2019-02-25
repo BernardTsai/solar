@@ -56,10 +56,10 @@ func (m *DependencyMap) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 // Component describes a base configuration for a component within a domain.
 type Component struct {
-	Component     string        `yaml:"component"`     // name of the component
-	Version       string        `yaml:"version"`       // version of the component
-	Configuration string        `yaml:"configuration"` // base configuration of the component
-	Dependencies  DependencyMap `yaml:"dependencies"`  // dependencies of component
+	Component     string        `yaml:"Component"`     // name of the component
+	Version       string        `yaml:"Version"`       // version of the component
+	Configuration string        `yaml:"Configuration"` // base configuration of the component
+	Dependencies  DependencyMap `yaml:"Dependencies"`  // dependencies of component
 }
 
 //------------------------------------------------------------------------------
@@ -68,10 +68,10 @@ type Component struct {
 func NewComponent(name string, version string, configuration string) (*Component, error) {
 	var component Component
 
-	component.Component = name
-	component.Version = version
+	component.Component     = name
+	component.Version       = version
 	component.Configuration = configuration
-	component.Dependencies = DependencyMap{Map: map[string]*Dependency{}}
+	component.Dependencies  = DependencyMap{Map: map[string]*Dependency{}}
 
 	// success
 	return &component, nil

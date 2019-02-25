@@ -1,0 +1,44 @@
+Domain:                    "dummy-domain"
+Solution:                  "dummy-solution"
+Version:                   "V1.0.0"
+Element:                   "dummy_A"
+Cluster:                   "V1.0.0"
+Instance:                  "3e19db02-b74d-4b60-9043-375442f989f8"
+Target:                    "active"
+State:                     "active"
+DesignTimeConfiguration:   ""
+RuntimeConfiguration:      ""
+Elements:
+  "dummy_A":
+  #------------
+    Element:                 "dummy_A"
+    Component:               "Dummy"
+    Target:                  "active"
+    State:                   "initial"
+    DesignTimeConfiguration: ""
+    RuntimeConfiguration:    ""
+    Endpoint:                ""
+    Clusters:
+      "V1.0.0":
+      #--------
+        Cluster:                 "V1.0.0"
+        Target:                  "active"
+        State:                   "active"
+        Min:                     1
+        Max:                     1
+        Size:                    1
+        BaseConfiguration:       ""
+        DesignTimeConfiguration: ""
+        RuntimeConfiguration:    ""
+        Endpoint:                ""
+        Relationships:           []
+        Instances:
+          "3e19db02-b74d-4b60-9043-375442f989f8":
+          #--------------------------------------
+            Instance:                "3e19db02-b74d-4b60-9043-375442f989f8"
+            Target:                  "active"
+            State:                   "initial"
+            BaseConfiguration:       ""
+            DesignTimeConfiguration: ""
+            RuntimeConfiguration:    ""
+            Endpoint:                ""

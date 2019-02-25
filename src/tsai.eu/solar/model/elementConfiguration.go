@@ -56,10 +56,10 @@ func (m *ClusterConfigurationMap) UnmarshalYAML(unmarshal func(interface{}) erro
 
 // ElementConfiguration describes the design time configuration of a solution element within a domain.
 type ElementConfiguration struct {
-	Element       string                  `yaml:"element"`       // name of the solution element
-	Component     string                  `yaml:"component"`     // type of the solution elmenent
-	Configuration string                  `yaml:"configuration"` // runtime configuration of the solution element
-	Clusters      ClusterConfigurationMap `yaml:"clusters"`      // cluster configurations of the solution element
+	Element       string                  `yaml:"Element"`       // name of the solution element
+	Component     string                  `yaml:"Component"`     // type of the solution elmenent
+	Configuration string                  `yaml:"Configuration"` // runtime configuration of the solution element
+	Clusters      ClusterConfigurationMap `yaml:"Clusters"`      // cluster configurations of the solution element
 }
 
 //------------------------------------------------------------------------------

@@ -1,0 +1,11 @@
+Schema: BT V1.0.0
+Name:   Model
+Domains:
+  Example-1:
+  #---------
+    Name:          "Example-1"
+    Components:    {}
+    Architectures: {}
+    Solutions:     {}
+    Tasks:         {}
+    Events:        {}

@@ -88,6 +88,9 @@ func Shell(m *model.Model) *ishell.Shell{
 		},
 	})
 
+	// durable history
+	shell.SetHomeHistoryPath(".solar")
+
 	// default setup
 	output        = ""
 	outputEnabled = true
@@ -101,6 +104,9 @@ func Shell(m *model.Model) *ishell.Shell{
 // handleResult reports error information if present or display success message
 func handleResult(context *ishell.Context, err error, fail string, success string) {
 	if err != nil {
+		// inform shell about error
+		context.Err(err)
+
 		if util.Debug() {
 
 			info := fmt.Sprintf("%s\n%+v\n	", fail, err)
@@ -152,7 +158,9 @@ func writeOutput(context *ishell.Context, info string) error {
 
 	// check which channel to use
 	if output == "" {
-		context.Println(info)
+		if info != "" {
+			context.Println(info)
+		}
 	} else {
 		f, err := os.OpenFile(output, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
     if err != nil {

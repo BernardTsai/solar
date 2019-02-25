@@ -27,11 +27,11 @@ import (
 
 // Instance describes the runtime configuration of an solution element cluster instance within a domain.
 type Instance struct {
-	UUID          string  `yaml:"uuid"`          // uuid of the instance
-	Target        string  `yaml:"target"`        // target state of the instance
-	State         string  `yaml:"state"`         // state of the instance
-	Configuration string  `yaml:"configuration"` // runtime configuration of the instance
-	Endpoint      string  `yaml:"endpoint"`      // endpoint of the instance
+	UUID          string  `yaml:"UUID"`          // uuid of the instance
+	Target        string  `yaml:"Target"`        // target state of the instance
+	State         string  `yaml:"State"`         // state of the instance
+	Configuration string  `yaml:"Configuration"` // runtime configuration of the instance
+	Endpoint      string  `yaml:"Endpoint"`      // endpoint of the instance
 }
 
 //------------------------------------------------------------------------------

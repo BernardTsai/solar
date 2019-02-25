@@ -61,7 +61,7 @@ func TestCLI(t *testing.T) {
 
 	// create model
 	m := model.GetModel()
-
+ 
 	// start the main event loop
 	engine.StartDispatcher(m)
 

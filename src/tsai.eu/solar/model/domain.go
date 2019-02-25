@@ -140,12 +140,12 @@ func (m EventMap) MarshalYAML() (interface{}, error) {
 
 // Domain describes all artefacts managed with an administrative realm.
 type Domain struct {
-	Name          string          `yaml:"name"`          // name of the domain
-	Components    ComponentMap    `yaml:"components"`    // map of components
-	Architectures ArchitectureMap `yaml:"architectures"` // map of architectures
-	Solutions     SolutionMap     `yaml:"solutions"`     // list of solutions
-	Tasks         TaskMap         `yaml:"tasks"`         // list of tasks
-	Events        EventMap        `yaml:"events"`        // list of events
+	Name          string          `yaml:"Name"`          // name of the domain
+	Components    ComponentMap    `yaml:"Components"`    // map of components
+	Architectures ArchitectureMap `yaml:"Architectures"` // map of architectures
+	Solutions     SolutionMap     `yaml:"Solutions"`     // list of solutions
+	Tasks         TaskMap         `yaml:"Tasks"`         // list of tasks
+	Events        EventMap        `yaml:"Events"`        // list of events
 }
 
 //------------------------------------------------------------------------------
@@ -154,12 +154,12 @@ type Domain struct {
 func NewDomain(name string) (*Domain, error) {
 	var domain Domain
 
-	domain.Name = name
-	domain.Components = ComponentMap{Map: map[string]*Component{}}
+	domain.Name          = name
+	domain.Components    = ComponentMap{Map: map[string]*Component{}}
 	domain.Architectures = ArchitectureMap{Map: map[string]*Architecture{}}
-	domain.Solutions = SolutionMap{Map: map[string]*Solution{}}
-	domain.Tasks = TaskMap{Map: map[string]*Task{}}
-	domain.Events = EventMap{Map: map[string]*Event{}}
+	domain.Solutions     = SolutionMap{Map: map[string]*Solution{}}
+	domain.Tasks         = TaskMap{Map: map[string]*Task{}}
+	domain.Events        = EventMap{Map: map[string]*Event{}}
 
 	// success
 	return &domain, nil
