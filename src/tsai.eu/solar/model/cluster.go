@@ -263,7 +263,7 @@ func (cluster *Cluster) Update(domainName string, solutionName string, elementNa
 		relationshipConfiguration, _ := clusterConfiguration.GetRelationship(relationshipName)
 
 		// relationship already exists
-		if cluster != nil {
+		if relationship != nil {
 			// check compatability of references
 			if relationship.Element != relationshipConfiguration.Element ||
 			   relationship.Version != relationshipConfiguration.Version {

@@ -52,7 +52,7 @@ import (
 
 // ComponentMap is a synchronized map for a map of components
 type ComponentMap struct {
-	Map map[string]*Component `yaml:"map"`             // map of components
+	Map map[string]*Component `yaml:"Components"` // map of components
 }
 
 // MarshalYAML marshals a ComponentMap into yaml
@@ -78,7 +78,7 @@ func (m *ComponentMap) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 // ArchitectureMap is a synchronized map for a map of architectures
 type ArchitectureMap struct {
-	Map map[string]*Architecture `yaml:"map"`             // map of architectures
+	Map map[string]*Architecture `yaml:"map"`  // map of architectures
 }
 
 // MarshalYAML marshals a ArchitectureMap into yaml
@@ -128,7 +128,7 @@ func (m TaskMap) MarshalYAML() (interface{}, error) {
 
 // EventMap is a synchronized map for a map of events
 type EventMap struct {
-	Map map[string]*Event `yaml:"map"`             // map of events
+	Map map[string]*Event `yaml:"map"`            // map of events
 }
 
 // MarshalYAML marshals a EventMap into yaml

@@ -34,6 +34,14 @@ func Shell(m *model.Model) *ishell.Shell{
 			ComponentUsage(false, c)
 			ArchitectureUsage(false, c)
 			SolutionUsage(false, c)
+			TaskUsage(false, c)
+			info := ""
+			info += "  # <comment>\n\n"
+			info += "  clear\n\n"
+			info += "  help\n\n"
+			info += "  exit\n"
+
+		  writeInfo(c, info)
 		},
 	})
 
@@ -77,6 +85,13 @@ func Shell(m *model.Model) *ishell.Shell{
 		Name: "solution",
 		Help: "solution commands",
 		Func: func(c *ishell.Context) { SolutionCommand(c, m) },
+	})
+
+	// register a function for the "task" command.
+	shell.AddCmd(&ishell.Cmd{
+		Name: "task",
+		Help: "task commands",
+		Func: func(c *ishell.Context) { TaskCommand(c, m) },
 	})
 
 	// register a function for "#" command.

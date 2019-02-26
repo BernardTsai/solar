@@ -412,3 +412,39 @@ func GetRelationship(domainName string, solutionName string, elementName string,
 }
 
 //------------------------------------------------------------------------------
+
+// GetTask get a task by uuid
+func GetTask(domainName string, uuid string) (*Task, error) {
+	domain, err := GetModel().GetDomain(domainName)
+	if err != nil {
+		return nil, errors.New("domain not found")
+	}
+
+	task, err := domain.GetTask(uuid)
+	if err != nil {
+		return nil, errors.New("task not found")
+	}
+
+	// success
+	return task, nil
+}
+
+//------------------------------------------------------------------------------
+
+// GetEvent get an event by uuid
+func GetEvent(domainName string, uuid string) (*Event, error) {
+	domain, err := GetModel().GetDomain(domainName)
+	if err != nil {
+		return nil, errors.New("domain not found")
+	}
+
+	event, err := domain.GetEvent(uuid)
+	if err != nil {
+		return nil, errors.New("event not found")
+	}
+
+	// success
+	return event, nil
+}
+
+//------------------------------------------------------------------------------

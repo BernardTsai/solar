@@ -8,27 +8,6 @@ import (
 
 //------------------------------------------------------------------------------
 
-// TaskStatus resembles the state of a task.
-type TaskStatus int
-
-// Enumeration of possible states of a task.
-const (
-	// TaskStatusInitial resembles the initial state of a task
-	TaskStatusInitial TaskStatus = iota
-	// TaskStatusExecuting resembles the execution state of a task
-	TaskStatusExecuting
-	// TaskStatusCompleted resembles the completed state of a task
-	TaskStatusCompleted
-	// TaskStatusFailed resembles the failed state of a task
-	TaskStatusFailed
-	// TaskStatusTimeout resembles the timeout state of a task
-	TaskStatusTimeout
-	// TaskStatusTerminated resembles the terminated state of a task
-	TaskStatusTerminated
-)
-
-//------------------------------------------------------------------------------
-
 // TaskHandler is function capable of processing a task related event.
 type TaskHandler func(task *Task)
 
@@ -46,7 +25,7 @@ type Task struct {
 	State        string     `yaml:"State"`        // desired state of entity
 	UUID         string     `yaml:"UUID"`         // uuid of task
 	Parent       string     `yaml:"Parent"`       // uuid of parent task
-	Status       TaskStatus `yaml:"Status"`       // status of task: (execution/completion/failure)
+	Status       string     `yaml:"Status"`       // status of task: (execution/completion/failure)
 	Phase        int        `yaml:"Phase"`        // phase of task
 	Subtasks     []string   `yaml:"Subtasks"`     // list of subtasks
 	execute      TaskHandler
@@ -129,7 +108,7 @@ func (task *Task) GetParent() string {
 //------------------------------------------------------------------------------
 
 // GetStatus delivers the status of the task.
-func (task *Task) GetStatus() TaskStatus {
+func (task *Task) GetStatus() string {
 	return task.Status
 }
 

@@ -44,3 +44,21 @@ const ContextRelationship string = "context"
 const ServiceRelationship string = "service"
 
 //------------------------------------------------------------------------------
+
+// TaskStatusInitial resembles the initial state of a task
+const TaskStatusInitial string = "initial"
+
+// TaskStatusExecuting resembles the execution state of a task
+const TaskStatusExecuting string = "executing"
+
+// TaskStatusCompleted resembles the completed state of a task
+const TaskStatusCompleted string = "completed"
+
+// TaskStatusFailed resembles the failed state of a task
+const TaskStatusFailed string = "failed"
+// TaskStatusTimeout resembles the timeout state of a task
+const TaskStatusTimeout string = "timeout"
+// TaskStatusTerminated resembles the terminated state of a task
+const TaskStatusTerminated string = "terminated"
+
+//------------------------------------------------------------------------------

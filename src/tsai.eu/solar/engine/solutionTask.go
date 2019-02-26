@@ -64,6 +64,10 @@ func ExecuteSolutionTask(task *model.Task) {
 		return
 	}
 
+	if status == model.TaskStatusInitial {
+		task.Status = model.TaskStatusExecuting
+	}
+
 	// determine context
 	solution, _ := model.GetSolution(task.Domain, task.Solution)
 

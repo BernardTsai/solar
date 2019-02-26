@@ -1,9 +1,9 @@
 Schema: BT V1.0.0
 Name:   Model
 Domains:
-  Example-1:
-  #---------
-    Name:          "Example-1"
+  Example-Domain:
+  #--------------
+    Name:          "Example-Domain"
     Components:    {}
     Architectures: {}
     Solutions:     {}

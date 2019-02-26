@@ -65,6 +65,10 @@ func ExecuteElementTask(task *model.Task) {
 		return
 	}
 
+	if status == model.TaskStatusInitial {
+		task.Status = model.TaskStatusExecuting
+	}
+
 	// determine context
 	element, _ := model.GetElement(task.Domain, task.Solution, task.Element)
 
@@ -76,7 +80,7 @@ func ExecuteElementTask(task *model.Task) {
 		// check if the cluster needs to be updated
 		if !cluster.OK() {
 			// create task to update the cluster
-			subtask, _ := NewClusterTask(task.Domain, task.UUID, task.Solution, task.Version,task.Element, task.Cluster)
+			subtask, _ := NewClusterTask(task.Domain, task.UUID, task.Solution, task.Version,task.Element, clusterName)
 			task.AddSubtask(&subtask)
 
 			// trigger the task

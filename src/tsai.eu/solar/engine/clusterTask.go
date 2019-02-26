@@ -14,7 +14,7 @@ func NewClusterTask(domain string, parent string, solution string, version strin
 	var task model.Task
 
 	// TODO: check parameters if context exists
-	task.Type         = "ElementTask"
+	task.Type         = "ClusterTask"
 	task.Domain       = domain
 	task.Solution     = solution
 	task.Version      = version
@@ -58,18 +58,22 @@ func ExecuteClusterTask(task *model.Task) {
 	// get event channel
 	channel := GetEventChannel()
 
-	// check status
+	// check and update status
 	status := task.GetStatus()
 
 	if status != model.TaskStatusInitial && status != model.TaskStatusExecuting {
 		return
 	}
 
+	if status == model.TaskStatusInitial {
+		task.Status = model.TaskStatusExecuting
+	}
+
 	// determine context
-	cluster, _   := model.GetCluster(task.Domain, task.Solution, task.Element, task.Cluster)
+	cluster, _  := model.GetCluster(task.Domain, task.Solution, task.Element, task.Cluster)
 
 	// evaluate relationships
-	switch cluster.State {
+	switch cluster.Target {
 	case model.InactiveState:
 		// check if all context relationships are active
 		relationshipNames, _ := cluster.ListRelationships()
@@ -112,13 +116,13 @@ func ExecuteClusterTask(task *model.Task) {
 	}
 
 	// adjust instances
-	switch cluster.State {
+	switch cluster.Target {
 	case model.InitialState:
 		// one by one identify the instances which need to be reset
 		instanceNames, _ := cluster.ListInstances()
 		for _, instanceName := range instanceNames {
 			instance, _ := cluster.GetInstance(instanceName)
-			if instance.State != cluster.State {
+			if instance.State != cluster.Target {
 				// update the related instance
 				triggerInstanceTask(task, instanceName, cluster.State)
 
@@ -133,7 +137,7 @@ func ExecuteClusterTask(task *model.Task) {
 		instanceNames, _ := cluster.ListInstances()
 		for _, instanceName := range instanceNames {
 			instance, _ := cluster.GetInstance(instanceName)
-			if instance.State != cluster.State {
+			if instance.State != cluster.Target {
 				// update instance to the desired state
 				if cluster.Size < count {
 					triggerInstanceTask(task, instanceName, cluster.State)
@@ -154,7 +158,7 @@ func ExecuteClusterTask(task *model.Task) {
 			instance, _ := cluster.GetInstance(instanceName)
 
 			// update instance
-			if instance.State != cluster.State && cluster.Size < count {
+			if instance.State != cluster.Target && cluster.Size < count {
 				triggerInstanceTask(task, instanceName, cluster.State)
 
 				// return and wait for next event
@@ -193,7 +197,11 @@ func triggerClusterTask(task *model.Task, relationship *model.Relationship)  {
 	channel := GetEventChannel()
 
 	// create task to update the cluster
-	subtask, _ := NewClusterTask(relationship.Domain, task.UUID, relationship.Solution, relationship.Version,relationship.Element, relationship.Version)
+	subtask, err := NewClusterTask(relationship.Domain, task.UUID, relationship.Solution, relationship.Version,relationship.Element, relationship.Version)
+	if err != nil {
+		util.Print("%s", err)
+	}
+
 	task.AddSubtask(&subtask)
 
 	// trigger the task

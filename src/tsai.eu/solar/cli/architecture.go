@@ -173,13 +173,13 @@ func ArchitectureCommand(context *ishell.Context, m *model.Model) {
 		}
 
 		// update the target state of the solution
-		if err := solution.Update(domain.Name, architecture); err != nil {
+		if err = solution.Update(domain.Name, architecture); err != nil {
 			handleResult(context, err, "unable to create or update the solution", "")
 			return
 		}
 
 		// create task and start it by signalling an event
-		task, _ := engine.NewSolutionTask(domain.Name, "", solution)
+		task, err := engine.NewSolutionTask(domain.Name, "", solution)
 		if err != nil {
 			handleResult(context, err, "task can not be created", "")
 			return
