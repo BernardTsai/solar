@@ -1,6 +1,8 @@
 package model
 
 import (
+	"sync"
+
 	"github.com/pkg/errors"
 	"tsai.eu/solar/util"
 )
@@ -30,11 +32,12 @@ import (
 
 // ElementConfigurationMap is a synchronized map for a map of element configurations
 type ElementConfigurationMap struct {
+	sync.RWMutex                         `yaml:"mutex,omitempty"` // mutex
 	Map map[string]*ElementConfiguration `yaml:"map"`             // map of element configurations
 }
 
 // MarshalYAML marshals an ElementConfigurationMap into yaml
-func (m ElementConfigurationMap) MarshalYAML() (interface{}, error) {
+func (m *ElementConfigurationMap) MarshalYAML() (interface{}, error) {
 	return m.Map, nil
 }
 
@@ -105,11 +108,11 @@ func (architecture *Architecture) ListElements() ([]string, error) {
 	// collect names
 	elementConfigurations := []string{}
 
-	if architecture != nil {
-		for elementConfiguration := range architecture.Elements.Map {
-			elementConfigurations = append(elementConfigurations, elementConfiguration)
-		}
+  architecture.Elements.RLock()
+	for elementConfiguration := range architecture.Elements.Map {
+		elementConfigurations = append(elementConfigurations, elementConfiguration)
 	}
+	architecture.Elements.RUnlock()
 
 	// success
 	return elementConfigurations, nil
@@ -120,7 +123,9 @@ func (architecture *Architecture) ListElements() ([]string, error) {
 // GetElement retrieves an element configuration by name
 func (architecture *Architecture) GetElement(name string) (*ElementConfiguration, error) {
 	// determine instance
+	architecture.Elements.RLock()
 	elementConfiguration, ok := architecture.Elements.Map[name]
+	architecture.Elements.RUnlock()
 
 	if !ok {
 		return nil, errors.New("element configuration not found")
@@ -135,13 +140,17 @@ func (architecture *Architecture) GetElement(name string) (*ElementConfiguration
 // AddElement adds an element configuration to a component
 func (architecture *Architecture) AddElement(elementConfiguration *ElementConfiguration) error {
 	// check if instance has already been defined
+	architecture.Elements.RLock()
 	_, ok := architecture.Elements.Map[elementConfiguration.Element]
+	architecture.Elements.RUnlock()
 
 	if ok {
 		return errors.New("element configuration already exists")
 	}
 
+	architecture.Elements.Lock()
 	architecture.Elements.Map[elementConfiguration.Element] = elementConfiguration
+	architecture.Elements.Unlock()
 
 	// success
 	return nil
@@ -152,14 +161,18 @@ func (architecture *Architecture) AddElement(elementConfiguration *ElementConfig
 // DeleteElement deletes an element configuration
 func (architecture *Architecture) DeleteElement(name string) error {
 	// determine element
+	architecture.Elements.RLock()
 	_, ok := architecture.Elements.Map[name]
+	architecture.Elements.RUnlock()
 
 	if !ok {
 		return errors.New("element configuration not found")
 	}
 
 	// remove element
+	architecture.Elements.Lock()
 	delete(architecture.Elements.Map, name)
+	architecture.Elements.Unlock()
 
 	// success
 	return nil

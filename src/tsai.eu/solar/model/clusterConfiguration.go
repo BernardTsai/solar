@@ -1,6 +1,8 @@
 package model
 
 import (
+	"sync"
+
 	"github.com/pkg/errors"
 	"tsai.eu/solar/util"
 )
@@ -31,11 +33,12 @@ import (
 
 // RelationshipConfigurationMap is a synchronized map for a map of relationship configurations
 type RelationshipConfigurationMap struct {
+	sync.RWMutex                              `yaml:"mutex,omitempty"` // mutex
 	Map map[string]*RelationshipConfiguration `yaml:"map"`             // map of relationships
 }
 
 // MarshalYAML marshals a RelationshipConfigurationMap into yaml
-func (m RelationshipConfigurationMap) MarshalYAML() (interface{}, error) {
+func (m *RelationshipConfigurationMap) MarshalYAML() (interface{}, error) {
 	return m.Map, nil
 }
 
@@ -112,9 +115,11 @@ func (clusterConfiguration *ClusterConfiguration) ListRelationships() ([]string,
 	// collect names
 	relationships := []string{}
 
+  clusterConfiguration.Relationships.RLock()
 	for relationship := range clusterConfiguration.Relationships.Map {
 		relationships = append(relationships, relationship)
 	}
+	clusterConfiguration.Relationships.RUnlock()
 
 	// success
 	return relationships, nil
@@ -125,7 +130,9 @@ func (clusterConfiguration *ClusterConfiguration) ListRelationships() ([]string,
 // GetRelationship retrieves a relationship configuration by name
 func (clusterConfiguration *ClusterConfiguration) GetRelationship(name string) (*RelationshipConfiguration, error) {
 	// determine relationship configuration
+	clusterConfiguration.Relationships.RLock()
 	relationship, ok := clusterConfiguration.Relationships.Map[name]
+	clusterConfiguration.Relationships.RUnlock()
 
 	if !ok {
 		return nil, errors.New("relationship configuration not found")
@@ -139,14 +146,18 @@ func (clusterConfiguration *ClusterConfiguration) GetRelationship(name string) (
 
 // AddRelationship adds a relationship configuration to a cluster
 func (clusterConfiguration *ClusterConfiguration) AddRelationship(relationshipConfiguration *RelationshipConfiguration) {
+	clusterConfiguration.Relationships.Lock()
 	clusterConfiguration.Relationships.Map[relationshipConfiguration.Relationship] = relationshipConfiguration
+	clusterConfiguration.Relationships.Unlock()
 }
 
 //------------------------------------------------------------------------------
 
 // DeleteRelationship deletes a relationship configuration from a cluster
 func (clusterConfiguration *ClusterConfiguration) DeleteRelationship(name string) {
+	clusterConfiguration.Relationships.Lock()
 	delete(clusterConfiguration.Relationships.Map, name)
+	clusterConfiguration.Relationships.Unlock()
 }
 
 //------------------------------------------------------------------------------

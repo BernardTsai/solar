@@ -41,11 +41,12 @@ import (
 
 // DomainMap is a synchronized map for a map of domains
 type DomainMap struct {
+	sync.RWMutex             `yaml:"mutex,omitempty"` // mutex
 	Map  map[string]*Domain  `yaml:"map"`             // map of domains
 }
 
 // MarshalYAML marshals a EventMap into yaml
-func (m DomainMap) MarshalYAML() (interface{}, error) {
+func (m *DomainMap) MarshalYAML() (interface{}, error) {
 	return m.Map, nil
 }
 
@@ -136,9 +137,11 @@ func (model *Model) Load(filename string) error {
 func (model *Model) ListDomains() ([]string, error) {
 	domains := []string{}
 
+	model.Domains.RLock()
 	for domain := range model.Domains.Map {
 		domains = append(domains, domain)
 	}
+ 	model.Domains.RUnlock()
 
 	// success
 	return domains, nil
@@ -149,7 +152,9 @@ func (model *Model) ListDomains() ([]string, error) {
 // GetDomain get a domain by name
 func (model *Model) GetDomain(name string) (*Domain, error) {
 	// determine domain
+ 	model.Domains.RLock()
 	domain, ok := model.Domains.Map[name]
+ 	model.Domains.RUnlock()
 
 	if !ok {
 		return nil, errors.New("domain not found")
@@ -164,13 +169,17 @@ func (model *Model) GetDomain(name string) (*Domain, error) {
 // AddDomain add a domain to the model
 func (model *Model) AddDomain(domain *Domain) error {
 	// determine domain
+	model.Domains.RLock()
 	_, ok := model.Domains.Map[domain.Name]
+	model.Domains.RUnlock()
 
 	if ok {
 		return errors.New("domain already exists")
 	}
 
+	model.Domains.Lock()
 	model.Domains.Map[domain.Name] = domain
+	model.Domains.Unlock()
 
 	// success
 	return nil
@@ -181,14 +190,18 @@ func (model *Model) AddDomain(domain *Domain) error {
 // DeleteDomain deletes a domain
 func (model *Model) DeleteDomain(name string) error {
 	// determine domain
+	model.Domains.RLock()
 	_, ok := model.Domains.Map[name]
+	model.Domains.RUnlock()
 
 	if !ok {
 		return errors.New("domain not found")
 	}
 
 	// remove domain
+	model.Domains.Lock()
 	delete(model.Domains.Map, name)
+	model.Domains.Unlock()
 
 	// success
 	return nil
