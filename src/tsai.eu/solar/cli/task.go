@@ -7,6 +7,7 @@ import (
 	ishell "gopkg.in/abiosoft/ishell.v2"
 	"tsai.eu/solar/model"
 	"tsai.eu/solar/util"
+	"tsai.eu/solar/engine"
 )
 
 //------------------------------------------------------------------------------
@@ -192,6 +193,29 @@ func TaskCommand(context *ishell.Context, m *model.Model) {
 		taskinfo := NewTaskInfo(task, level)
 		result, err := util.ConvertToYAML(taskinfo)
 		handleResult(context, err, "task can not be displayed", result)
+	case _terminate:
+		// check availability of arguments
+		if len(context.Args) != 3 {
+			TaskUsage(true, context)
+			return
+		}
+
+		// determine task
+		task, err := model.GetTask(context.Args[1], context.Args[2])
+
+		if err != nil {
+			handleResult(context, err, "task can not be identified", "")
+			return
+		}
+
+		// execute the command
+		// get event channel
+		channel := engine.GetEventChannel()
+
+		// create event
+		channel <- model.NewEvent(context.Args[1], task.UUID, model.EventTypeTaskTermination, "", "initial")
+
+		handleResult(context, nil, "task can not be terminated", "")
 	default:
 		TaskUsage(true, context)
 	}
@@ -207,6 +231,7 @@ func TaskUsage(header bool, context *ishell.Context) {
 	}
 	info += "  task list <domain> <solution> <element> <cluster> <instance>\n"
 	info += "       get <domain> <task> <level>\n"
+	info += "       terminate <domain> <task>\n"
 
   writeInfo(context, info)
 }

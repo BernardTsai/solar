@@ -10,6 +10,7 @@ import (
   "tsai.eu/solar/model"
   "tsai.eu/solar/util"
   "tsai.eu/solar/cli"
+  "tsai.eu/solar/engine"
 )
 
 //------------------------------------------------------------------------------
@@ -99,6 +100,29 @@ func TaskGetHandler(w http.ResponseWriter, r *http.Request) {
   // write yaml
   // w.Header().Set("Content-Type", "application/x-yaml")
   io.WriteString(w, yaml)
+}
+
+//------------------------------------------------------------------------------
+
+// TaskTerminateHandler retrieves a task tree.
+func TaskTerminateHandler(w http.ResponseWriter, r *http.Request) {
+  vars         := mux.Vars(r)
+  domainName   := vars["domain"]
+  taskName     := vars["task"]
+
+  // determine task
+  task, err := model.GetTask(domainName, taskName)
+  if err != nil {
+    w.WriteHeader(http.StatusBadRequest)
+    return
+  }
+
+  // execute the command
+  // get event channel
+  channel := engine.GetEventChannel()
+
+  // create event
+  channel <- model.NewEvent(domainName, task.UUID, model.EventTypeTaskTermination, "", "initial")
 }
 
 //------------------------------------------------------------------------------

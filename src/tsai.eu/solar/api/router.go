@@ -44,8 +44,14 @@ func NewRouter() {
   router.HandleFunc("/solution/{domain}/{solution}/{version}",  SolutionDeployHandler).Methods("POST")
 
   // task
-  router.HandleFunc("/task/{domain}/{solution}/{element}/{cluster}/{instance}", TaskListHandler).Methods("GET")
-  router.HandleFunc("/task/{domain}/{task}/{level}",                            TaskGetHandler).Methods("GET")
+  router.HandleFunc("/tasks/{domain}/{solution}/{element}/{cluster}/{instance}", TaskListHandler).Methods("GET")
+  router.HandleFunc("/tasks/{domain}/{solution}/{element}/{cluster}",            TaskListHandler).Methods("GET")
+  router.HandleFunc("/tasks/{domain}/{solution}/{element}",                      TaskListHandler).Methods("GET")
+  router.HandleFunc("/tasks/{domain}/{solution}",                                TaskListHandler).Methods("GET")
+  router.HandleFunc("/tasks/{domain}",                                           TaskListHandler).Methods("GET")
+
+  router.HandleFunc("/task/{domain}/{task}/{level}",                             TaskGetHandler).Methods("GET")
+  router.HandleFunc("/task/{domain}/{task}",                                     TaskTerminateHandler).Methods("DELETE")
 
   // start processing
   http.Handle("/", router)
