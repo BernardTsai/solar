@@ -58,7 +58,7 @@ func SolutionCommand(context *ishell.Context, m *model.Model) {
 			}
 		}
 
-		result, err := util.ConvertToJSON(solutions)
+		result, err := util.ConvertToYAML(solutions)
 		handleResult(context, err, "solutions could not be listed", result)
 	case _set:
 		// check availability of arguments

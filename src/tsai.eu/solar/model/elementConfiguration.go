@@ -30,39 +30,13 @@ import (
 //   - elementConfiguration.DeleteCluster
 //------------------------------------------------------------------------------
 
-// ClusterConfigurationMap is a synchronized map for a map of cluster configurations
-type ClusterConfigurationMap struct {
-	sync.RWMutex                         `yaml:"mutex,omitempty"`    // mutex
-	Map map[string]*ClusterConfiguration `yaml:"map"`                // map of cluster configurations
-}
-
-// MarshalYAML marshals a ClusterConfigurationMap into yaml
-func (m *ClusterConfigurationMap) MarshalYAML() (interface{}, error) {
-	return m.Map, nil
-}
-
-// UnmarshalYAML unmarshals a ClusterConfigurationMap from yaml
-func (m *ClusterConfigurationMap) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	Map := map[string]*ClusterConfiguration{}
-
-	err := unmarshal(&Map)
-	if err != nil {
-		return err
-	}
-
-	*m = ClusterConfigurationMap{Map: Map}
-
-	return nil
-}
-
-//------------------------------------------------------------------------------
-
 // ElementConfiguration describes the design time configuration of a solution element within a domain.
 type ElementConfiguration struct {
-	Element       string                  `yaml:"Element"`       // name of the solution element
-	Component     string                  `yaml:"Component"`     // type of the solution elmenent
-	Configuration string                  `yaml:"Configuration"` // runtime configuration of the solution element
-	Clusters      ClusterConfigurationMap `yaml:"Clusters"`      // cluster configurations of the solution element
+	Element       string                           `yaml:"Element"`             // name of the solution element
+	Component     string                           `yaml:"Component"`           // type of the solution elmenent
+	Configuration string                           `yaml:"Configuration"`       // runtime configuration of the solution element
+	Clusters      map[string]*ClusterConfiguration `yaml:"Clusters"`            // cluster configurations of the solution element
+	ClustersX     sync.RWMutex                     `yaml:"ClustersX,omitempty"` // mutex for cluster configurations
 }
 
 //------------------------------------------------------------------------------
@@ -71,10 +45,11 @@ type ElementConfiguration struct {
 func NewElementConfiguratin(name string, component string, configuration string) (*ElementConfiguration, error) {
 	var elementConfiguration ElementConfiguration
 
-	elementConfiguration.Element = name
-	elementConfiguration.Component = component
+	elementConfiguration.Element       = name
+	elementConfiguration.Component     = component
 	elementConfiguration.Configuration = configuration
-	elementConfiguration.Clusters = ClusterConfigurationMap{Map: map[string]*ClusterConfiguration{}}
+	elementConfiguration.Clusters      = map[string]*ClusterConfiguration{}
+	elementConfiguration.ClustersX     = sync.RWMutex{}
 
 	// success
 	return &elementConfiguration, nil
@@ -108,11 +83,11 @@ func (elementConfiguration *ElementConfiguration) ListClusters() ([]string, erro
 	// collect names
 	clusterConfigurations := []string{}
 
-  elementConfiguration.Clusters.RLock()
-	for clusterConfiguration := range elementConfiguration.Clusters.Map {
+  elementConfiguration.ClustersX.RLock()
+	for clusterConfiguration := range elementConfiguration.Clusters {
 		clusterConfigurations = append(clusterConfigurations, clusterConfiguration)
 	}
-	elementConfiguration.Clusters.RUnlock()
+	elementConfiguration.ClustersX.RUnlock()
 
 	// success
 	return clusterConfigurations, nil
@@ -123,9 +98,9 @@ func (elementConfiguration *ElementConfiguration) ListClusters() ([]string, erro
 // GetCluster retrieves a cluster configuration by name
 func (elementConfiguration *ElementConfiguration) GetCluster(name string) (*ClusterConfiguration, error) {
 	// determine dependency
-	elementConfiguration.Clusters.RLock()
-	clusterConfiguration, ok := elementConfiguration.Clusters.Map[name]
-	elementConfiguration.Clusters.RUnlock()
+	elementConfiguration.ClustersX.RLock()
+	clusterConfiguration, ok := elementConfiguration.Clusters[name]
+	elementConfiguration.ClustersX.RUnlock()
 
 	if !ok {
 		return nil, errors.New("cluster configuration not found")
@@ -139,18 +114,18 @@ func (elementConfiguration *ElementConfiguration) GetCluster(name string) (*Clus
 
 // AddCluster adds a cluster configuration to an element
 func (elementConfiguration *ElementConfiguration) AddCluster(clusterConfiguration *ClusterConfiguration) {
-	elementConfiguration.Clusters.Lock()
-	elementConfiguration.Clusters.Map[clusterConfiguration.Version] = clusterConfiguration
-	elementConfiguration.Clusters.Unlock()
+	elementConfiguration.ClustersX.Lock()
+	elementConfiguration.Clusters[clusterConfiguration.Version] = clusterConfiguration
+	elementConfiguration.ClustersX.Unlock()
 }
 
 //------------------------------------------------------------------------------
 
 // DeleteCluster deletes a cluster configuration from an element
 func (elementConfiguration *ElementConfiguration) DeleteCluster(version string) {
-	elementConfiguration.Clusters.Lock()
-	delete(elementConfiguration.Clusters.Map, version)
-	elementConfiguration.Clusters.Unlock()
+	elementConfiguration.ClustersX.Lock()
+	delete(elementConfiguration.Clusters, version)
+	elementConfiguration.ClustersX.Unlock()
 }
 
 //------------------------------------------------------------------------------

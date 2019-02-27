@@ -66,7 +66,7 @@ func ArchitectureCommand(context *ishell.Context, m *model.Model) {
 			}
 		}
 
-		result, err := util.ConvertToJSON(architectures)
+		result, err := util.ConvertToYAML(architectures)
 		handleResult(context, err, "architectures could not be listed", result)
 	case _set:
 		// check availability of arguments
@@ -189,7 +189,7 @@ func ArchitectureCommand(context *ishell.Context, m *model.Model) {
 		channel := engine.GetEventChannel()
 
 		// create event
-		channel <- model.NewEvent(domain.Name, task.UUID, model.EventTypeTaskExecution, "")
+		channel <- model.NewEvent(domain.Name, task.UUID, model.EventTypeTaskExecution, "", "initial")
 
 		handleResult(context, nil, "architecture can not be executed", task.UUID)
 	default:

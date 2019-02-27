@@ -75,9 +75,9 @@ func GetTransition(currentState string, targetState string) (string, error) {
 	}
 
 	// determine transition
-	transition, err := GetTransition(currentState, targetState)
+	transition, found := transitionTable[currentState][targetState]
 
-	if err != nil {
+	if !found {
 		return "", errors.New("invalid transition")
 	}
 
@@ -102,6 +102,7 @@ func GetTransition(currentState string, targetState string) (string, error) {
 //
 //   - solution.Show
 //   - solution.Load
+//   - solution.Load2
 //   - solution.Save
 //   - solution.Update
 //   - solution.OK
@@ -112,41 +113,15 @@ func GetTransition(currentState string, targetState string) (string, error) {
 //   - solution.DeleteElement
 //------------------------------------------------------------------------------
 
-// ElementMap is a synchronized map for a map of elements
-type ElementMap struct {
-	sync.RWMutex                      `yaml:"mutex,omitempty"` // mutex
-	Map          map[string]*Element  `yaml:"map"`             // map of events
-}
-
-// MarshalYAML marshals an ElementMap into yaml
-func (m *ElementMap) MarshalYAML() (interface{}, error) {
-	return m.Map, nil
-}
-
-// UnmarshalYAML unmarshals an ElementMap from yaml
-func (m *ElementMap) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	Map := map[string]*Element{}
-
-	err := unmarshal(&Map)
-	if err != nil {
-		return err
-	}
-
-	*m = ElementMap{Map: Map}
-
-	return nil
-}
-
-//------------------------------------------------------------------------------
-
 // Solution describes the runtime configuration of a solution within a domain.
 type Solution struct {
-	Solution      string     `yaml:"Solution"`       // name of solution
-	Version       string     `yaml:"Version"`        // version of solution
-	Target        string     `yaml:"Target"`         // target state of solution
-	State         string     `yaml:"State"`          // current state of solution
-	Configuration string     `yaml:"Configuration"`  // configuration of solution
-	Elements      ElementMap `yaml:"Elements"`       // elements of solution
+	Solution       string              `yaml:"Solution"`            // name of solution
+	Version        string              `yaml:"Version"`             // version of solution
+	Target         string              `yaml:"Target"`              // target state of solution
+	State          string              `yaml:"State"`               // current state of solution
+	Configuration  string              `yaml:"Configuration"`       // configuration of solution
+	Elements       map[string]*Element `yaml:"Elements"`            // elements of solution
+	ElementsX      sync.RWMutex        `yaml:"ElementsX,omitempty"` // mutex for elements
 }
 
 //------------------------------------------------------------------------------
@@ -160,7 +135,8 @@ func NewSolution(name string, version string, configuration string) (*Solution, 
 	solution.Target        = InitialState
 	solution.State         = InitialState
 	solution.Configuration = configuration
-	solution.Elements      = ElementMap{Map: map[string]*Element{}}
+	solution.Elements      = map[string]*Element{}
+	solution.ElementsX     = sync.RWMutex{}
 
 	// success
 	return &solution, nil
@@ -189,16 +165,23 @@ func (solution *Solution) Load(filename string) error {
 
 //------------------------------------------------------------------------------
 
+// Load2 imports a yaml model
+func (solution *Solution) Load2(yaml string) error {
+	return util.ConvertFromYAML(yaml, solution)
+}
+
+//------------------------------------------------------------------------------
+
 // ListElements lists all elements of a solution
 func (solution *Solution) ListElements() ([]string, error) {
 	// collect names
 	elements := []string{}
 
-	solution.Elements.RLock()
-	for element := range solution.Elements.Map {
+	solution.ElementsX.RLock()
+	for element := range solution.Elements {
 		elements = append(elements, element)
 	}
-	solution.Elements.RUnlock()
+	solution.ElementsX.RUnlock()
 
 	// success
 	return elements, nil
@@ -209,9 +192,9 @@ func (solution *Solution) ListElements() ([]string, error) {
 // GetElement retrieves an element by name
 func (solution *Solution) GetElement(name string) (*Element, error) {
 	// determine instance
-	solution.Elements.RLock()
-	element, ok := solution.Elements.Map[name]
-	solution.Elements.RUnlock()
+	solution.ElementsX.RLock()
+	element, ok := solution.Elements[name]
+	solution.ElementsX.RUnlock()
 
 	if !ok {
 		return nil, errors.New("element not found")
@@ -226,17 +209,17 @@ func (solution *Solution) GetElement(name string) (*Element, error) {
 // AddElement adds an element to a solution
 func (solution *Solution) AddElement(element *Element) error {
 	// check if instance has already been defined
-	solution.Elements.RLock()
-	_, ok := solution.Elements.Map[element.Element]
-	solution.Elements.RUnlock()
+	solution.ElementsX.RLock()
+	_, ok := solution.Elements[element.Element]
+	solution.ElementsX.RUnlock()
 
 	if ok {
 		return errors.New("element already exists")
 	}
 
-	solution.Elements.Lock()
-	solution.Elements.Map[element.Element] = element
-	solution.Elements.Unlock()
+	solution.ElementsX.Lock()
+	solution.Elements[element.Element] = element
+	solution.ElementsX.Unlock()
 
 	// success
 	return nil
@@ -247,18 +230,18 @@ func (solution *Solution) AddElement(element *Element) error {
 // DeleteElement deletes an element
 func (solution *Solution) DeleteElement(uuid string) error {
 	// determine element
-	solution.Elements.RLock()
-	_, ok := solution.Elements.Map[uuid]
-	solution.Elements.RUnlock()
+	solution.ElementsX.RLock()
+	_, ok := solution.Elements[uuid]
+	solution.ElementsX.RUnlock()
 
 	if !ok {
 		return errors.New("element not found")
 	}
 
 	// remove element
-	solution.Elements.Lock()
-	delete(solution.Elements.Map, uuid)
-	solution.Elements.Unlock()
+	solution.ElementsX.Lock()
+	delete(solution.Elements, uuid)
+	solution.ElementsX.Unlock()
 
 	// success
 	return nil

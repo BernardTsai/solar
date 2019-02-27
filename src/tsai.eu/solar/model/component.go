@@ -22,6 +22,7 @@ import (
 //
 //   - component.Show
 //   - component.Load
+//   - component.Load2
 //   - component.Save
 //
 //   - component.ListDependencies
@@ -30,39 +31,13 @@ import (
 //   - component.DeleteDependency
 //------------------------------------------------------------------------------
 
-// DependencyMap is a synchronized map for a map of dependencies
-type DependencyMap struct {
-	sync.RWMutex                         `yaml:"mutex,omitempty"` // mutex
-	Map          map[string]*Dependency  `yaml:"map"`             // map of dependencies
-}
-
-// MarshalYAML marshals a DependencyMap into yaml
-func (m *DependencyMap) MarshalYAML() (interface{}, error) {
-	return m.Map, nil
-}
-
-// UnmarshalYAML unmarshals a DependencyMap from yaml
-func (m *DependencyMap) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	Map := map[string]*Dependency{}
-
-	err := unmarshal(&Map)
-	if err != nil {
-		return err
-	}
-
-	*m = DependencyMap{Map: Map}
-
-	return nil
-}
-
-//------------------------------------------------------------------------------
-
 // Component describes a base configuration for a component within a domain.
 type Component struct {
-	Component     string        `yaml:"Component"`     // name of the component
-	Version       string        `yaml:"Version"`       // version of the component
-	Configuration string        `yaml:"Configuration"` // base configuration of the component
-	Dependencies  DependencyMap `yaml:"Dependencies"`  // dependencies of component
+	Component     string                 `yaml:"Component"`             // name of the component
+	Version       string                 `yaml:"Version"`               // version of the component
+	Configuration string                 `yaml:"Configuration"`         // base configuration of the component
+	Dependencies  map[string]*Dependency `yaml:"Dependencies"`          // dependencies of component
+	DependenciesX sync.RWMutex           `yaml:"ComponentsX,omitempty"` // mutex for dependencies
 }
 
 //------------------------------------------------------------------------------
@@ -74,7 +49,8 @@ func NewComponent(name string, version string, configuration string) (*Component
 	component.Component     = name
 	component.Version       = version
 	component.Configuration = configuration
-	component.Dependencies  = DependencyMap{Map: map[string]*Dependency{}}
+	component.Dependencies  = map[string]*Dependency{}
+	component.DependenciesX = sync.RWMutex{}
 
 	// success
 	return &component, nil
@@ -103,16 +79,23 @@ func (component *Component) Load(filename string) error {
 
 //------------------------------------------------------------------------------
 
+// Load2 imports a yaml model
+func (component *Component) Load2(yaml string) error {
+	return util.ConvertFromYAML(yaml, component)
+}
+
+//------------------------------------------------------------------------------
+
 // ListDependencies lists all dependencies of a template
 func (component *Component) ListDependencies() ([]string, error) {
 	// collect names
 	dependencies := []string{}
 
-	component.Dependencies.RLock()
-	for dependency := range component.Dependencies.Map {
+	component.DependenciesX.RLock()
+	for dependency := range component.Dependencies {
 		dependencies = append(dependencies, dependency)
 	}
-	component.Dependencies.RUnlock()
+	component.DependenciesX.RUnlock()
 
 	// success
 	return dependencies, nil
@@ -123,9 +106,9 @@ func (component *Component) ListDependencies() ([]string, error) {
 // GetDependency retrieves a dependency by name
 func (component *Component) GetDependency(name string) (*Dependency, error) {
 	// determine dependency
-	component.Dependencies.RLock()
-	dependency, ok := component.Dependencies.Map[name]
-	component.Dependencies.RUnlock()
+	component.DependenciesX.RLock()
+	dependency, ok := component.Dependencies[name]
+	component.DependenciesX.RUnlock()
 
 	if !ok {
 		return nil, errors.New("dependency not found")
@@ -140,17 +123,17 @@ func (component *Component) GetDependency(name string) (*Dependency, error) {
 // AddDependency adds a dependency to a component
 func (component *Component) AddDependency(dependency *Dependency) error {
 	// check if dependency has already been defined
-	component.Dependencies.RLock()
-	_, ok := component.Dependencies.Map[dependency.Dependency]
-	component.Dependencies.RUnlock()
+	component.DependenciesX.RLock()
+	_, ok := component.Dependencies[dependency.Dependency]
+	component.DependenciesX.RUnlock()
 
 	if ok {
 		return errors.New("variant already exists")
 	}
 
-	component.Dependencies.Lock()
-	component.Dependencies.Map[dependency.Dependency] = dependency
-	component.Dependencies.Unlock()
+	component.DependenciesX.Lock()
+	component.Dependencies[dependency.Dependency] = dependency
+	component.DependenciesX.Unlock()
 
 	// success
 	return nil
@@ -161,18 +144,18 @@ func (component *Component) AddDependency(dependency *Dependency) error {
 // DeleteDependency deletes a dependency
 func (component *Component) DeleteDependency(name string) error {
 	// determine dependency
-	component.Dependencies.RLock()
-	_, ok := component.Dependencies.Map[name]
-	component.Dependencies.RUnlock()
+	component.DependenciesX.RLock()
+	_, ok := component.Dependencies[name]
+	component.DependenciesX.RUnlock()
 
 	if !ok {
 		return errors.New("dependency not found")
 	}
 
 	// remove version
-	component.Dependencies.Lock()
-	delete(component.Dependencies.Map, name)
-	component.Dependencies.Unlock()
+	component.DependenciesX.Lock()
+	delete(component.Dependencies, name)
+	component.DependenciesX.Unlock()
 
 	// success
 	return nil

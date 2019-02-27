@@ -62,3 +62,18 @@ const TaskStatusTimeout string = "timeout"
 const TaskStatusTerminated string = "terminated"
 
 //------------------------------------------------------------------------------
+
+// EventTypeTaskExecution resembles an event which should trigger the execution of a task.
+const EventTypeTaskExecution string = "execution"
+// EventTypeTaskCompletion resembles an event which should trigger the closure of a task.
+const EventTypeTaskCompletion string = "completion"
+// EventTypeTaskFailure resembles an event which should trigger failure handling of a task.
+const EventTypeTaskFailure string = "failure"
+// EventTypeTaskTimeout resemblesan an event which should trigger timeout handling of a task.
+const EventTypeTaskTimeout string = "timeout"
+// EventTypeTaskTermination resembles an event which should trigger termination handling of a task.
+const EventTypeTaskTermination string = "termination"
+// EventTypeTaskUnknown resembles an unknown event.
+const EventTypeTaskUnknown string = "unknown"
+
+//------------------------------------------------------------------------------

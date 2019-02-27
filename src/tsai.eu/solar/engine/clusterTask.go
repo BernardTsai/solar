@@ -124,12 +124,15 @@ func ExecuteClusterTask(task *model.Task) {
 			instance, _ := cluster.GetInstance(instanceName)
 			if instance.State != cluster.Target {
 				// update the related instance
-				triggerInstanceTask(task, instanceName, cluster.State)
+				triggerInstanceTask(task, instanceName, cluster.Target)
 
 				// return and wait for next event
 				return
 			}
 		}
+
+		// cluster has reached the desired state
+		cluster.State = model.InitialState
 	case model.InactiveState:
 		count := countInstances(cluster, model.InactiveState)
 
@@ -140,7 +143,7 @@ func ExecuteClusterTask(task *model.Task) {
 			if instance.State != cluster.Target {
 				// update instance to the desired state
 				if cluster.Size < count {
-					triggerInstanceTask(task, instanceName, cluster.State)
+					triggerInstanceTask(task, instanceName, cluster.Target)
 				} else {
 					triggerInstanceTask(task, instanceName, model.InitialState)
 				}
@@ -148,6 +151,9 @@ func ExecuteClusterTask(task *model.Task) {
 				// return and wait for next event
 				return
 			}
+
+			// cluster has reached the desired state
+			cluster.State = model.InactiveState
 		}
 	case model.ActiveState:
 		count := countInstances(cluster, model.ActiveState)
@@ -158,17 +164,20 @@ func ExecuteClusterTask(task *model.Task) {
 			instance, _ := cluster.GetInstance(instanceName)
 
 			// update instance
-			if instance.State != cluster.Target && cluster.Size < count {
-				triggerInstanceTask(task, instanceName, cluster.State)
+			if instance.State != cluster.Target && count < cluster.Size {
+				triggerInstanceTask(task, instanceName, cluster.Target)
 
 				// return and wait for next event
 				return
 			}
 		}
+
+		// cluster has reached the desired state
+		cluster.State = model.ActiveState
 	}
 
 	// execution has completed
-	channel <- model.NewEvent(task.Domain, task.UUID, model.EventTypeTaskCompletion, task.UUID)
+	channel <- model.NewEvent(task.Domain, task.UUID, model.EventTypeTaskCompletion, task.UUID, "")
 }
 
 //------------------------------------------------------------------------------
@@ -197,15 +206,12 @@ func triggerClusterTask(task *model.Task, relationship *model.Relationship)  {
 	channel := GetEventChannel()
 
 	// create task to update the cluster
-	subtask, err := NewClusterTask(relationship.Domain, task.UUID, relationship.Solution, relationship.Version,relationship.Element, relationship.Version)
-	if err != nil {
-		util.Print("%s", err)
-	}
+	subtask, _ := NewClusterTask(relationship.Domain, task.UUID, relationship.Solution, relationship.Version,relationship.Element, relationship.Version)
 
 	task.AddSubtask(&subtask)
 
 	// trigger the task
-	channel <- model.NewEvent(task.Domain, subtask.UUID, model.EventTypeTaskExecution, task.UUID)
+	channel <- model.NewEvent(task.Domain, subtask.UUID, model.EventTypeTaskExecution, task.UUID, "")
 }
 
 //------------------------------------------------------------------------------
@@ -220,7 +226,7 @@ func triggerInstanceTask(task *model.Task, instance string, state string)  {
 	task.AddSubtask(&subtask)
 
 	// trigger the task
-	channel <- model.NewEvent(task.Domain, subtask.UUID, model.EventTypeTaskExecution, task.UUID)
+	channel <- model.NewEvent(task.Domain, subtask.UUID, model.EventTypeTaskExecution, task.UUID, "")
 }
 
 //------------------------------------------------------------------------------

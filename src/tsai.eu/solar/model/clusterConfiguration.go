@@ -31,42 +31,17 @@ import (
 //   - clusterConfiguration.DeleteRelationship
 //------------------------------------------------------------------------------
 
-// RelationshipConfigurationMap is a synchronized map for a map of relationship configurations
-type RelationshipConfigurationMap struct {
-	sync.RWMutex                              `yaml:"mutex,omitempty"` // mutex
-	Map map[string]*RelationshipConfiguration `yaml:"map"`             // map of relationships
-}
-
-// MarshalYAML marshals a RelationshipConfigurationMap into yaml
-func (m *RelationshipConfigurationMap) MarshalYAML() (interface{}, error) {
-	return m.Map, nil
-}
-
-// UnmarshalYAML unmarshals a RelationshipConfigurationMap from yaml
-func (m *RelationshipConfigurationMap) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	Map := map[string]*RelationshipConfiguration{}
-
-	err := unmarshal(&Map)
-	if err != nil {
-		return err
-	}
-
-	*m = RelationshipConfigurationMap{Map: Map}
-
-	return nil
-}
-
-//------------------------------------------------------------------------------
-
 // ClusterConfiguration describes the design time configuration of a solution element cluster within a domain.
 type ClusterConfiguration struct {
-	Version       string                       `yaml:"Version"`       // version of the solution element cluster
-	State         string                       `yaml:"State"`         // state of the solution element cluster
-	Min           int                          `yaml:"Min"`           // min. size of the solution element cluster
-	Max           int                          `yaml:"Max"`           // max. size of the solution element cluster
-	Size          int                          `yaml:"Size"`          // size of the solution element cluster
-	Configuration string                       `yaml:"Configuration"` // runtime configuration of the solution element cluster
-	Relationships RelationshipConfigurationMap `yaml:"Relationships"` // relationships of the solution element cluster
+	Version        string                                `yaml:"Version"`                  // version of the solution element cluster
+	State          string                                `yaml:"State"`                    // state of the solution element cluster
+	Min            int                                   `yaml:"Min"`                      // min. size of the solution element cluster
+	Max            int                                   `yaml:"Max"`                      // max. size of the solution element cluster
+	Size           int                                   `yaml:"Size"`                     // size of the solution element cluster
+	Configuration  string                                `yaml:"Configuration"`            // runtime configuration of the solution element cluster
+	Relationships  map[string]*RelationshipConfiguration `yaml:"Relationships"`            // relationships of the solution element cluster
+	RelationshipsX sync.RWMutex                          `yaml:"RelationshipsX,omitempty"` // mutex for relationships
+
 }
 
 //------------------------------------------------------------------------------
@@ -75,13 +50,14 @@ type ClusterConfiguration struct {
 func NewClusterConfiguration(version string, state string, min int, max int, size int, configuration string) (*ClusterConfiguration, error) {
 	var clusterConfiguration ClusterConfiguration
 
-	clusterConfiguration.Version       = version
-	clusterConfiguration.State         = state
-	clusterConfiguration.Min           = min
-	clusterConfiguration.Max           = max
-	clusterConfiguration.Size          = size
-	clusterConfiguration.Configuration = configuration
-	clusterConfiguration.Relationships = RelationshipConfigurationMap{Map: map[string]*RelationshipConfiguration{}}
+	clusterConfiguration.Version        = version
+	clusterConfiguration.State          = state
+	clusterConfiguration.Min            = min
+	clusterConfiguration.Max            = max
+	clusterConfiguration.Size           = size
+	clusterConfiguration.Configuration  = configuration
+	clusterConfiguration.Relationships  = map[string]*RelationshipConfiguration{}
+	clusterConfiguration.RelationshipsX = sync.RWMutex{}
 
 	// success
 	return &clusterConfiguration, nil
@@ -115,11 +91,11 @@ func (clusterConfiguration *ClusterConfiguration) ListRelationships() ([]string,
 	// collect names
 	relationships := []string{}
 
-  clusterConfiguration.Relationships.RLock()
-	for relationship := range clusterConfiguration.Relationships.Map {
+  clusterConfiguration.RelationshipsX.RLock()
+	for relationship := range clusterConfiguration.Relationships {
 		relationships = append(relationships, relationship)
 	}
-	clusterConfiguration.Relationships.RUnlock()
+	clusterConfiguration.RelationshipsX.RUnlock()
 
 	// success
 	return relationships, nil
@@ -130,9 +106,9 @@ func (clusterConfiguration *ClusterConfiguration) ListRelationships() ([]string,
 // GetRelationship retrieves a relationship configuration by name
 func (clusterConfiguration *ClusterConfiguration) GetRelationship(name string) (*RelationshipConfiguration, error) {
 	// determine relationship configuration
-	clusterConfiguration.Relationships.RLock()
-	relationship, ok := clusterConfiguration.Relationships.Map[name]
-	clusterConfiguration.Relationships.RUnlock()
+	clusterConfiguration.RelationshipsX.RLock()
+	relationship, ok := clusterConfiguration.Relationships[name]
+	clusterConfiguration.RelationshipsX.RUnlock()
 
 	if !ok {
 		return nil, errors.New("relationship configuration not found")
@@ -146,18 +122,18 @@ func (clusterConfiguration *ClusterConfiguration) GetRelationship(name string) (
 
 // AddRelationship adds a relationship configuration to a cluster
 func (clusterConfiguration *ClusterConfiguration) AddRelationship(relationshipConfiguration *RelationshipConfiguration) {
-	clusterConfiguration.Relationships.Lock()
-	clusterConfiguration.Relationships.Map[relationshipConfiguration.Relationship] = relationshipConfiguration
-	clusterConfiguration.Relationships.Unlock()
+	clusterConfiguration.RelationshipsX.Lock()
+	clusterConfiguration.Relationships[relationshipConfiguration.Relationship] = relationshipConfiguration
+	clusterConfiguration.RelationshipsX.Unlock()
 }
 
 //------------------------------------------------------------------------------
 
 // DeleteRelationship deletes a relationship configuration from a cluster
 func (clusterConfiguration *ClusterConfiguration) DeleteRelationship(name string) {
-	clusterConfiguration.Relationships.Lock()
-	delete(clusterConfiguration.Relationships.Map, name)
-	clusterConfiguration.Relationships.Unlock()
+	clusterConfiguration.RelationshipsX.Lock()
+	delete(clusterConfiguration.Relationships, name)
+	clusterConfiguration.RelationshipsX.Unlock()
 }
 
 //------------------------------------------------------------------------------

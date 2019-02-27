@@ -5,6 +5,7 @@ import (
 
 	"tsai.eu/solar/engine"
 	"tsai.eu/solar/model"
+	"tsai.eu/solar/api"
 	"tsai.eu/solar/cli"
 	"tsai.eu/solar/util"
 )
@@ -31,6 +32,9 @@ func main() {
 
 	// start the main event loop
 	engine.StartDispatcher(m)
+
+	// start the API
+	go api.NewRouter()
 
 	// get the command line interface
 	shell := cli.Shell(m)

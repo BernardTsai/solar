@@ -37,42 +37,16 @@ import (
 //   - element.DeleteCluster
 //------------------------------------------------------------------------------
 
-// ClusterMap is a synchronized map for a map of clusters
-type ClusterMap struct {
-  sync.RWMutex                     `yaml:"mutex,omitempty"` // mutex
-	Map          map[string]*Cluster `yaml:"map"`             // map of clusters
-}
-
-// MarshalYAML marshals a ClusterMap into yaml
-func (m *ClusterMap) MarshalYAML() (interface{}, error) {
-	return m.Map, nil
-}
-
-// UnmarshalYAML unmarshals a ClusterMap from yaml
-func (m *ClusterMap) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	Map := map[string]*Cluster{}
-
-	err := unmarshal(&Map)
-	if err != nil {
-		return err
-	}
-
-	*m = ClusterMap{Map: Map}
-
-	return nil
-}
-
-//------------------------------------------------------------------------------
-
 // Element describes the runtime configuration of a solution element within a domain.
 type Element struct {
-	Element       string      `yaml:"Element"`       // name of the solution element
-	Component     string      `yaml:"Component"`     // type of the solution elmenent
-	Target        string      `yaml:"Target"`        // target state of element
-	State         string      `yaml:"State"`         // current state of element
-	Configuration string      `yaml:"Configuration"` // runtime configuration of the solution element
-	Endpoint      string      `yaml:"Endpoint"`      // state of the solution element
-	Clusters      ClusterMap  `yaml:"Clusters"`      // clusters of the solution element
+	Element        string              `yaml:"Element"`             // name of the solution element
+	Component      string              `yaml:"Component"`           // type of the solution elmenent
+	Target         string              `yaml:"Target"`              // target state of element
+	State          string              `yaml:"State"`               // current state of element
+	Configuration  string              `yaml:"Configuration"`       // runtime configuration of the solution element
+	Endpoint       string              `yaml:"Endpoint"`            // state of the solution element
+	Clusters       map[string]*Cluster `yaml:"Clusters"`            // clusters of the solution element
+	ClustersX      sync.RWMutex        `yaml:"ClustersX,omitempty"` // mutex for clusters
 }
 
 //------------------------------------------------------------------------------
@@ -81,11 +55,12 @@ type Element struct {
 func NewElement(name string, component string, configuration string) (*Element, error) {
 	var element Element
 
-	element.Element = name
-	element.Component = component
+	element.Element       = name
+	element.Component     = component
 	element.Configuration = configuration
-	element.Endpoint = ""
-	element.Clusters = ClusterMap{Map: map[string]*Cluster{}}
+	element.Endpoint      = ""
+	element.Clusters      = map[string]*Cluster{}
+	element.ClustersX     = sync.RWMutex{}
 
 	// success
 	return &element, nil
@@ -119,11 +94,11 @@ func (element *Element) ListClusters() ([]string, error) {
 	// collect names
 	clusters := []string{}
 
-	element.Clusters.RLock()
-	for cluster := range element.Clusters.Map {
+	element.ClustersX.RLock()
+	for cluster := range element.Clusters {
 		clusters = append(clusters, cluster)
 	}
-	element.Clusters.RUnlock()
+	element.ClustersX.RUnlock()
 
 	// success
 	return clusters, nil
@@ -134,9 +109,9 @@ func (element *Element) ListClusters() ([]string, error) {
 // GetCluster retrieves a cluster by name
 func (element *Element) GetCluster(name string) (*Cluster, error) {
 	// determine dependency
-	element.Clusters.RLock()
-	cluster, ok := element.Clusters.Map[name]
-	element.Clusters.RUnlock()
+	element.ClustersX.RLock()
+	cluster, ok := element.Clusters[name]
+	element.ClustersX.RUnlock()
 
 	if !ok {
 		return nil, errors.New("cluster not found")
@@ -150,18 +125,18 @@ func (element *Element) GetCluster(name string) (*Cluster, error) {
 
 // AddCluster adds a cluster to an element
 func (element *Element) AddCluster(cluster *Cluster) {
-	element.Clusters.Lock()
-	element.Clusters.Map[cluster.Version] = cluster
-	element.Clusters.Unlock()
+	element.ClustersX.Lock()
+	element.Clusters[cluster.Version] = cluster
+	element.ClustersX.Unlock()
 }
 
 //------------------------------------------------------------------------------
 
 // DeleteCluster deletes a cluster from an element
 func (element *Element) DeleteCluster(version string) {
-	element.Clusters.Lock()
-	delete(element.Clusters.Map, version)
-	element.Clusters.Unlock()
+	element.ClustersX.Lock()
+	delete(element.Clusters, version)
+	element.ClustersX.Unlock()
 }
 
 //------------------------------------------------------------------------------

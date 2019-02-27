@@ -84,7 +84,7 @@ func ExecuteElementTask(task *model.Task) {
 			task.AddSubtask(&subtask)
 
 			// trigger the task
-			channel <- model.NewEvent(task.Domain, subtask.UUID, model.EventTypeTaskExecution, task.UUID)
+			channel <- model.NewEvent(task.Domain, subtask.UUID, model.EventTypeTaskExecution, task.UUID, "")
 
 			// return and wait for next event
 			return
@@ -92,7 +92,7 @@ func ExecuteElementTask(task *model.Task) {
 	}
 
 	// execution has completed
-	channel <- model.NewEvent(task.Domain, task.UUID, model.EventTypeTaskCompletion, task.UUID)
+	channel <- model.NewEvent(task.Domain, task.UUID, model.EventTypeTaskCompletion, task.UUID, "")
 }
 
 //------------------------------------------------------------------------------

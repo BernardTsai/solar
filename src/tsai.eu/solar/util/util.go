@@ -159,6 +159,8 @@ func SaveYAML(filename string, entity interface{}) error {
 	return nil
 }
 
+//------------------------------------------------------------------------------
+
 // DumpYAML writes the entity as yaml data to the console
 func DumpYAML(entity interface{}) {
 	// marshal entity

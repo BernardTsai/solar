@@ -45,72 +45,20 @@ import (
 //   - cluster.DeleteInstance
 //------------------------------------------------------------------------------
 
-// RelationshipMap is a synchronized map for a map of relationships
-type RelationshipMap struct {
-	sync.RWMutex                          `yaml:"mutex,omitempty"` // mutex
-	Map          map[string]*Relationship `yaml:"map"`             // map of relationships
-}
-
-// MarshalYAML marshals a RelationshipMap into yaml
-func (m *RelationshipMap) MarshalYAML() (interface{}, error) {
-	return m.Map, nil
-}
-
-// UnmarshalYAML unmarshals a RelationshipMap from yaml
-func (m *RelationshipMap) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	Map := map[string]*Relationship{}
-
-	err := unmarshal(&Map)
-	if err != nil {
-		return err
-	}
-
-	*m = RelationshipMap{Map: Map}
-
-	return nil
-}
-
-//------------------------------------------------------------------------------
-
-// InstanceMap is a synchronized map for a map of instances
-type InstanceMap struct {
-	sync.RWMutex                      `yaml:"mutex,omitempty"` // mutex
-	Map          map[string]*Instance `yaml:"map"`             // map of Relationship
-}
-
-// MarshalYAML marshals a RelationshipMap into yaml
-func (m *InstanceMap) MarshalYAML() (interface{}, error) {
-	return m.Map, nil
-}
-
-// UnmarshalYAML unmarshals a RelationshipMap from yaml
-func (m *InstanceMap) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	Map := map[string]*Instance{}
-
-	err := unmarshal(&Map)
-	if err != nil {
-		return err
-	}
-
-	*m = InstanceMap{Map: Map}
-
-	return nil
-}
-
-//------------------------------------------------------------------------------
-
 // Cluster describes the runtime configuration of a solution element cluster within a domain.
 type Cluster struct {
-	Version       string          `yaml:"Version"`       // version of the solution element cluster
-	Target        string          `yaml:"Target"`        // target state of the solution element cluster
-	State         string          `yaml:"State"`         // state of the solution element cluster
-	Min           int             `yaml:"Min"`           // min. size of the solution element cluster
-	Max           int             `yaml:"Max"`           // max. size of the solution element cluster
-	Size          int             `yaml:"Size"`          // size of the solution element cluster
-	Configuration string          `yaml:"Configuration"` // runtime configuration of the solution element cluster
-	Endpoint      string          `yaml:"Endpoint"`      // endpoint of the solution element cluster
-	Relationships RelationshipMap `yaml:"Relationships"` // relationships of the solution element cluster
-	Instances     InstanceMap     `yaml:"Instances"`     // instances of the solution element cluster
+	Version        string                   `yaml:"Version"`        // version of the solution element cluster
+	Target         string                   `yaml:"Target"`         // target state of the solution element cluster
+	State          string                   `yaml:"State"`          // state of the solution element cluster
+	Min            int                      `yaml:"Min"`            // min. size of the solution element cluster
+	Max            int                      `yaml:"Max"`            // max. size of the solution element cluster
+	Size           int                      `yaml:"Size"`           // size of the solution element cluster
+	Configuration  string                   `yaml:"Configuration"`  // runtime configuration of the solution element cluster
+	Endpoint       string                   `yaml:"Endpoint"`       // endpoint of the solution element cluster
+	Relationships  map[string]*Relationship `yaml:"Relationships"`  // relationships of the solution element cluster
+	RelationshipsX sync.RWMutex             `yaml:"RelationshipsX"` // mutex for relationships
+	Instances      map[string]*Instance     `yaml:"Instances"`      // instances of the solution element cluster
+	InstancesX     sync.RWMutex             `yaml:"InstancesX"`     // mutex for instances
 }
 
 //------------------------------------------------------------------------------
@@ -119,16 +67,18 @@ type Cluster struct {
 func NewCluster(version string, state string, min int, max int, size int, configuration string) (*Cluster, error) {
 	var cluster Cluster
 
-	cluster.Version       = version
-	cluster.Target        = state
-	cluster.State         = InitialState
-	cluster.Min           = min
-	cluster.Max           = max
-	cluster.Size          = size
-	cluster.Configuration = configuration
-	cluster.Endpoint      = ""
-	cluster.Relationships = RelationshipMap{Map: map[string]*Relationship{}}
-	cluster.Instances     = InstanceMap{Map: map[string]*Instance{}}
+	cluster.Version        = version
+	cluster.Target         = state
+	cluster.State          = InitialState
+	cluster.Min            = min
+	cluster.Max            = max
+	cluster.Size           = size
+	cluster.Configuration  = configuration
+	cluster.Endpoint       = ""
+	cluster.Relationships  = map[string]*Relationship{}
+	cluster.RelationshipsX = sync.RWMutex{}
+	cluster.Instances      = map[string]*Instance{}
+	cluster.InstancesX     = sync.RWMutex{}
 
 	// success
 	return &cluster, nil
@@ -162,11 +112,11 @@ func (cluster *Cluster) ListRelationships() ([]string, error) {
 	// collect names
 	relationships := []string{}
 
-  cluster.Relationships.RLock()
-	for relationship := range cluster.Relationships.Map {
+  cluster.RelationshipsX.RLock()
+	for relationship := range cluster.Relationships {
 		relationships = append(relationships, relationship)
 	}
-	cluster.Relationships.RUnlock()
+	cluster.RelationshipsX.RUnlock()
 
 	// success
 	return relationships, nil
@@ -177,9 +127,9 @@ func (cluster *Cluster) ListRelationships() ([]string, error) {
 // GetRelationship retrieves a relationship by name
 func (cluster *Cluster) GetRelationship(name string) (*Relationship, error) {
 	// determine relationship
-	cluster.Relationships.RLock()
-	relationship, ok := cluster.Relationships.Map[name]
-	cluster.Relationships.RUnlock()
+	cluster.RelationshipsX.RLock()
+	relationship, ok := cluster.Relationships[name]
+	cluster.RelationshipsX.RUnlock()
 
 	if !ok {
 		return nil, errors.New("relationship not found")
@@ -193,18 +143,18 @@ func (cluster *Cluster) GetRelationship(name string) (*Relationship, error) {
 
 // AddRelationship adds a relationship to a cluster
 func (cluster *Cluster) AddRelationship(relationship *Relationship) {
-	cluster.Relationships.Lock()
-	cluster.Relationships.Map[relationship.Relationship] = relationship
-	cluster.Relationships.Unlock()
+	cluster.RelationshipsX.Lock()
+	cluster.Relationships[relationship.Relationship] = relationship
+	cluster.RelationshipsX.Unlock()
 }
 
 //------------------------------------------------------------------------------
 
 // DeleteRelationship deletes a relationship from a cluster
 func (cluster *Cluster) DeleteRelationship(name string) {
-	cluster.Relationships.Lock()
-	delete(cluster.Relationships.Map, name)
-	cluster.Relationships.Unlock()
+	cluster.RelationshipsX.Lock()
+	delete(cluster.Relationships, name)
+	cluster.RelationshipsX.Unlock()
 }
 
 //------------------------------------------------------------------------------
@@ -214,11 +164,11 @@ func (cluster *Cluster) ListInstances() ([]string, error) {
 	// collect names
 	instances := []string{}
 
-  cluster.Instances.RLock()
-	for instance := range cluster.Instances.Map {
+  cluster.InstancesX.RLock()
+	for instance := range cluster.Instances {
 		instances = append(instances, instance)
 	}
-	cluster.Instances.RUnlock()
+	cluster.InstancesX.RUnlock()
 
 	// success
 	return instances, nil
@@ -229,9 +179,9 @@ func (cluster *Cluster) ListInstances() ([]string, error) {
 // GetInstance retrieves an instance by uuid
 func (cluster *Cluster) GetInstance(uuid string) (*Instance, error) {
 	// determine instance
-	cluster.Instances.RLock()
-	instance, ok := cluster.Instances.Map[uuid]
-	cluster.Instances.RUnlock()
+	cluster.InstancesX.RLock()
+	instance, ok := cluster.Instances[uuid]
+	cluster.InstancesX.RUnlock()
 
 	if !ok {
 		return nil, errors.New("instance not found")
@@ -245,18 +195,18 @@ func (cluster *Cluster) GetInstance(uuid string) (*Instance, error) {
 
 // AddInstance adds an instance to a cluster
 func (cluster *Cluster) AddInstance(instance *Instance) {
-	cluster.Instances.Lock()
-	cluster.Instances.Map[instance.UUID] = instance
-	cluster.Instances.Unlock()
+	cluster.InstancesX.Lock()
+	cluster.Instances[instance.UUID] = instance
+	cluster.InstancesX.Unlock()
 }
 
 //------------------------------------------------------------------------------
 
 // DeleteInstance deletes an instance from a cluster
 func (cluster *Cluster) DeleteInstance(uuid string) {
-	cluster.Instances.Lock()
-	delete(cluster.Instances.Map, uuid)
-	cluster.Instances.Unlock()
+	cluster.InstancesX.Lock()
+	delete(cluster.Instances, uuid)
+	cluster.InstancesX.Unlock()
 }
 
 //------------------------------------------------------------------------------

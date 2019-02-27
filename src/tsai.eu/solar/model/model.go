@@ -31,6 +31,7 @@ import (
 //
 //   - model.Show
 //   - model.Load
+//   - model.Load2
 //   - model.Save
 //
 //   - model.ListDomains
@@ -39,38 +40,12 @@ import (
 //   - model.DeleteDomain
 //------------------------------------------------------------------------------
 
-// DomainMap is a synchronized map for a map of domains
-type DomainMap struct {
-	sync.RWMutex             `yaml:"mutex,omitempty"` // mutex
-	Map  map[string]*Domain  `yaml:"map"`             // map of domains
-}
-
-// MarshalYAML marshals a EventMap into yaml
-func (m *DomainMap) MarshalYAML() (interface{}, error) {
-	return m.Map, nil
-}
-
-// UnmarshalYAML unmarshals a DomainMap from yaml
-func (m *DomainMap) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	Map := map[string]*Domain{}
-
-	err := unmarshal(&Map)
-	if err != nil {
-		return err
-	}
-
-	*m = DomainMap{Map: Map}
-
-	return nil
-}
-
-//------------------------------------------------------------------------------
-
 // Model describes all managed artefacts within a model.
 type Model struct {
-	Schema  string    `yaml:"Schema"`  // schema of the model
-	Name    string    `yaml:"Name"`    // name of the model
-	Domains DomainMap `yaml:"Domains"` // map of domains
+	Schema   string             `yaml:"Schema"`             // schema of the model
+	Name     string             `yaml:"Name"`               // name of the model
+	Domains  map[string]*Domain `yaml:"Domains"`            // map of domains
+	DomainsX sync.RWMutex       `yaml:"DomainsX,omitempty"` // mutex for domains
 }
 
 var theModel *Model
@@ -102,9 +77,10 @@ func NewModel() (*Model, error) {
 
 // Reset resets all model data to its initial values
 func (model *Model) Reset() error {
-	model.Schema = "BT V1.0.0"
-	model.Name = "Model"
-	model.Domains = DomainMap{Map: map[string]*Domain{}}
+	model.Schema   = "BT V1.0.0"
+	model.Name     = "Model"
+	model.Domains  = map[string]*Domain{}
+	model.DomainsX = sync.RWMutex{}
 
 	// success
 	return nil
@@ -119,16 +95,23 @@ func (model *Model) Show() (string, error) {
 
 //------------------------------------------------------------------------------
 
-// Save writes the model as json data to a file "model.json"
+// Save writes the model as json data to a file
 func (model *Model) Save(filename string) error {
 	return util.SaveYAML(filename, model)
 }
 
 //------------------------------------------------------------------------------
 
-// Load reads the model from a file "model.json"
+// Load reads the model from a file
 func (model *Model) Load(filename string) error {
 	return util.LoadYAML(filename, model)
+}
+
+//------------------------------------------------------------------------------
+
+// Load2 imports a yaml model
+func (model *Model) Load2(yaml string) error {
+	return util.ConvertFromYAML(yaml, model)
 }
 
 //------------------------------------------------------------------------------
@@ -137,11 +120,11 @@ func (model *Model) Load(filename string) error {
 func (model *Model) ListDomains() ([]string, error) {
 	domains := []string{}
 
-	model.Domains.RLock()
-	for domain := range model.Domains.Map {
+	model.DomainsX.RLock()
+	for domain := range model.Domains {
 		domains = append(domains, domain)
 	}
- 	model.Domains.RUnlock()
+ 	model.DomainsX.RUnlock()
 
 	// success
 	return domains, nil
@@ -152,9 +135,9 @@ func (model *Model) ListDomains() ([]string, error) {
 // GetDomain get a domain by name
 func (model *Model) GetDomain(name string) (*Domain, error) {
 	// determine domain
- 	model.Domains.RLock()
-	domain, ok := model.Domains.Map[name]
- 	model.Domains.RUnlock()
+ 	model.DomainsX.RLock()
+	domain, ok := model.Domains[name]
+ 	model.DomainsX.RUnlock()
 
 	if !ok {
 		return nil, errors.New("domain not found")
@@ -169,17 +152,17 @@ func (model *Model) GetDomain(name string) (*Domain, error) {
 // AddDomain add a domain to the model
 func (model *Model) AddDomain(domain *Domain) error {
 	// determine domain
-	model.Domains.RLock()
-	_, ok := model.Domains.Map[domain.Name]
-	model.Domains.RUnlock()
+	model.DomainsX.RLock()
+	_, ok := model.Domains[domain.Name]
+	model.DomainsX.RUnlock()
 
 	if ok {
 		return errors.New("domain already exists")
 	}
 
-	model.Domains.Lock()
-	model.Domains.Map[domain.Name] = domain
-	model.Domains.Unlock()
+	model.DomainsX.Lock()
+	model.Domains[domain.Name] = domain
+	model.DomainsX.Unlock()
 
 	// success
 	return nil
@@ -190,18 +173,18 @@ func (model *Model) AddDomain(domain *Domain) error {
 // DeleteDomain deletes a domain
 func (model *Model) DeleteDomain(name string) error {
 	// determine domain
-	model.Domains.RLock()
-	_, ok := model.Domains.Map[name]
-	model.Domains.RUnlock()
+	model.DomainsX.RLock()
+	_, ok := model.Domains[name]
+	model.DomainsX.RUnlock()
 
 	if !ok {
 		return errors.New("domain not found")
 	}
 
 	// remove domain
-	model.Domains.Lock()
-	delete(model.Domains.Map, name)
-	model.Domains.Unlock()
+	model.DomainsX.Lock()
+	delete(model.Domains, name)
+	model.DomainsX.Unlock()
 
 	// success
 	return nil
@@ -349,7 +332,7 @@ func GetComponent2(domainName string, solutionName string, elementName string, c
 		return nil, errors.New("cluster not found")
 	}
 
-	component, err := domain.GetComponent(element.Element + " - " + cluster.Version)
+	component, err := domain.GetComponent(element.Component + " - " + cluster.Version)
 	if err != nil {
 		return nil, errors.New("component not found")
 	}

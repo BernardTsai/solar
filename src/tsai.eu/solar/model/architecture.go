@@ -22,6 +22,7 @@ import (
 //
 //   - architecture.Show
 //   - architecture.Load
+//   - architecture.Load2
 //   - architecture.Save
 //
 //   - architecture.ListElements
@@ -30,39 +31,13 @@ import (
 //   - architecture.DeleteElement
 //------------------------------------------------------------------------------
 
-// ElementConfigurationMap is a synchronized map for a map of element configurations
-type ElementConfigurationMap struct {
-	sync.RWMutex                         `yaml:"mutex,omitempty"` // mutex
-	Map map[string]*ElementConfiguration `yaml:"map"`             // map of element configurations
-}
-
-// MarshalYAML marshals an ElementConfigurationMap into yaml
-func (m *ElementConfigurationMap) MarshalYAML() (interface{}, error) {
-	return m.Map, nil
-}
-
-// UnmarshalYAML unmarshals an ElementConfigurationMap from yaml
-func (m *ElementConfigurationMap) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	Map := map[string]*ElementConfiguration{}
-
-	err := unmarshal(&Map)
-	if err != nil {
-		return err
-	}
-
-	*m = ElementConfigurationMap{Map: Map}
-
-	return nil
-}
-
-//------------------------------------------------------------------------------
-
 // Architecture describes the design time configuration of a solution within a domain.
 type Architecture struct {
-	Architecture  string                  `yaml:"Architecture"`   // name of architecture
-	Version       string                  `yaml:"Version"`        // type of solution
-	Configuration string                  `yaml:"Configuration"`  // configuration of the architecture
-	Elements      ElementConfigurationMap `yaml:"Elements"`       // elements configurations of solution
+	Architecture  string                           `yaml:"Architecture"`        // name of architecture
+	Version       string                           `yaml:"Version"`             // type of solution
+	Configuration string                           `yaml:"Configuration"`       // configuration of the architecture
+	Elements      map[string]*ElementConfiguration `yaml:"Elements"`            // element configurations of solution
+	ElementsX     sync.RWMutex                     `yaml:"ElementsX,omitempty"` // mutex for element configurations
 }
 
 //------------------------------------------------------------------------------
@@ -74,7 +49,8 @@ func NewArchitecture(name string, version string, configuration string) (*Archit
 	architecture.Architecture  = name
 	architecture.Version       = version
 	architecture.Configuration = configuration
-	architecture.Elements      = ElementConfigurationMap{Map: map[string]*ElementConfiguration{}}
+	architecture.Elements      = map[string]*ElementConfiguration{}
+	architecture.ElementsX     = sync.RWMutex{}
 
 	// success
 	return &architecture, nil
@@ -103,16 +79,23 @@ func (architecture *Architecture) Load(filename string) error {
 
 //------------------------------------------------------------------------------
 
+// Load2 imports a yaml model
+func (architecture *Architecture) Load2(yaml string) error {
+	return util.ConvertFromYAML(yaml, architecture)
+}
+
+//------------------------------------------------------------------------------
+
 // ListElements lists all elements of an architecture
 func (architecture *Architecture) ListElements() ([]string, error) {
 	// collect names
 	elementConfigurations := []string{}
 
-  architecture.Elements.RLock()
-	for elementConfiguration := range architecture.Elements.Map {
+  architecture.ElementsX.RLock()
+	for elementConfiguration := range architecture.Elements {
 		elementConfigurations = append(elementConfigurations, elementConfiguration)
 	}
-	architecture.Elements.RUnlock()
+	architecture.ElementsX.RUnlock()
 
 	// success
 	return elementConfigurations, nil
@@ -123,9 +106,9 @@ func (architecture *Architecture) ListElements() ([]string, error) {
 // GetElement retrieves an element configuration by name
 func (architecture *Architecture) GetElement(name string) (*ElementConfiguration, error) {
 	// determine instance
-	architecture.Elements.RLock()
-	elementConfiguration, ok := architecture.Elements.Map[name]
-	architecture.Elements.RUnlock()
+	architecture.ElementsX.RLock()
+	elementConfiguration, ok := architecture.Elements[name]
+	architecture.ElementsX.RUnlock()
 
 	if !ok {
 		return nil, errors.New("element configuration not found")
@@ -140,17 +123,17 @@ func (architecture *Architecture) GetElement(name string) (*ElementConfiguration
 // AddElement adds an element configuration to a component
 func (architecture *Architecture) AddElement(elementConfiguration *ElementConfiguration) error {
 	// check if instance has already been defined
-	architecture.Elements.RLock()
-	_, ok := architecture.Elements.Map[elementConfiguration.Element]
-	architecture.Elements.RUnlock()
+	architecture.ElementsX.RLock()
+	_, ok := architecture.Elements[elementConfiguration.Element]
+	architecture.ElementsX.RUnlock()
 
 	if ok {
 		return errors.New("element configuration already exists")
 	}
 
-	architecture.Elements.Lock()
-	architecture.Elements.Map[elementConfiguration.Element] = elementConfiguration
-	architecture.Elements.Unlock()
+	architecture.ElementsX.Lock()
+	architecture.Elements[elementConfiguration.Element] = elementConfiguration
+	architecture.ElementsX.Unlock()
 
 	// success
 	return nil
@@ -161,18 +144,18 @@ func (architecture *Architecture) AddElement(elementConfiguration *ElementConfig
 // DeleteElement deletes an element configuration
 func (architecture *Architecture) DeleteElement(name string) error {
 	// determine element
-	architecture.Elements.RLock()
-	_, ok := architecture.Elements.Map[name]
-	architecture.Elements.RUnlock()
+	architecture.ElementsX.RLock()
+	_, ok := architecture.Elements[name]
+	architecture.ElementsX.RUnlock()
 
 	if !ok {
 		return errors.New("element configuration not found")
 	}
 
 	// remove element
-	architecture.Elements.Lock()
-	delete(architecture.Elements.Map, name)
-	architecture.Elements.Unlock()
+	architecture.ElementsX.Lock()
+	delete(architecture.Elements, name)
+	architecture.ElementsX.Unlock()
 
 	// success
 	return nil

@@ -13,7 +13,7 @@ func (c Controller) Status(setup *model.Setup) (status *model.Status, err error)
 	clusterSetup     := elementSetup.Clusters[setup.Cluster]
 	instanceSetup    := clusterSetup.Instances[setup.Instance]
 
-	// construct status 
+	// construct status
 	status = &model.Status{
 		Domain:           setup.Domain,
 		Solution:         setup.Solution,
@@ -24,8 +24,8 @@ func (c Controller) Status(setup *model.Setup) (status *model.Status, err error)
 		ClusterEndpoint:  "",
 		ClusterState:     clusterSetup.Target,
 	  Instance:         setup.Instance,
-		InstanceEndpoint: instanceSetup.Target,
-		InstanceState:    model.UndefinedState,
+		InstanceEndpoint: "",
+		InstanceState:    instanceSetup.Target,
 	}
 
 	// return results

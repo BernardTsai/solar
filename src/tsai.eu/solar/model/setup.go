@@ -225,7 +225,7 @@ func GetClusterSetup(setup *Setup, elementName string, clusterName string) (*Clu
   }
 
   // determine component context
-  component, err := domain.GetComponent(elementName + " - " + clusterName)
+  component, err := domain.GetComponent(element.Component+ " - " + clusterName)
   if err != nil {
     return nil, err
   }
@@ -405,7 +405,7 @@ func GetInstanceSetup(setup *Setup, elementName string, clusterName string, inst
   }
 
   // determine component context
-  component, err := domain.GetComponent(elementName + " - " + clusterName)
+  component, err := domain.GetComponent(element.Component + " - " + clusterName)
   if err != nil {
     return nil, err
   }

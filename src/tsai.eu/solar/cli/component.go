@@ -65,7 +65,7 @@ func ComponentCommand(context *ishell.Context, m *model.Model) {
 			}
 		}
 
-		result, err := util.ConvertToJSON(components)
+		result, err := util.ConvertToYAML(components)
 		handleResult(context, err, "components could not be listed", result)
 	case _set:
 		// check availability of arguments

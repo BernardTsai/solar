@@ -85,17 +85,20 @@ func ExecuteInstanceTask(task *model.Task) {
 	instance, _  := model.GetInstance(task.Domain, task.Solution, task.Element, task.Cluster, task.Instance)
 	component, _ := model.GetComponent2(task.Domain, task.Solution, task.Element, task.Cluster)
 
+	// update target state of instance
+	instance.Target = task.State
+
 	// check if the target state has been reached
-	if instance.State == task.State {
-		channel <- model.NewEvent(task.Domain, task.UUID, model.EventTypeTaskCompletion, task.UUID)
+	if instance.State == instance.Target {
+		channel <- model.NewEvent(task.Domain, task.UUID, model.EventTypeTaskCompletion, task.UUID, "")
+		return
 	}
 
 	// determine required transition
 	transition, err := model.GetTransition(instance.State, task.State)
 	if err != nil {
-		channel <- model.NewEvent(task.Domain, task.UUID, model.EventTypeTaskFailure, task.UUID)
+		channel <- model.NewEvent(task.Domain, task.UUID, model.EventTypeTaskFailure, task.UUID, "invalid transition")
 	}
-
 
 	// determine setup
 	setup, _ := model.GetSetup(task.GetDomain(),
@@ -106,10 +109,9 @@ func ExecuteInstanceTask(task *model.Task) {
 										      	 task.GetInstance() )
 
 	// determine the required controller
-
 	controller, err := ctrl.GetController(component.Component)
 	if err != nil {
-		channel <- model.NewEvent(task.Domain, task.UUID, model.EventTypeTaskFailure, task.UUID)
+		channel <- model.NewEvent(task.Domain, task.UUID, model.EventTypeTaskFailure, task.UUID, "unknon controller: " + component.Component)
 	}
 
 	// execute the required transition
@@ -137,9 +139,9 @@ func ExecuteInstanceTask(task *model.Task) {
 
 	// check for errors and reexecute the task until the desired state has been reached
 	if err != nil {
-		channel <- model.NewEvent(task.Domain, task.UUID, model.EventTypeTaskFailure, task.UUID)
+		channel <- model.NewEvent(task.Domain, task.UUID, model.EventTypeTaskFailure, task.UUID, err.Error())
 	} else {
-		channel <- model.NewEvent(task.Domain, task.UUID, model.EventTypeTaskExecution, task.UUID)
+		channel <- model.NewEvent(task.Domain, task.UUID, model.EventTypeTaskExecution, task.UUID, "")
 	}
 }
 

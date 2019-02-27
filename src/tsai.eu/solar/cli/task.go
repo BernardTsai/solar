@@ -2,6 +2,7 @@ package cli
 
 import (
 	"strconv"
+	"sort"
 
 	ishell "gopkg.in/abiosoft/ishell.v2"
 	"tsai.eu/solar/model"
@@ -75,6 +76,7 @@ func NewTaskInfo(task *model.Task, level int) (*TaskInfo) {
 				taskinfo.Events = append(taskinfo.Events, event)
 			}
 		}
+		sort.SliceStable(taskinfo.Events, func(i, j int) bool { return taskinfo.Events[i].Time < taskinfo.Events[j].Time })
 	}
 
 	return &taskinfo
@@ -153,7 +155,7 @@ func TaskCommand(context *ishell.Context, m *model.Model) {
 			}
 		}
 
-		result, err := util.ConvertToJSON(tasks)
+		result, err := util.ConvertToYAML(tasks)
 		handleResult(context, err, "tasks could not be listed", result)
 	case _get:
 		// check availability of arguments
@@ -188,7 +190,7 @@ func TaskCommand(context *ishell.Context, m *model.Model) {
 
 		// execute the command
 		taskinfo := NewTaskInfo(task, level)
-		result, err := util.ConvertToJSON(taskinfo)
+		result, err := util.ConvertToYAML(taskinfo)
 		handleResult(context, err, "task can not be displayed", result)
 	default:
 		TaskUsage(true, context)
@@ -204,7 +206,7 @@ func TaskUsage(header bool, context *ishell.Context) {
 		info = _usage
 	}
 	info += "  task list <domain> <solution> <element> <cluster> <instance>\n"
-	info += "       get <task> <level>\n"
+	info += "       get <domain> <task> <level>\n"
 
   writeInfo(context, info)
 }

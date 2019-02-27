@@ -18,7 +18,7 @@ func TerminateTask(task *model.Task) {
 
 		// terminate all subtasks
 		for _, subtask := range task.Subtasks {
-			channel <- model.NewEvent(task.Domain, subtask, model.EventTypeTaskTermination, task.UUID)
+			channel <- model.NewEvent(task.Domain, subtask, model.EventTypeTaskTermination, task.UUID, "")
 		}
 	}
 }
@@ -36,7 +36,9 @@ func FailedTask(task *model.Task) {
 		task.Status = model.TaskStatusFailed
 
 		// retrigger execution of parent
-		channel <- model.NewEvent(task.Domain, task.Parent, model.EventTypeTaskFailure, task.UUID)
+		if task.Parent != "" {
+			channel <- model.NewEvent(task.Domain, task.Parent, model.EventTypeTaskFailure, task.UUID, "")
+		}
 	}
 }
 
@@ -59,7 +61,9 @@ func TimeoutTask(task *model.Task) {
 		task.Status = model.TaskStatusTimeout
 
 		// signal timeout to parent
-		channel <- model.NewEvent(task.Domain, task.Parent, model.EventTypeTaskTimeout, task.UUID)
+		if task.Parent != "" {
+			channel <- model.NewEvent(task.Domain, task.Parent, model.EventTypeTaskTimeout, task.UUID, "")
+		}
 	}
 }
 
@@ -76,7 +80,9 @@ func CompletedTask(task *model.Task) {
 		task.Status = model.TaskStatusCompleted
 
 		// retrigger execution of parent
-		channel <- model.NewEvent(task.Domain, task.Parent, model.EventTypeTaskExecution, task.UUID)
+		if task.Parent != "" {
+			channel <- model.NewEvent(task.Domain, task.Parent, model.EventTypeTaskExecution, task.UUID, "")
+		}
 	}
 }
 
