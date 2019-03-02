@@ -53,6 +53,9 @@ func NewRouter() {
   router.HandleFunc("/task/{domain}/{task}/{level}",                             TaskGetHandler).Methods("GET")
   router.HandleFunc("/task/{domain}/{task}",                                     TaskTerminateHandler).Methods("DELETE")
 
+  // static files
+  router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
+
   // start processing
   http.Handle("/", router)
   http.ListenAndServe(":80", nil)

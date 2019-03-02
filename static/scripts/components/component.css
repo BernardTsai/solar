@@ -1,0 +1,52 @@
+#navigation #components #container .component{
+  display:       inline-block;
+  width:         160px;
+  height:        40px;
+  text-overflow: ellipsis;
+  border-radius: 8px;
+  border-left:   8px solid green;
+  padding-left:  2px;
+  margin-left:   8px;
+  margin-top:    8px;
+  background-color: lightgrey;
+  padding-top:   4px;
+}
+
+#navigation #components #container .component.new{
+  border-left:   8px solid darkgrey;
+}
+
+#navigation #components #container .component .label {
+  display: inline-block;
+  width:   110px;
+}
+
+#navigation #components #container .component.new .label {
+  color: darkgrey;
+}
+
+#navigation #components #container .component .label .name{
+  font-size:     14px;
+  overflow:      hidden;
+  white-space:   nowrap;
+  text-overflow: ellipsis;
+}
+
+#navigation #components #container .component .label .version{
+  font-size:     10px;
+  overflow:      hidden;
+  white-space:   nowrap;
+  text-overflow: ellipsis;
+}
+
+#navigation #components #container .component .logo {
+  display: inline-block;
+  width:    32px;
+  color:   green;
+}
+
+#navigation #components #container .component.new .logo {
+  display: inline-block;
+  width:    32px;
+  color:   darkgrey;
+}

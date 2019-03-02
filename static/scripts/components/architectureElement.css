@@ -1,0 +1,39 @@
+#navigation #architecture #container .architectureElement{
+  display:       inline-block;
+  width:         160px;
+  height:        40px;
+  text-overflow: ellipsis;
+  border-radius: 8px;
+  border-left:   8px solid blue;
+  padding-left:  2px;
+  margin-left:   8px;
+  margin-top:    8px;
+  background-color: lightgrey;
+  padding-top:   4px;
+}
+
+#navigation #architecture #container .architectureElement .label {
+  display: inline-block;
+  width:   110px;
+}
+
+#navigation #architecture #container .architectureElement .label .name{
+  font-size:     14px;
+  overflow:      hidden;
+  white-space:   nowrap;
+  text-overflow: ellipsis;
+}
+
+#navigation #architecture #container .architectureElement .label .version{
+  font-size:     10px;
+  overflow:      hidden;
+  white-space:   nowrap;
+  text-overflow: ellipsis;
+}
+
+
+#navigation #architecture #container .architectureElement .logo {
+  display: inline-block;
+  width:    32px;
+  color:   blue;
+}
