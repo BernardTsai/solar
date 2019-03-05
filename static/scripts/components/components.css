@@ -13,3 +13,8 @@
   right:      0px;
   top:        0px;
 }
+
+#navigation #components #add {
+  display: inline-block;
+  color:   lightgrey;
+}

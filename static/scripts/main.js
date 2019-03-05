@@ -1,8 +1,8 @@
 var app
 
 function main() {
-  // load data
-  loadModel()
+  // load initial data
+  loadDomains()
 
   // present user interface
   app = new Vue({

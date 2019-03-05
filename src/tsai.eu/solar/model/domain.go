@@ -28,6 +28,7 @@ import (
 //   - domain.Save
 //
 //   - domain.ListComponents
+//   - domain.GetComponents
 //   - domain.GetComponent
 //   - domain.AddComponent
 //   - domain.DeleteComponent
@@ -133,6 +134,27 @@ func (domain *Domain) ListComponents() ([]string, error) {
 
 	// success
 	return components, nil
+}
+
+//------------------------------------------------------------------------------
+
+// GetComponents retrieves all components
+func (domain *Domain) GetComponents() ([]*Component, error) {
+	// construct result
+	domain.ComponentsX.RLock()
+
+	// iterate over all components
+	result := make( []*Component, len(domain.Components) )
+	index  := 0
+	for _, value := range domain.Components {
+		result[index] = value
+		index++
+	}
+
+	domain.ComponentsX.RUnlock()
+
+	// success
+	return result, nil
 }
 
 //------------------------------------------------------------------------------

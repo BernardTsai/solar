@@ -1,37 +1,35 @@
 Vue.component(
   'component',
   {
-    props: ['model', 'view', 'component'],
+    props: ['model', 'view', 'component', 'index'],
+    methods: {
+      editComponent: function(index) {
+        view.newComponent = false
+        view.component    = index
+      }
+    },
     computed: {
       label: function() {
-        if (this.component == "") {
-          return "new component"
-        }
-        return this.component
+        return this.name + " - " + this.version
       },
       name: function() {
-        if (this.component == "") {
-          return "+"
+        if (this.component == null) {
+          return "Unknown"
         }
-        component = this.component
-        version   = component.split(" - ").slice(-1)[0]
-        name      = component.substring(0, component.length - 3 - version.length)
-
-        return name
+        return this.component.Component
       },
       version: function() {
-        if (this.component == "") {
+        if (this.component == null) {
           return "Vx.y.z"
         }
-        component = this.component
-        version   = component.split(" - ").slice(-1)[0]
-        name      = component.substring(0, component.length - 3 - version.length)
-
-        return version
+        return this.component.Version
       }
     },
     template: `
-      <div  class="component" v-bind:title="label" v-bind:class="{new: name=='+'}" v-on:click="editComponent(label, $event)">
+      <div  class="component"
+        v-bind:title="label"
+        v-bind:class="{new: name=='Unknown'}"
+        v-on:click="editComponent(index)">
         <div class="label">
           <div class="name">{{name}}</div>
           <div class="version">{{version}}</div>
@@ -40,8 +38,3 @@ Vue.component(
       </div>`
   }
 )
-
-function editComponent(message, event) {
-  console.log(message)
-  console.log(event)
-}

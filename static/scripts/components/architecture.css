@@ -35,3 +35,8 @@
   top:        0px;
   height:    32px;
 }
+
+#navigation #architecture #add {
+  display: inline-block;
+  color:   lightgrey;
+}

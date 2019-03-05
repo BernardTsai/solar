@@ -1,0 +1,18 @@
+Component:     Dummy
+Version:       V2.0.0
+Configuration: "Basic configuration"
+Dependencies:
+  "Parent":
+  #--------
+    Dependency:    "Parent"
+    Type:          "context"
+    Component:     "Dummy"
+    Version:       "V2.0.0"
+    Configuration: ""
+  "Service":
+  #--------
+    Dependency:    "Service"
+    Type:          "service"
+    Component:     "Dummy"
+    Version:       "V2.0.0"
+    Configuration: ""

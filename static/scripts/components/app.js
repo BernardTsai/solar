@@ -21,7 +21,7 @@ Vue.component( 'app',
               </select>
             </div>
           </div>
-          <div id="nav">
+          <div id="nav" v-if="view.domain!=''">
             <div v-on:click="navComponents"   :class="{selected: view.nav=='Components'}"   id="Components">Components     <i class="fas fa-cube  text-gray-300"></i></div>
             <div v-on:click="navArchitecture" :class="{selected: view.nav=='Architecture'}" id="Architecture">Architecture <i class="fas fa-map   text-gray-300"></i></div>
             <div v-on:click="navSolution"     :class="{selected: view.nav=='Solution'}"     id="Solution">Solution         <i class="fas fa-cubes text-gray-300"></i></div>
@@ -36,6 +36,13 @@ Vue.component( 'app',
 function selectDomain() {
   view.domain = document.getElementById('domainSelector').value
 
+  // load catalog
+  if (view.domain == ""){
+    model.Catalog = []
+  } else {
+    loadCatalog(view.domain)
+  }
+
   // load components
   if (view.domain == ""){
     model.Components = []
@@ -46,16 +53,20 @@ function selectDomain() {
   // load architectures
   if (view.domain == ""){
     model.Architectures = []
-    model.Architecture  = {}
+    model.Architecture  = null
   } else {
     loadArchitectures(view.domain)
-    model.Architecture  = {}
+    model.Architecture  = null
   }
   view.architecture = ""
 }
 
 function selectArchitecture() {
   view.architecture = document.getElementById('architectureSelector').value
+
+  // set solution
+  view.solution = getName(view.architecture)
+  view.version  = getVersion(view.architecture)
 
   // load architectures
   if (view.domain != "" && view.architecture != ""){

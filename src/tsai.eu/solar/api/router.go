@@ -24,6 +24,9 @@ func NewRouter() {
   router.HandleFunc("/domain/{domain}", DomainGetHandler).Methods("GET")
   router.HandleFunc("/domain/{domain}", DomainResetHandler).Methods("PUT")
 
+  // catalog
+  router.HandleFunc("/catalog/{domain}", CatalogGetHandler).Methods("GET")
+
   // component
   router.HandleFunc("/component/{domain}",             ComponentListHandler).Methods("GET")
   router.HandleFunc("/component/{domain}",             ComponentSetHandler).Methods("POST")
@@ -54,7 +57,7 @@ func NewRouter() {
   router.HandleFunc("/task/{domain}/{task}",                                     TaskTerminateHandler).Methods("DELETE")
 
   // static files
-  router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
+  router.PathPrefix("/solar/").Handler(http.StripPrefix("/solar/", http.FileServer(http.Dir("./static/"))))
 
   // start processing
   http.Handle("/", router)
