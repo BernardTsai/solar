@@ -174,6 +174,8 @@ Vue.component(
       },
       // componentChanged  handles changes of the component information
       componentChanged: function() {
+        this.model.ArchElement.Component = this.view.ae.Component
+
         // add possible clusters to the element
         this.model.ArchElement.Clusters = {}
         for (index in this.model.Catalog) {
@@ -283,16 +285,27 @@ Vue.component(
       },
       // dependencyChanged handles changes of the relationship dependency information
       dependencyChanged: function() {
+        // determine cluster and relationship
+        cluster = this.model.ArchElement.Clusters[this.view.ae.Cluster]
+        relationship = cluster.Relationships[this.view.ae.Relationship]
+
+        // update the field
+        relationship.Dependency = this.view.ae.Dependency
+
         // reset element and configuration
         this.view.ae.RelElement     = ""
         this.view.ae.Configuration3 = ""
       },
-      // elementChanged handles changes of the relationship element information
-      elementChanged: function() {
+      // relElementChanged handles changes of the relationship element information
+      relElementChanged: function() {
+        // determine cluster and relationship and update element
+        cluster              = this.model.ArchElement.Clusters[this.view.ae.Cluster]
+        relationship         = cluster.Relationships[this.view.ae.Relationship]
+        relationship.Element = this.view.ae.RelElement
       },
       // configuration3Changed handles changes of the relationship configuration information
       configuration3Changed: function() {
-        // determine cluster and relationship
+        // determine cluster and relationship and update configuration
         cluster                    = this.model.ArchElement.Clusters[this.view.ae.Cluster]
         relationship               = cluster.Relationships[this.view.ae.Relationship]
         relationship.Configuration = this.view.ae.Configuration3
@@ -310,6 +323,9 @@ Vue.component(
       },
       // updateElement updates an existing element of the architecture
       updateElement: function() {
+        Vue.delete(this.model.Architecture.Elements, this.view.ae.Element)
+        Vue.set(this.model.Architecture.Elements, this.view.ae.Element, this.model.ArchElement)
+        this.model.ArchElement = null
       },
       // deleteElement removes an existing element from the architecture
       deleteElement: function() {
@@ -333,7 +349,7 @@ Vue.component(
               <tr>
                 <td><strong>Element:</strong></td>
                 <td>
-                  <input class="long" type="text" v-model="view.ae.Element" v-on:change="elementChanged()" autofocus></input>
+                  <input type="text" v-model="view.ae.Element" :disabled="!view.ae.New" @change="elementChanged()"></input>
                 </td>
               </tr>
               <tr>
@@ -424,7 +440,7 @@ Vue.component(
                 <td>
                   <div style="white-space: nowrap;">
                     <div class="icon" v-on:click="addRelationship()"><i class="fas fa-plus-circle" ></i></div>
-                    <div class="icon" v-on:click="delRelationship()"><i class="fas fa-minus-circle"></i></div>
+                    <div class="icon" v-on:click="delRelationship()"><i class="fas fa-times-circle"></i></div>
                   </div>
                 </td>
               </tr>
@@ -441,7 +457,7 @@ Vue.component(
               <tr>
                 <td>&nbsp;Element:</td>
                 <td>
-                  <select v-model="view.ae.RelElement"  v-on:change="elementChanged()"
+                  <select v-model="view.ae.RelElement"  v-on:change="relElementChanged()"
                     :disabled="view.ae.Component=='' || view.ae.Cluster=='' || view.ae.Relationship=='' || view.ae.Dependency==''">
                     <option disabled value="">please select</option>
                     <option v-for="e in elements()">{{e}}</option>
@@ -466,13 +482,13 @@ Vue.component(
           <div class="modal-footer">
             &nbsp;
             <button class="modal-default-button" v-if="!view.ae.New" v-on:click="deleteElement()">
-              Delete Element <i class="fas fa-check">
+              Delete Element <i class="fas fa-times-circle">
             </button>
             <button class="modal-default-button" v-if="!view.ae.New" v-on:click="updateElement()">
-              Update Element <i class="fas fa-check">
+              Update Element <i class="fas fa-plus-circle">
             </button>
             <button class="modal-default-button" v-if="view.ae.New" v-on:click="createElement()">
-              Create Element <i class="fas fa-check">
+              Create Element <i class="fas fa-plus-circle">
             </button>
           </div>
         </div>
