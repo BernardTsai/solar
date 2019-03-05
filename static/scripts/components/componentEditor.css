@@ -1,6 +1,6 @@
 .modal-mask {
   position:         fixed;
-  z-index:          9998;
+  z-index:          5000;
   top:                 0;
   left:                0;
   width:            100%;
@@ -10,33 +10,19 @@
   transition: opacity .3s ease;
 }
 
-.modal-wrapper {
-  display:        table-cell;
-  vertical-align: middle;
-}
-
-.modal-editor {
-  width:            800px;
-  margin:           0px auto;
-  padding:          20px 30px;
-  background-color: #fff;
-  border-radius:    2px;
-  box-shadow:       0 2px 8px rgba(0, 0, 0, .33);
-  transition:       all .3s ease;
-  font-family:      Helvetica, Arial, sans-serif;
-  font-size:        12px;
-}
-
 .modal-container {
+  position:         absolute;
+  top:              64px;
+  left:             50%;
+  margin-left:      -400px;
   width:            800px;
-  margin:           0px auto;
   padding:          20px 30px;
   background-color: #fff;
   border-radius:    2px;
   box-shadow:       0 2px 8px rgba(0, 0, 0, .33);
   transition:       all .3s ease;
   font-family:      Helvetica, Arial, sans-serif;
-  font-size:        12px;
+  font-size:        14px;
 }
 
 .modal-header h3 {
@@ -83,6 +69,10 @@
   transform: scale(1.1);
 }
 
+.modal-container td {
+  vertical-align: top;
+}
+
 .modal-container input {
   width: 100%
 }
@@ -91,10 +81,24 @@
   width: 100%
 }
 
+.modal-container textarea {
+  width:  100%;
+  resize: none;
+  border: 1px solid lightgrey;
+}
+
 .modal-container input:disabled {
   background-color: #eee
 }
 
 .modal-container select:disabled {
   background-color: #eee
+}
+
+.modal-container textarea:disabled {
+  background-color: #eee
+}
+
+.modal-container div.icon {
+  display: inline-block;
 }

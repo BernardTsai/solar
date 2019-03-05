@@ -5,10 +5,27 @@ var view = {
   newComponent: false,           // indicates if a new component is to be designed
   solution:     "",              // name of architecture/solution
   version:      "",              // version of architecture/solution
-  element:      null,            // element to be configured
-  newElement:   false,           // indicates if a new element is to be designed
+  cluster:      "",              // name of selected cluster
+  relationship: "",              // name of selected relationship
 
-  cluster:   "",
+  ae: {                          // fields for the architecture element editor
+    New:            false,
+    Element:        "unknown",
+    Component:      "",
+    Configuration1: "",
+    Cluster:        "",
+    State:          "initial",
+    Min:            "1",
+    Max:            "1",
+    Size:           "1",
+    Configuration2: "",
+    Relationship:   "",
+    Dependency:     "",
+    DepType:        "",
+    RelElement:     "",
+    Configuration3: ""
+  },
+
   instance:  "",
   focus:     "",
   node:      null

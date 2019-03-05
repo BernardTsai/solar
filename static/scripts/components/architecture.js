@@ -4,12 +4,31 @@ Vue.component(
     props: ['model', 'view'],
     methods: {
       addElement: function() {
-        view.newElement = true
-        view.element    = {
+        // reset fields for architecture element editor
+        this.view.ae = {
+          New:            true,
+          Element:        "",
+          Component:      "",
+          Configuration1: "",
+          Cluster:        "",
+          State:          "",
+          Min:            "",
+          Max:            "",
+          Size:           "",
+          Configuration2: "",
+          Relationship:   "",
+          Dependency:     "",
+          DepType:        "",
+          RelElement:     "",
+          Configuration3: ""
+        },
+
+        // initialise the architecture element of the model
+        this.model.ArchElement = {
           Element:       "unknown",
           Component:     "",
           Configuration: "",
-          Clusters:      []
+          Clusters:      {}
         }
       }
     },
@@ -25,11 +44,10 @@ Vue.component(
           <div id="add" v-on:click="addElement" v-if="model.Architecture">
             <i class="fas fa-2x fa-plus-circle">
           </div>
-          <architectureElementWizard
+          <architectureElementEditor
             v-bind:model="model"
-            v-bind:view="view"
-            v-bind:element="{}">
-          </architectureElementWizard>
+            v-bind:view="view">
+          </architectureElementEditor>
         </div>
       </div>`
   }

@@ -4,6 +4,7 @@ var model = {
   Components:    [],
   Architectures: {},
   Architecture:  null,
+  ArchElement:   null,
   Solution:      {},
   Tasks:         [],
   Task:          {}
