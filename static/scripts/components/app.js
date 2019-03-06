@@ -4,7 +4,7 @@ Vue.component( 'app',
     template: `
       <div>
         <div id="header">
-          <div id="title">SOLAR</div>
+          <div id="title" title="Simplified Orchestration of the Lifecycle Automation of Resources">SOLAR</div>
           <div id="selectors">
             <div id="domain-selector">
               <strong>Domain:</strong>

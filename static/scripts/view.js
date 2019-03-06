@@ -8,6 +8,18 @@ var view = {
   cluster:      "",              // name of selected cluster
   relationship: "",              // name of selected relationship
 
+  ce: {                          // fields for the component editor
+    New:            false,
+    Component:      "",
+    Version:        "",
+    Configuration1: "",
+    Dependency:     "",
+    DepType:        "",
+    DepComponent:   "",
+    DepVersion:     "",
+    Configuration2: ""
+  },
+
   ae: {                          // fields for the architecture element editor
     New:            false,
     Element:        "unknown",

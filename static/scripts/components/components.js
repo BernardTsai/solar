@@ -3,38 +3,28 @@ Vue.component(
   {
     props: ['model', 'view'],
     methods: {
+      // addComponent opens editor for creating a new component
       addComponent: function() {
-        // find new name
-        index = 1
-        id    = "Comp-" + index
-        do {
-          id    = "Comp-" + index
-          found = false
-          for (idx in model.Catalog) {
-            c = model.Catalog[idx]
-            if (c.Component == id) {
-              found = true
-              break
-            }
-          }
-          // finally found a unique name
-          if (!found) {
-            break
-          }
-          index++
-        } while (true);
+        // reset fields for component element editor
+        this.view.ce = {
+          New:            true,
+          Component:      "",
+          Version:        "",
+          Configuration1: "",
+          Dependency:     "",
+          DepType:        "",
+          DepComponent:   "",
+          DepVersion:     "",
+          Configuration2: ""
+        },
 
-        // add new component
-        model.Catalog.push({
-          Component:     id,
-          Version:       "V1.0.0",
+        // initialise the component element of the model
+        this.model.Component = {
+          Component:     "unknown",
+          Version:       "",
           Configuration: "",
           Dependencies:  {}
-        })
-
-        // open editor
-        view.newComponent = true
-        view.component    = model.Catalog.length - 1
+        }
       }
     },
     template: `
@@ -53,11 +43,9 @@ Vue.component(
           </div>
         </div>
         <componentEditor
-          v-if="view.component>=0"
+          v-if="model.Component"
           v-bind:model="model"
-          v-bind:view="view"
-          v-bind:configuration="null"
-          v-bind:component="model.Catalog[view.component]">
+          v-bind:view="view">
         </componentEditor>
       </div>`
   }
