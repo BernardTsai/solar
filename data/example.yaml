@@ -86,9 +86,36 @@ Domains:
                 Max: 1
                 Size: 1
                 Configuration: ""
-                Relationships: {}
+                Relationships:
+                  Tenant:
+                    Relationship: Tenant
+                    Dependency: Parent
+                    Type: context
+                    Element: Tenant
+                    Version: V1.0.0
+                    Configuration: ""
           Host-B:
             Element: Host-B
+            Component: Dummy
+            Configuration: ""
+            Clusters:
+              V1.0.0:
+                Version: V1.0.0
+                State: active
+                Min: 1
+                Max: 1
+                Size: 1
+                Configuration: ""
+                Relationships:
+                  Tenant:
+                    Relationship: Tenant
+                    Dependency: Parent
+                    Type: context
+                    Element: Tenant
+                    Version: V1.0.0
+                    Configuration: ""
+          Tenant:
+            Element: Tenant
             Component: Dummy
             Configuration: ""
             Clusters:

@@ -418,7 +418,7 @@ function immediateBelowPath(model, view, edge) {
     x4 = dx + edge.DestCol * w3 + r + (edge.DestIndex+1)/(dest.Destinations.length+1) * w2
     y4 = dy + edge.DestRow * h3 - r
 
-    x2 = x2
+    x2 = x1
     y2 = (y1 + y4) / 2
     x3 = x4
     y3 = y2

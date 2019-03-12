@@ -2,9 +2,6 @@ Vue.component(
   'solution',
   {
     props: ['model', 'view'],
-    methods: {
-
-    },
     computed: {
       graph:  function() {
         // check solution
@@ -23,7 +20,9 @@ Vue.component(
           Destinations:  [],
           Edges:         {},
           Layers:        [],
-          Columns:       []
+          Columns:       [],
+          Width:         0,
+          Height:        0
         }
 
         // load catalog, architecture and solution
@@ -41,6 +40,7 @@ Vue.component(
           sortDestinations(g)
           sortNodes(g)
           calculateEdges(g)
+          calculateDimensions(g, this.view)
           this.model.Graph = g
         })
         .catch((error) => {
@@ -55,7 +55,7 @@ Vue.component(
       <div id="solution" v-if="view.nav=='Solution'">
         {{graph}}
         <div id="container" v-if="model.Graph">
-          <svg id="canvas">
+          <svg id="canvas" v-bind:style="{ width: model.Graph.Width + 'px', height: model.Graph.Height + 'px'}">
             <edge
               v-bind:model="model"
               v-bind:view="view"
@@ -170,14 +170,18 @@ function calculateDestinations(g) {
 
   Object.values(elements).forEach((element) => {
     Object.values(element.Clusters).forEach((cluster) => {
-      var name = element.Element + " / " + cluster.Version
-      var tag  = cluster.Version
-      var node = nodes[element.Element]
+      var name   = element.Element + " / " + cluster.Version
+      var tag    = cluster.Version
+      var state  = cluster.State
+      var target = cluster.Target
+      var node   = nodes[element.Element]
 
       // create a new destination
       var destination = {
         Name:    name,
         Tag:     tag,
+        State:   state,
+        Target:  target,
         Node:    node,
         Index:   -1
       }
@@ -389,7 +393,7 @@ function calculateEdges(g) {
       var relationship = source.Relationship
       var destination  = destinations[relationship.Element + " / " + relationship.Version]
       var name         = source.Name + " / " + destination.Name
-      var tag          = source.Name + " --- " + relationship.Relationship + " --> " + destination.Name
+      var tag          = source.Name + " --> " + destination.Name
       var category     = relationship.Type
 
       var edge = {
@@ -483,5 +487,10 @@ function calculateEdges(g) {
 
 //------------------------------------------------------------------------------
 
+// calculateDimensions determines the width and height of the graph
+function calculateDimensions(g, v) {
+  g.Width  = v.graph.dx + (g.Columns.length-1) * (v.graph.node.width  + v.graph.dx)
+  g.Height = v.graph.dy + g.Layers.length      * (v.graph.node.height + v.graph.dy)
+}
 
 //------------------------------------------------------------------------------

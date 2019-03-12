@@ -16,7 +16,7 @@ Vue.component(
       }
     },
     template: `
-      <div class="destination"
+      <div class="destination" :class="destination.State"
         v-bind:style="{left: left}"
         v-bind:title="tag">
       </div>`
