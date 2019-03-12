@@ -1,11 +1,11 @@
 Vue.component(
-  'architectureElement',
+  'solutionElement',
   {
     props: ['model', 'view', 'element'],
     methods: {
       editElement: function() {
-        // reset fields for architecture element editor
-        this.view.ae = {
+        // reset fields for element editor
+        this.view.ee = {
           New:            false,
           Element:        this.element.Element,
           Component:      this.element.Component,
@@ -24,11 +24,11 @@ Vue.component(
         },
 
         // initialise the architecture element of the model
-        this.model.ArchElement = this.element
+        this.model.Element = this.element
       }
     },
     template: `
-      <div  class="architectureElement" v-bind:title="element.Element" v-on:click="editElement()">
+      <div  class="solutionElement" v-bind:title="element.Element" v-on:click="editElement()">
         <div class="label">
           <div class="name">{{element.Element}}</div>
           <div class="version">&nbsp;</div>

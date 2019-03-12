@@ -1,0 +1,19 @@
+.edge {
+  position: absolute;
+  left:     0px;
+  top:      0px;
+}
+
+.relationship {
+  stroke:         black;
+  fill:           none;
+  pointer-events: all;
+}
+
+.relationship.service {
+  stroke-dasharray: 4 4;
+}
+
+.relationship:hover {
+  stroke: red;
+}

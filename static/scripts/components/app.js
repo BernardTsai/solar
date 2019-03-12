@@ -20,6 +20,13 @@ Vue.component( 'app',
                 <option v-for="architecture in model.Architectures">{{architecture}}</option>
               </select>
             </div>
+            <div id="solution-selector" v-if="view.nav=='Solution'">
+              <strong>Solution:</strong>
+              <select id="solutionSelector" v-model="view.solution" v-on:change="selectSolution">
+                <option disabled selected value="">Please select one</option>
+                <option v-for="solution in model.Solutions">{{solution}}</option>
+              </select>
+            </div>
           </div>
           <div id="nav" v-if="view.domain!=''">
             <div v-on:click="navComponents"   :class="{selected: view.nav=='Components'}"   id="Components">Components     <i class="fas fa-cube  text-gray-300"></i></div>
@@ -33,6 +40,9 @@ Vue.component( 'app',
   }
 )
 
+//------------------------------------------------------------------------------
+
+// selectArchitecture pick a specific version of an architecture
 function selectDomain() {
   view.domain = document.getElementById('domainSelector').value
 
@@ -59,8 +69,21 @@ function selectDomain() {
     model.Architecture  = null
   }
   view.architecture = ""
+
+  // load solutions
+  if (view.domain == ""){
+    model.Solutions = []
+    model.Solution  = null
+  } else {
+    loadSolutions(view.domain)
+    model.Solution  = null
+  }
+  view.solution = ""
 }
 
+//------------------------------------------------------------------------------
+
+// selectArchitecture pick a specific version of an architecture
 function selectArchitecture() {
   view.architecture = document.getElementById('architectureSelector').value
 
@@ -74,7 +97,23 @@ function selectArchitecture() {
   }
 }
 
+//------------------------------------------------------------------------------
+
+// selectSolution pick a specific solution
+function selectSolution() {
+  view.solution = document.getElementById('solutionSelector').value
+
+  // load architectures
+  if (view.domain != "" && view.solution != ""){
+    loadSolution(view.domain, view.solution)
+  }
+}
+
+//------------------------------------------------------------------------------
+
 function navComponents()   { view.nav = "Components";   }
 function navArchitecture() { view.nav = "Architecture"; }
 function navSolution()     { view.nav = "Solution"; }
 function navAutomation()   { view.nav = "Automation"; }
+
+//------------------------------------------------------------------------------

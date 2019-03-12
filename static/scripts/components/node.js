@@ -1,41 +1,24 @@
 Vue.component(
-  'node',
+  'node_destination',
   {
-    props: ['node', 'view'],
-    methods:  {
-          toggleExpand: function(event) {
-            // toggle node class "expanded"
-            element = event.target;
-            parent  = element.parentElement.parentElement;
-            parent.classList.toggle("expanded");
-          },
-          showDetails: function(event) {
-            view.focus = "node";
-            view.node  = this.node;
-          }
-        },
+    props: ['model', 'view', 'node', 'destination', 'idx'],
+    computed: {
+      left: function() {
+        var portIndex = parseInt(this.idx) + 1
+        var ports     = this.node.Destinations.length + 1
+        var radius    = this.view.graph.port.diameter/2
+        var w         = this.view.graph.node.width - 2 * radius
+
+        return (radius + portIndex/ports*w - radius) + 'px'
+      },
+      tag: function() {
+        return this.destination.Tag
+      }
+    },
     template: `
-      <!-- standard node -->
-      <div class="node" v-bind:class="'level' + node.level">
-
-        <!-- title row -->
-        <div class="title">
-          <div class="name" v-on:click="toggleExpand($event)">
-            <i class="fas fa-folder default"/><i class="fas fa-folder-open expanded"/>&nbsp;{{node.component}}
-          </div>
-          <div class="info">
-            <span v-for="version, versionNumber in node.versions" class="version" v-bind:class="[version.state]">V{{version.version}}&nbsp;</span>
-          </div>
-          <div class="buttons"><span v-on:click="showDetails($event)"><i class="fas fa-eye"/></span></div>
-        </div>
-
-        <!-- children row -->
-        <div class="children">
-          <node
-            v-for="child in node.children"
-            v-bind:node="child"
-            v-bind:view="view"></node>
-        </div>
+      <div class="destination"
+        v-bind:style="{left: left}"
+        v-bind:title="tag">
       </div>`
   }
 )
@@ -43,198 +26,82 @@ Vue.component(
 //------------------------------------------------------------------------------
 
 Vue.component(
-  'nodeDetail',
+  'node_source',
   {
-    props: ['node', 'view'],
-    data: function() {
-      for (var key in this.node.versions) {
-        return {versionID: key, content: "undefined"}
-      }
-
-      return {versionID: ""}
-    },
+    props: ['model', 'view', 'node', 'source', 'idx'],
     computed: {
-      versions: function() {
-        return Object.keys(this.node.versions)
+      left: function() {
+        var portIndex = parseInt(this.idx) + 1
+        var ports     = this.node.Sources.length + 1
+        var radius    = this.view.graph.port.diameter/2
+        var w         = this.view.graph.node.width - 2 * radius
+
+        return (radius + portIndex/ports*w - radius) + 'px'
       },
-      version: function() {
-        return this.node.versions[this.versionID]
+      tag: function() {
+        return this.source.Tag
       }
     },
-    mounted: function(){
-      for (var key in this.node.versions) {
-        this.view.version = this.node.versions[key];
-        break;
-      }
-    },
-    methods:  {
-          selectTab: function(event) {
-            var tab  = event.target;
-            var name = event.target.innerHTML;
-
-            // update tab display
-            var tabs = document.getElementById("nodeDetail").getElementsByClassName("tab");
-            for (var t of tabs) {
-              t.classList.remove("selected")
-            }
-            tab.classList.add("selected");
-
-            // activate appropriate pabe
-            var panes = document.getElementById("nodeDetail").getElementsByClassName("pane");
-            for (var p of panes) {
-              p.classList.remove("selected")
-            }
-
-            var pane = document.getElementById("nodeDetail").getElementsByClassName(name + "Tab");
-            pane[0].classList.add("selected");
-
-            // update content
-            node = this.node.path.replace("/tmp/data/", "")
-            url = '/render/' + node + ":" + this.version.version;
-            loadData(url).then(content => {this.content=content})
-          },
-          configuration: function() {
-            result = "";
-
-            for (var key in this.version.instances) {
-              instance = this.version.instances[key];
-              result = instance.configuration;
-              break;
-            }
-
-            return jsyaml.safeDump(result);
-          },
-          dependencies: function() {
-            result = "";
-
-            for (var key in this.version.instances) {
-              instance = this.version.instances[key];
-              result = instance.dependencies;
-              break;
-            }
-
-            return result;
-          }
-        },
     template: `
-      <!-- node detail -->
-      <div id="nodeDetail" class="nodeDetail">
-        <div class="header">
-          <div class="nameLabel">Node:&nbsp;</div>
-          <div class="name">{{node.component}}</div>
-          <div class="seperator"/>
-          <div class="versionLabel">Version:&nbsp;</div>
-          <select class="versionSelector" v-model="versionID">
-            <option v-for="versionNumber in versions">{{versionNumber}}</option>
-          </select>
-          <div class="seperator"/>
-        </div>
-
-        <!-- tabs -->
-        <div class="tabs">
-          <div v-on:click="selectTab($event)" class="tab general selected">General</div>
-          <div v-on:click="selectTab($event)" class="tab instance">Instances</div>
-          <div v-on:click="selectTab($event)" class="tab service">Service</div>
-          <div v-on:click="selectTab($event)" class="tab content">Content</div>
-          <div v-on:click="selectTab($event)" class="tab configuration">Configuration</div>
-          <div v-on:click="selectTab($event)" class="tab dependencies">Dependencies</div>
-          <div v-on:click="selectTab($event)" class="tab context">Context</div>
-        </div>
-
-        <!-- General Tab -->
-        <div class="pane GeneralTab selected" v-if="version">
-          <table>
-            <tr>
-              <th>Domain:</th>
-              <td>{{version.domain}}</td>
-            </tr>
-            <tr>
-              <th>Component:</th>
-              <td>{{version.component}}</td>
-            </tr>
-            <tr>
-              <th>Version:</th>
-              <td>{{version.version}}</td>
-            </tr>
-            <tr>
-              <th>State:</th>
-              <td>{{version.state}}</td>
-            </tr>
-          </table>
-        </div>
-
-        <!-- Service Tab -->
-        <div class="pane ServiceTab" v-if="version">
-          <table>
-            <tr>
-              <th>Path:</th>
-              <td>{{version.path}}</td>
-            </tr>
-          </table>
-        </div>
-
-        <!-- Instances Tab -->
-        <div class="pane InstancesTab" v-if="version">
-          <table>
-            <tr v-for="(instance,key,index) in version.instances">
-              <th><span v-if="index === 0">Instances:</span></th>
-              <td>{{instance.instance}} ({{instance.state}})</td>
-            </tr>
-          </table>
-        </div>
-
-        <!-- Content Tab -->
-        <div class="pane ContentTab" v-if="version">
-          <h3>Content</h3>
-          <pre>{{content}}</pre>
-        </div>
-
-        <!-- Configuration Tab -->
-        <div class="pane ConfigurationTab" v-if="version">
-          <h3>Configuration</h3>
-          <pre>{{configuration()}}</pre>
-        </div>
-
-        <!-- Dependencies Tab -->
-        <div class="pane DependenciesTab" v-if="version">
-          <table>
-            <tr>
-              <th>Reference</th>
-              <th>Component</th>
-              <th>Version</th>
-              <th>State</th>
-              <th class="expand">Endpoint</th>
-            </tr>
-            <tr v-for="(dependency,key,index) in dependencies()" v-if="dependency.type==='service'">
-              <td>{{key}}</td>
-              <td>{{dependency.component}}</td>
-              <td>{{dependency.version}}</td>
-              <td>{{dependency.state}}</td>
-              <td>{{dependency.endpoint}}</td>
-            </tr>
-          </table>
-        </div>
-
-        <!-- Context Tab -->
-        <div class="pane ContextTab" v-if="version">
-          <table>
-            <tr>
-              <th>Reference</th>
-              <th>Component</th>
-              <th>Version</th>
-              <th>State</th>
-              <th class="expand">Endpoint</th>
-            </tr>
-            <tr v-for="(dependency,key,index) in dependencies()" v-if="dependency.type==='context'">
-              <td>{{key}}</td>
-              <td>{{dependency.component}}</td>
-              <td>{{dependency.version}}</td>
-              <td>{{dependency.state}}</td>
-              <td>{{dependency.endpoint}}</td>
-            </tr>
-          </table>
-        </div>
-
+      <div class="source"
+        v-bind:style="{left: left}"
+        v-bind:title="tag">
       </div>`
   }
 )
+
+//------------------------------------------------------------------------------
+
+Vue.component(
+  'node',
+  {
+    props: ['model', 'view', 'node'],
+    computed: {
+      left: function() {
+        var w   = this.view.graph.node.width
+        var dx  = this.view.graph.dx
+        var col = this.node.Column
+
+        return ( dx + col * (dx + w)) + "px"
+      },
+      top: function() {
+        var h   = this.view.graph.node.height
+        var dy  = this.view.graph.dy
+        var row = this.node.Row
+
+        return ( dy + row * (dy + h)) + "px"
+      },
+      name: function() {
+        return this.node.Name
+      },
+      type: function() {
+        return this.node.Type
+      }
+    },
+    template: `
+      <div  class="node"
+        v-bind:title="name"
+        v-bind:style="{left: left, top: top}">
+        <div class="name">{{name}}</div>
+        <div class="type">{{type}}</div>
+        <node_destination
+          v-bind:model="model"
+          v-bind:view="view"
+          v-bind:node="node"
+          v-bind:destination="destination"
+          v-bind:idx="idx"
+          v-for="(destination,idx) in node.Destinations">
+        </node_destination>
+        <node_source
+          v-bind:model="model"
+          v-bind:view="view"
+          v-bind:node="node"
+          v-bind:source="source"
+          v-bind:idx="idx"
+          v-for="(source,idx) in node.Sources">
+        </node_source>
+      </div>`
+  }
+)
+
+//------------------------------------------------------------------------------

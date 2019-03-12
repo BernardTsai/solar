@@ -33,3 +33,10 @@ function getVersion(label) {
 }
 
 //------------------------------------------------------------------------------
+
+// dump prints an object as yaml to the console
+function dump(obj) {
+  console.log(jsyaml.safeDump(obj))
+}
+
+//------------------------------------------------------------------------------

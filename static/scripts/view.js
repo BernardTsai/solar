@@ -38,6 +38,19 @@ var view = {
     Configuration3: ""
   },
 
+  graph: {
+    dx: 40,
+    dy: 40,
+    node: {
+      width:  160,
+      height:  40
+    },
+    port: {
+      diameter: 8,
+      border:   1
+    }
+  },
+
   instance:  "",
   focus:     "",
   node:      null

@@ -8,7 +8,8 @@ var model = {
   ArchElement:   null,      // the architectural element which is currently being edited
   Solution:      {},
   Tasks:         [],
-  Task:          {}
+  Task:          {},
+  Graph:         null
 };
 
 //------------------------------------------------------------------------------
@@ -97,6 +98,48 @@ function loadArchitecture(domain, architecture) {
     .then((response) => response.text())
     .then((text)     => jsyaml.safeLoad(text))
     .then((yaml)     => model.Architecture = yaml)
+}
+
+//------------------------------------------------------------------------------
+
+// loadSolutions retrieves a list of solution names from the the repository
+function loadSolutions(domain) {
+  // determine domains
+  fetch("http://localhost/solution/" + domain)
+    .then((response) => response.text())
+    .then((text)     => jsyaml.safeLoad(text))
+    .then((yaml)     => model.Solutions = yaml)
+}
+
+//------------------------------------------------------------------------------
+
+// loadSolution retrieves a solution from the the repository
+function loadSolution(domain, solution) {
+  // determine domains
+  fetch("http://localhost/solution/" + domain + "/" + solution)
+    .then((response) => response.text())
+    .then((text)     => jsyaml.safeLoad(text))
+    .then((yaml)     => model.Solution = yaml)
+}
+
+//------------------------------------------------------------------------------
+
+// loadAll retrieves a solution, the architecture and the catalog from the the repository
+function loadAll(domain, solution) {
+  // determine domains
+  return fetch("http://localhost/catalog/" + domain)
+  .then((response) => response.text())
+  .then((text)     => jsyaml.safeLoad(text))
+  .then((yaml)     => yaml.sort((a,b) => (a.Component > b.Component) ? 1 : (a.Component < b.Component) ? -1 : 0))
+  .then((list)     => model.Catalog = list)
+  .then(()         => fetch("http://localhost/solution/" + domain + "/" + solution))
+  .then((response) => response.text())
+  .then((text)     => jsyaml.safeLoad(text))
+  .then((yaml)     => model.Solution = yaml)
+  .then(()         => fetch("http://localhost/architecture/" + domain + "/" + model.Solution.Solution + " - " +  model.Solution.Version))
+  .then((response) => response.text())
+  .then((text)     => jsyaml.safeLoad(text))
+  .then((yaml)     => model.Architecture = yaml)
 }
 
 //------------------------------------------------------------------------------
