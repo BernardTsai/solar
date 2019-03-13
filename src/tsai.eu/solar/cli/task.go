@@ -148,10 +148,10 @@ func TaskCommand(context *ishell.Context, m *model.Model) {
 		for _, tName := range tNames {
 			task, _ := domain.GetTask(tName)
 
-			if (solutionName == "" || solutionName == task.Solution) &&
-				 (elementName  == "" || elementName  == task.Element)  &&
-				 (clusterName  == "" || clusterName  == task.Cluster)  &&
-				 (instanceName == "" || instanceName == task.Instance) {
+			if (solutionName == task.Solution) &&
+				 (elementName  == task.Element)  &&
+				 (clusterName  == task.Cluster)  &&
+				 (instanceName == task.Instance) {
 			  tasks = append(tasks, tName)
 			}
 		}

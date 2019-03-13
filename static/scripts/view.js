@@ -38,6 +38,24 @@ var view = {
     Configuration3: ""
   },
 
+  se: {                          // fields for the solution element editor
+    New:            false,
+    Element:        "unknown",
+    Component:      "",
+    Configuration1: "",
+    Cluster:        "",
+    State:          "initial",
+    Min:            "1",
+    Max:            "1",
+    Size:           "1",
+    Configuration2: "",
+    Relationship:   "",
+    Dependency:     "",
+    DepType:        "",
+    RelElement:     "",
+    Configuration3: ""
+  },
+
   graph: {
     dx: 40,
     dy: 40,

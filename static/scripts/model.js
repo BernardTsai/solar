@@ -7,6 +7,7 @@ var model = {
   Architecture:  null,      // the architecture which is currently being edited
   ArchElement:   null,      // the architectural element which is currently being edited
   Solution:      {},
+  SolElement:    null,      // the solution element which is currently being viewed
   Tasks:         [],
   Task:          {},
   Graph:         null

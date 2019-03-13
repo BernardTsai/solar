@@ -38,7 +38,7 @@
 
 /*----------------------------------------------------------------------------*/
 
-#navigation #solution svg {
+#navigation #solution #canvas {
   position:   absolute;
   left:       0px;
   top:        0px;

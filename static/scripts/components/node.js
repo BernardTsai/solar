@@ -56,6 +56,31 @@ Vue.component(
   'node',
   {
     props: ['model', 'view', 'node'],
+    methods: {
+      viewElement: function() {
+        // reset fields for solution element editor
+        this.view.se = {
+          New:            false,
+          Element:        this.node.Element.Element,
+          Component:      this.node.Element.Component,
+          Configuration1: this.node.Element.Configuration,
+          Cluster:        "",
+          State:          "",
+          Min:            "",
+          Max:            "",
+          Size:           "",
+          Configuration2: "",
+          Relationship:   "",
+          Dependency:     "",
+          DepType:        "",
+          RelElement:     "",
+          Configuration3: ""
+        },
+
+        // initialise the architecture element of the model
+        this.model.SolElement = this.node.Element
+      }
+    },
     computed: {
       left: function() {
         var w   = this.view.graph.node.width
@@ -81,7 +106,8 @@ Vue.component(
     template: `
       <div  class="node"
         v-bind:title="name"
-        v-bind:style="{left: left, top: top}">
+        v-bind:style="{left: left, top: top}"
+        v-on:click="viewElement()">
         <div class="name">{{name}}</div>
         <div class="type">{{type}}</div>
         <node_destination

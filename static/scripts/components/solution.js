@@ -70,6 +70,10 @@ Vue.component(
             v-for="node in model.Graph.Nodes">
           </node>
         </div>
+        <solutionElementEditor
+          v-bind:model="model"
+          v-bind:view="view">
+        </solutionElementEditor>
       </div>`
   }
 )
