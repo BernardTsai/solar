@@ -78,3 +78,10 @@ func (event *Event) Load(filename string) error {
 }
 
 //------------------------------------------------------------------------------
+
+// GetUUID delivers the universal unique identifier of the event
+func (event *Event) GetUUID() string {
+	return event.UUID
+}
+
+//------------------------------------------------------------------------------

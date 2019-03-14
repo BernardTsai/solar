@@ -106,8 +106,8 @@ Vue.component(
       }
     },
     template: `
-      <div class="modal-mask" v-if="model.SolElement != null">
-        <div class="modal-container">
+      <div class="modal-mask" v-if="model.SolElement != null" @keyup.esc="cancelDialog()" tabindex="0">
+        <div class="modal-container" @keyup.esc="cancelDialog()" tabindex="0">
           <div class="modal-header">
             <h3>Solution Element Viewer</h3>
             <div class="close" v-on:click="cancelDialog()"><i class="far fa-times-circle"></i></div>

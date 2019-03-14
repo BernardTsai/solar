@@ -51,6 +51,16 @@ func NewTaskInfo(task *model.Task, level int) (*TaskInfo) {
 		Events:     []*model.Event{},
 	}
 
+	// add events
+	domain, _ := model.GetDomain(task.Domain)
+
+	for _, eventUUID := range task.Events {
+		event, _ := domain.GetEvent(eventUUID)
+
+		taskinfo.Events = append(taskinfo.Events, event)
+	}
+	sort.SliceStable(taskinfo.Events, func(i, j int) bool { return taskinfo.Events[i].Time < taskinfo.Events[j].Time })
+
 	// check if details are needed (depends on level)
 	if level == 0 || level > 1 {
 		sublevel := 0
@@ -64,20 +74,6 @@ func NewTaskInfo(task *model.Task, level int) (*TaskInfo) {
 
 			taskinfo.Subtasks = append(taskinfo.Subtasks, NewTaskInfo(subtask, sublevel))
 		}
-
-		// add events (horribly slow)
-		domain, _ := model.GetDomain(task.Domain)
-
-		eventUUIDs, _ := domain.ListEvents()
-		for _, eventUUID := range eventUUIDs {
-			event, _ := domain.GetEvent(eventUUID)
-
-			// only add related tasks
-			if event.Task == task.UUID {
-				taskinfo.Events = append(taskinfo.Events, event)
-			}
-		}
-		sort.SliceStable(taskinfo.Events, func(i, j int) bool { return taskinfo.Events[i].Time < taskinfo.Events[j].Time })
 	}
 
 	return &taskinfo

@@ -69,6 +69,13 @@ var view = {
     }
   },
 
+  automation: {
+    solution: "",
+    element:  "",
+    cluster:  "",
+    instance: ""
+  },
+
   instance:  "",
   focus:     "",
   node:      null

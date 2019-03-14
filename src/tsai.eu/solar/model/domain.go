@@ -499,6 +499,12 @@ func (domain *Domain) AddEvent(event *Event) error {
 	domain.Events[event.UUID] = event
 	domain.EventsX.Unlock()
 
+	// register with task
+	domain.TasksX.Lock()
+	task := domain.Tasks[event.Task]
+	task.AddEvent(event)
+	domain.TasksX.Unlock()
+
 	// success
 	return nil
 }

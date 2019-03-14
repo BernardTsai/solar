@@ -4,6 +4,7 @@ import (
   "io"
   "net/http"
   "strconv"
+  "time"
 
   "github.com/gorilla/mux"
 
@@ -12,6 +13,27 @@ import (
   "tsai.eu/solar/cli"
   "tsai.eu/solar/engine"
 )
+
+//------------------------------------------------------------------------------
+
+// TaskSummary captures the most relevant informations related to a task
+type TaskSummary struct {
+  Type         string   `yaml:"Type"`         // type of task
+	Domain       string   `yaml:"Domain"`       // domain of task
+	Solution     string   `yaml:"Solution"`     // architecture of entity
+	Version      string   `yaml:"Version"`      // architecture version of entity
+	Element      string   `yaml:"Element"`      // element of entity
+	Cluster      string   `yaml:"Cluster"`      // cluster of entity
+	Instance     string   `yaml:"Instance"`     // instance of entity
+	State        string   `yaml:"State"`        // desired state of entity
+	UUID         string   `yaml:"UUID"`         // uuid of task
+	Parent       string   `yaml:"Parent"`       // uuid of parent task
+	Status       string   `yaml:"Status"`       // status of task: (execution/completion/failure)
+	Phase        int      `yaml:"Phase"`        // phase of task
+  Started      string   `yaml:"Started"`      // start date
+  Completed    string   `yaml:"Completed"`    // completed date
+  Latest       string   `yaml:"Latest"`       // date of latest event
+}
 
 //------------------------------------------------------------------------------
 
@@ -32,7 +54,7 @@ func TaskListHandler(w http.ResponseWriter, r *http.Request) {
   }
 
   // determine list of solution names
-  tasks := []string{}
+  tasks := []*TaskSummary{}
 
   tNames, _ := domain.ListTasks()
   for _, tName := range tNames {
@@ -42,7 +64,72 @@ func TaskListHandler(w http.ResponseWriter, r *http.Request) {
        (elementName  == task.Element)  &&
        (clusterName  == task.Cluster)  &&
        (instanceName == task.Instance) {
-      tasks = append(tasks, tName)
+
+      // copy task information into summary
+      summary := TaskSummary{
+        Type:       task.Type,
+        Domain:     task.Domain,
+        Solution:   task.Solution,
+        Version:    task.Version,
+        Element:    task.Element,
+        Cluster:    task.Cluster,
+        Instance:   task.Instance,
+        State:      task.State,
+        UUID:       task.UUID,
+        Parent:     task.Parent,
+        Status:     task.Status,
+        Phase:      task.Phase,
+        Started:    "",
+        Completed:  "",
+        Latest:     "",
+      }
+
+      // derive most relevant event information
+      var min int64
+      var max int64
+      var lst int64
+      var def int64
+
+      def = 9223372036854775807
+      min = def
+      max = 0
+      lst = 0
+      for _, eventUUID := range task.Events {
+        event, _ := domain.GetEvent(eventUUID)
+
+        if event.Type == "execution" {
+          if event.Time < min {
+            min = event.Time
+          }
+          if lst < event.Time {
+            lst = event.Time
+          }
+        } else {
+          if max < event.Time {
+            max = event.Time
+          }
+          if lst < event.Time {
+            lst = event.Time
+          }
+        }
+      }
+
+      // copy to summary
+      if min != def {
+        // summary.Started = strconv.FormatInt(min, 10)
+        summary.Started = time.Unix(0, min).String()
+      }
+      if max != def {
+        // summary.Completed = strconv.FormatInt(max, 10)
+        summary.Completed = time.Unix(0, max).String()
+      }
+      if lst != 0 {
+        // summary.Latest = strconv.FormatInt(lst, 10)
+        summary.Latest = time.Unix(0, lst).String()
+      }
+
+      // append summary to list of tasks
+      tasks = append(tasks, &summary)
     }
   }
 

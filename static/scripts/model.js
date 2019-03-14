@@ -144,3 +144,42 @@ function loadAll(domain, solution) {
 }
 
 //------------------------------------------------------------------------------
+
+// loadTasks retrieves a list of task names from the the repository
+function loadTasks(domain, solution, element, cluster, instance) {
+  // case: only domain and solution are defined
+  if (element == "") {
+    fetch("http://localhost/tasks/" + domain + "/" + solution)
+      .then((response) => response.text())
+      .then((text)     => jsyaml.safeLoad(text))
+      .then((yaml)     => model.Tasks = yaml)
+    return
+  }
+
+  // case: only domain, solution and element are defined
+  if (cluster == "") {
+    fetch("http://localhost/tasks/" + domain + "/" + solution + "/" + element)
+      .then((response) => response.text())
+      .then((text)     => jsyaml.safeLoad(text))
+      .then((yaml)     => model.Tasks = yaml)
+    return
+  }
+
+  // case: only domain, solution, element and cluster are defined
+  if (instance == "") {
+    fetch("http://localhost/tasks/" + domain + "/" + solution + "/" + element + "/" + cluster)
+      .then((response) => response.text())
+      .then((text)     => jsyaml.safeLoad(text))
+      .then((yaml)     => model.Tasks = yaml)
+    return
+  }
+
+  // every parameter is defined
+  fetch("http://localhost/tasks/" + domain + "/" + solution + "/" + element + "/" + cluster + "/" + instance)
+    .then((response) => response.text())
+    .then((text)     => jsyaml.safeLoad(text))
+    .then((yaml)     => model.Tasks = yaml)
+}
+
+
+//------------------------------------------------------------------------------

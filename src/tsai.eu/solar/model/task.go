@@ -28,6 +28,7 @@ type Task struct {
 	Status       string     `yaml:"Status"`       // status of task: (execution/completion/failure)
 	Phase        int        `yaml:"Phase"`        // phase of task
 	Subtasks     []string   `yaml:"Subtasks"`     // list of subtasks
+	Events       []string   `yaml:"Events"`       // list of events
 	execute      TaskHandler
 	terminate    TaskHandler
 	failed       TaskHandler
@@ -161,6 +162,13 @@ func (task *Task) GetSubtasks() []string {
 // AddSubtask adds a subtask to the list of subtasks.
 func (task *Task) AddSubtask(subtask *Task) {
 	task.Subtasks = append(task.Subtasks, subtask.GetUUID())
+}
+
+//------------------------------------------------------------------------------
+
+// AddEvent adds an event to the list of events.
+func (task *Task) AddEvent(event *Event) {
+	task.Events = append(task.Events, event.GetUUID())
 }
 
 //------------------------------------------------------------------------------

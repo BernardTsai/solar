@@ -114,6 +114,13 @@ function selectSolution() {
 function navComponents()   { view.nav = "Components";   }
 function navArchitecture() { view.nav = "Architecture"; }
 function navSolution()     { view.nav = "Solution"; }
-function navAutomation()   { view.nav = "Automation"; }
+function navAutomation()   {
+  view.nav = "Automation";
+
+  view.automation.solution = view.solution
+  view.automation.element  = ""
+  view.automation.cluster  = ""
+  view.automation.instnace = ""
+}
 
 //------------------------------------------------------------------------------
