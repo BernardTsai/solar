@@ -3,6 +3,10 @@ Vue.component(
   {
     props: ['model', 'view'],
     methods: {
+      showTask: function(task) {
+        loadTrace(this.view.domain, task)
+        this.view.automation.task = task
+      },
       selectSolution: function() {
         this.view.solution = this.view.automation.solution
 
@@ -54,7 +58,7 @@ Vue.component(
     },
     template: `
       <div id="automation">
-        <div id="selector">
+        <div id="selector" v-if="!model.Trace">
           <div id="selector1">
             <strong>Solution:</strong>
             <select v-model="view.automation.solution" v-on:change="selectSolution">
@@ -89,11 +93,11 @@ Vue.component(
 
         </div>
 
-        <table id="tasks">
+        <table id="tasks" v-if="!model.Trace">
           <tr>
             <th>Type</th>
             <th>UUID</th>
-            <th>State</th>
+            <th>Version/State</th>
             <th>Started</th>
             <th>Completed</th>
             <th>Latest</th>
@@ -101,14 +105,21 @@ Vue.component(
           </tr>
           <tr v-for="task in model.Tasks">
             <td>{{task.Type}}</td>
-            <td>{{task.UUID}}</td>
-            <td>{{task.State}}</td>
+            <td @click="showTask(task.UUID)">{{task.UUID}}</td>
+            <td v-if="task.Type != 'InstanceTask'">{{task.Version}}</td>
+            <td v-if="task.Type == 'InstanceTask'">{{task.State}}</td>
             <td>{{task.Started}}</td>
             <td>{{task.Completed}}</td>
             <td>{{task.Latest}}</td>
             <td class="status" :class="task.Status">{{task.Status}}</td>
           </tr>
+          <tr v-if="model.Tasks.length == 0">
+            <td colspan=7 class="noentries">no tasks</td>
+          </tr>
         </table>
+        <task v-if="model.Trace"
+          v-bind:model="model"
+          v-bind:view="view"></task>
       </div>`
   }
 )

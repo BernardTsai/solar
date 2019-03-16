@@ -1,0 +1,111 @@
+#task {
+  position:       absolute;
+  left:           0px;
+  right:          0px;
+  top:            0px;
+  bottom:         0px;
+}
+
+#task div.entity {
+  position:       absolute;
+  left:           0px;
+  right:          0px;
+  font-size:      10px;
+  vertical-align: middle;
+  border-bottom:  1px solid lightgrey;
+  color:          black;
+}
+
+#task div.label {
+  position:       absolute;
+  left:           0px;
+  top:            0px;
+  width:          100px;
+  white-space:    nowrap;
+  text-overflow:  ellipsis;
+  overflow:       hidden;
+}
+
+#task div.label.administrator {
+  /* background-color: darkblue; */
+  padding-left:     4px;
+  font-weight:      bold;
+}
+
+#task div.label.element {
+  /* background-color: darkblue; */
+  padding-left:     12px;
+  font-weight:      bold;
+}
+
+#task div.label.cluster {
+  /* background-color: lightblue; */
+  padding-left:     20px;
+}
+
+#task div.label.instance {
+  /* background-color: darkgrey; */
+  padding-left:     28px;
+}
+
+.task {
+  position:         absolute;
+  height:           4px;
+  border-radius:    2px;
+  background-color: lightgrey;
+}
+
+.task2 {
+  position:         absolute;
+  height:           4px;
+  border-radius:    2px;
+  background-color: grey;
+}
+
+.event {
+  position:         absolute;
+  width:            1px;
+  border-radius:    1px;
+}
+
+.event .arrow.up {
+  position: absolute;
+  width:     5px;
+  height:    5px;
+  top:       0px;
+  left:     -2px;
+  background-image: url(../../images/up.png);
+  background-repeat: no-repeat;
+}
+
+.event .arrow.down {
+  position: absolute;
+  width:     5px;
+  height:    5px;
+  bottom:    0px;
+  left:     -2px;
+  background-image: url(../../images/down.png);
+  background-repeat: no-repeat;
+}
+
+.event.execution   { background-color: blue;  }
+.event.completion  { background-color: green; }
+.event.failure     { background-color: red;   }
+.event.timeout     { background-color: red;   }
+.event.termination { background-color: red;   }
+
+.event2 {
+  position:         absolute;
+  width:            8px;
+  height:           8px;
+  background-color: none;
+  border-radius:    4px;
+  margin-left:      -4px;
+  margin-top:       -8px;
+}
+
+.event2.execution   { border: 1px solid blue;  }
+.event2.completion  { border: 1px solid green; }
+.event2.failure     { border: 1px solid red;   }
+.event2.timeout     { border: 1px solid red;   }
+.event2.termination { border: 1px solid red;   }

@@ -53,6 +53,7 @@ func NewRouter() {
   router.HandleFunc("/tasks/{domain}/{solution}",                                TaskListHandler).Methods("GET")
   router.HandleFunc("/tasks/{domain}",                                           TaskListHandler).Methods("GET")
 
+  router.HandleFunc("/task/{domain}/{task}",                                     TaskTraceHandler).Methods("GET")
   router.HandleFunc("/task/{domain}/{task}/{level}",                             TaskGetHandler).Methods("GET")
   router.HandleFunc("/task/{domain}/{task}",                                     TaskTerminateHandler).Methods("DELETE")
 

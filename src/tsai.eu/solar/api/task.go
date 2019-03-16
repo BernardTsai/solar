@@ -85,41 +85,14 @@ func TaskListHandler(w http.ResponseWriter, r *http.Request) {
       }
 
       // derive most relevant event information
-      var min int64
-      var max int64
-      var lst int64
-      var def int64
-
-      def = 9223372036854775807
-      min = def
-      max = 0
-      lst = 0
-      for _, eventUUID := range task.Events {
-        event, _ := domain.GetEvent(eventUUID)
-
-        if event.Type == "execution" {
-          if event.Time < min {
-            min = event.Time
-          }
-          if lst < event.Time {
-            lst = event.Time
-          }
-        } else {
-          if max < event.Time {
-            max = event.Time
-          }
-          if lst < event.Time {
-            lst = event.Time
-          }
-        }
-      }
+      min, max, lst := task.GetTimestamps()
 
       // copy to summary
-      if min != def {
+      if min != 0 {
         // summary.Started = strconv.FormatInt(min, 10)
         summary.Started = time.Unix(0, min).String()
       }
-      if max != def {
+      if max != 0 {
         // summary.Completed = strconv.FormatInt(max, 10)
         summary.Completed = time.Unix(0, max).String()
       }
@@ -141,6 +114,34 @@ func TaskListHandler(w http.ResponseWriter, r *http.Request) {
   }
 
   // return the result
+  io.WriteString(w, yaml)
+}
+
+//------------------------------------------------------------------------------
+
+// TaskTraceHandler retrieves a task trace.
+func TaskTraceHandler(w http.ResponseWriter, r *http.Request) {
+  vars         := mux.Vars(r)
+  domainName   := vars["domain"]
+  taskName     := vars["task"]
+
+  // determine task
+  task, err := model.GetTask(domainName, taskName)
+  if err != nil {
+    w.WriteHeader(http.StatusBadRequest)
+    return
+  }
+
+  // retrieve the task information
+  trace := cli.NewTrace(task)
+  yaml, err := util.ConvertToYAML(trace)
+  if err != nil {
+    w.WriteHeader(http.StatusInternalServerError)
+    return
+  }
+
+  // write yaml
+  // w.Header().Set("Content-Type", "application/x-yaml")
   io.WriteString(w, yaml)
 }
 

@@ -271,3 +271,53 @@ func (task *Task) Completed() {
 }
 
 //------------------------------------------------------------------------------
+
+// GetTimestamps delivers the timestamps of the task.
+func (task *Task) GetTimestamps() (started int64, completed int64, latest int64) {
+	var min int64
+	var max int64
+	var lst int64
+	var def int64
+
+	def = 9223372036854775807
+	min = def
+	max = 0
+	lst = 0
+	for _, eventUUID := range task.Events {
+		event, _ := GetEvent(task.Domain, eventUUID)
+
+		if event.Type == "execution" {
+			if event.Time < min {
+				min = event.Time
+			}
+			if lst < event.Time {
+				lst = event.Time
+			}
+		} else {
+			if max < event.Time {
+				max = event.Time
+			}
+			if lst < event.Time {
+				lst = event.Time
+			}
+		}
+	}
+
+	// copy to results
+	started = 0
+	if min != def {
+		started = min
+	}
+	completed = 0
+	if max != def {
+		completed = max
+	}
+	latest = 0
+	if lst != 0 {
+		latest = lst
+	}
+
+	return started, completed, latest
+}
+
+//------------------------------------------------------------------------------

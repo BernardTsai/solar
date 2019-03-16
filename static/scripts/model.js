@@ -10,7 +10,8 @@ var model = {
   SolElement:    null,      // the solution element which is currently being viewed
   Tasks:         [],
   Task:          {},
-  Graph:         null
+  Graph:         null,      // solution graph
+  Trace:         null,      // task trace
 };
 
 //------------------------------------------------------------------------------
@@ -181,5 +182,16 @@ function loadTasks(domain, solution, element, cluster, instance) {
     .then((yaml)     => model.Tasks = yaml)
 }
 
+
+//------------------------------------------------------------------------------
+
+// loadTrace retrieves a task trace from the the repository
+function loadTrace(domain, task) {
+  // determine domains
+  fetch("http://localhost/task/" + domain + "/" + task)
+    .then((response) => response.text())
+    .then((text)     => jsyaml.safeLoad(text))
+    .then((yaml)     => model.Trace = yaml)
+}
 
 //------------------------------------------------------------------------------

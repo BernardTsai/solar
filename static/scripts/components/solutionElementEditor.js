@@ -99,6 +99,22 @@ Vue.component(
         this.view.se.New       = false
       },
       // updateElement updates an existing element of the architecture
+      showTasks: function() {
+        this.view.automation.solution = this.view.solution
+        this.view.automation.element  = this.model.SolElement.Element
+        this.view.automation.cluster  = this.view.se.Cluster
+        this.view.automation.instance = ""
+
+        loadTasks(
+          this.view.domain,
+          this.view.automation.solution,
+          this.view.automation.element,
+          this.view.automation.cluster,
+          this.view.automation.instance)
+
+        this.view.nav = "Automation"
+      },
+      // updateElement updates an existing element of the architecture
       updateElement: function() {
         Vue.delete(this.model.Architecture.Elements, this.view.se.Element)
         Vue.set(this.model.Architecture.Elements, this.view.se.Element, this.model.SolElement)
@@ -235,6 +251,9 @@ Vue.component(
 
           <div class="modal-footer">
             &nbsp;
+            <button class="modal-default-button" v-on:click="showTasks()">
+              Show Tasks <i class="fas fa-cogs">
+            </button>
             <button class="modal-default-button" v-on:click="updateElement()">
               Update Element <i class="fas fa-plus-circle">
             </button>

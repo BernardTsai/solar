@@ -73,7 +73,10 @@ var view = {
     solution: "",
     element:  "",
     cluster:  "",
-    instance: ""
+    instance: "",
+    task:     "",
+    line:     16,
+    width:    1000
   },
 
   instance:  "",
