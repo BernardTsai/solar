@@ -33,6 +33,7 @@ import (
 //   - cluster.Update
 //   - cluster.Reset
 //   - cluster.OK
+//   - cluster.Pools
 //
 //   - cluster.ListRelationships
 //   - cluster.GetRelationship
@@ -301,11 +302,40 @@ func (cluster *Cluster) OK() bool {
 		return false
 	}
 
-	// check size
-	instanceNames, _ := cluster.ListInstances()
-	instances := len(instanceNames)
-	if instances != cluster.Size {
+	// check size of cluster
+	// count number of instances in each lifecycle state
+	_, inactive, active, failure, _ := cluster.Pools()
+
+	// check if there are any failed instances
+	if failure > 0 {
 		return false
+	}
+
+	// check categories
+	switch cluster.Target {
+		case InitialState:
+			// too many instances are still active or have been deployed
+			if inactive > 0 || active > 0 {
+				return false
+			}
+		case InactiveState:
+			// too many instances are still active
+			if active > 0 {
+				return false
+			}
+			// size of cluster does not match
+			if inactive != cluster.Size {
+				return false
+			}
+		case ActiveState:
+			// size of cluster does not match
+			if active != cluster.Size {
+				return false
+			}
+			// size of inactive instances is still too high
+			if inactive > (cluster.Max - cluster.Min) {
+				return false
+			}
 	}
 
 	// check relationships
@@ -344,6 +374,38 @@ func (cluster *Cluster) OK() bool {
 
 	// cluster is ok
 	return true
+}
+
+//------------------------------------------------------------------------------
+
+// Pools determines the sizes of the pools in which the instances may reside
+func (cluster *Cluster) Pools() (initial int, inactive int, active int, failure int, other int) {
+	// count number of instances in each lifecycle state
+	initial  = 0
+	inactive = 0
+	active   = 0
+	failure  = 0
+	other    = 0
+
+	instanceNames, _ := cluster.ListInstances()
+	for _, instanceName := range instanceNames {
+		instance, _ := cluster.GetInstance(instanceName)
+		switch instance.State {
+			case InitialState:
+				initial++
+			case InactiveState:
+				inactive++
+			case ActiveState:
+				active++
+			case FailureState:
+				failure++
+			default:
+				other++
+		}
+	}
+
+	// finished
+	return initial, inactive, active, failure, other
 }
 
 //------------------------------------------------------------------------------

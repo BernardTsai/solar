@@ -134,41 +134,86 @@ func ExecuteClusterTask(task *model.Task) {
 		// cluster has reached the desired state
 		cluster.State = model.InitialState
 	case model.InactiveState:
-		count := countInstances(cluster, model.InactiveState)
+		_, inactive, active, _, _ := cluster.Pools()
 
 		// one by one identify the instances which need to be reset
 		instanceNames, _ := cluster.ListInstances()
 		for _, instanceName := range instanceNames {
 			instance, _ := cluster.GetInstance(instanceName)
-			if instance.State != cluster.Target {
-				// update instance to the desired state
-				if cluster.Size < count {
-					triggerInstanceTask(task, instanceName, cluster.Target)
-				} else {
-					triggerInstanceTask(task, instanceName, model.InitialState)
-				}
 
-				// return and wait for next event
+			// cleanup failed instances
+			if instance.State == model.FailureState {
+				triggerInstanceTask(task, instanceName, model.InitialState)
+
 				return
+			}
+
+			// deactivate active instances
+			if instance.State == model.ActiveState {
+				triggerInstanceTask(task, instanceName, model.InactiveState)
+
+				return
+			}
+
+			// ensure that the number of inactive nodes matches the cluster size
+			if inactive < cluster.Size {
+				// activate the amount of required instances
+			  if instance.State != model.InactiveState {
+					triggerInstanceTask(task, instanceName, model.InactiveState)
+
+					return
+				}
+			} else if active > cluster.Size {
+				// activate the amount of required instances
+			  if instance.State == model.InactiveState {
+					triggerInstanceTask(task, instanceName, model.InitialState)
+
+					return
+				}
 			}
 
 			// cluster has reached the desired state
 			cluster.State = model.InactiveState
 		}
 	case model.ActiveState:
-		count := countInstances(cluster, model.ActiveState)
+		_, inactive, active, _, _ := cluster.Pools()
 
 		// one by one identify the instances which need to be reset
 		instanceNames, _ := cluster.ListInstances()
 		for _, instanceName := range instanceNames {
 			instance, _ := cluster.GetInstance(instanceName)
 
-			// update instance
-			if instance.State != cluster.Target && count < cluster.Size {
-				triggerInstanceTask(task, instanceName, cluster.Target)
+			// cleanup failed instances
+			if instance.State == model.FailureState {
+				triggerInstanceTask(task, instanceName, model.InitialState)
 
-				// return and wait for next event
 				return
+			}
+
+			// ensure that the number of active nodes matches the cluster size
+			if active < cluster.Size {
+				// activate the amount of required instances
+			  if instance.State != cluster.Target {
+					triggerInstanceTask(task, instanceName, model.ActiveState)
+
+					return
+				}
+			} else if active == cluster.Size {
+				// remove excess inactive instances
+				if inactive > (cluster.Max - cluster.Size) {
+					if instance.State == model.InactiveState {
+						triggerInstanceTask(task, instanceName, model.InitialState)
+
+						return
+					}
+				}
+			} else if active > cluster.Size {
+				// deactivate excess active instances
+				if instance.State == model.ActiveState {
+					triggerInstanceTask(task, instanceName, model.InactiveState)
+
+					return
+				}
 			}
 		}
 
@@ -222,7 +267,7 @@ func triggerInstanceTask(task *model.Task, instance string, state string)  {
 	channel := GetEventChannel()
 
 	// create task to update the instance
-	subtask, _ := NewInstanceTask(task.Domain, task.UUID, task.Solution, task.Version, task.Element, task.Version, instance, state )
+	subtask, _ := NewInstanceTask(task.Domain, task.UUID, task.Solution, task.Version, task.Element, task.Cluster, instance, state )
 	task.AddSubtask(&subtask)
 
 	// trigger the task

@@ -5,6 +5,7 @@ import (
   "net/http"
   "strconv"
   "time"
+  "sort"
 
   "github.com/gorilla/mux"
 
@@ -105,6 +106,11 @@ func TaskListHandler(w http.ResponseWriter, r *http.Request) {
       tasks = append(tasks, &summary)
     }
   }
+
+  // sort tasks along started timestamp
+  sort.Slice(tasks, func(i int,j int) bool {
+    return tasks[i].Started > tasks[j].Started
+  })
 
   // convert list to yaml
   yaml, err := util.ConvertToYAML(tasks)
