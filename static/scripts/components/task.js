@@ -15,6 +15,25 @@ Vue.component( 'task',
       },
       left: function(event) {
         return (100 + event.Time/this.model.Trace.Range*view.automation.width) + 'px'
+      },
+      trace: function(event) {
+        x = event.clientX;
+        c = document.getElementById('cursor')
+        m = document.getElementById('marker')
+
+        if (100 <= x && x < 1100) {
+          c.style.visibility = "visible"
+          c.style.left       = x + "px"
+
+          m.style.visibility = "visible"
+          m.style.left       = x + "px"
+
+          time = Math.round((x-100)/1000 * this.model.Trace.Range) + ' [ns]'
+          m.innerText = time
+        } else {
+          c.style.visibility = "hidden"
+          m.style.visibility = "hidden"
+        }
       }
     },
     computed: {
@@ -143,68 +162,87 @@ Vue.component( 'task',
       }
     },
     template: `
-      <div id="task">
-        <div class="entity"
-          v-bind:style="{
-            'top':         '0px',
-            'height':      view.automation.line + 'px',
-            'line-height': view.automation.line + 'px'}">
-          <div class="label administrator"
-            v-bind:style="{height: view.automation.line + 'px'}">
-            Administrator
+      <div id="task" v-on:mousemove="trace">
+        <div id="time">
+          <div class="label time">
+            Time
           </div>
+          <div id="marker">A</div>
         </div>
-        <div class="entity"
-          v-for="entity in entities"
-          v-bind:style="{
-            'top':         (entity.Index*view.automation.line) + 'px',
-            'height':      view.automation.line + 'px',
-            'line-height': view.automation.line + 'px'}">
-          <div class="label"
-            v-bind:class="entity.Type"
-            v-bind:style="{height: view.automation.line + 'px'}">
-            {{entity.Name}}
+        <div id="trace">
+          <div class="entity"
+            v-bind:style="{
+              'top':         '0px',
+              'height':      view.automation.line + 'px',
+              'line-height': view.automation.line + 'px'}">
+            <div class="label administrator"
+              v-on:mouseover="trace"
+              v-bind:style="{height: view.automation.line + 'px'}">
+              Administrator
+            </div>
           </div>
-        </div>
-        <div class="task"
-          v-bind:id="task.UUID"
-          v-bind:title="task.UUID + ' - ' + task.Status"
-          v-for="task in tasks"
-          v-bind:style="{
-            left:  (100 + task.Started/range*view.automation.width) + 'px',
-            width: ((task.Latest-task.Started)/range*view.automation.width) + 'px',
-            top:   (task.Index*view.automation.line + (task.Layer+1)*view.automation.line/(task.Layers+1)-2) + 'px'}">
-        </div>
-        <div class="task2"
-          v-bind:id="task.UUID"
-          v-bind:title="task.UUID + ' - ' + task.Status"
-          v-for="task in tasks"
-          v-bind:style="{
-            left:  (100 + task.Started/range*view.automation.width) + 'px',
-            width: ((task.Completed-task.Started)/range*view.automation.width) + 'px',
-            top:   (task.Index*view.automation.line + (task.Layer+1)*view.automation.line/(task.Layers+1)-2) + 'px'}">
-        </div>
-        <div class="event"
-          v-for="event in events"
-          v-if="event.Task1 != event.Task2 && event.Task1 != ''"
-          v-bind:class="event.Type"
-          v-bind:id="event.UUID"
-          v-bind:title="event.UUID + ' - ' + event.Type"
-          v-bind:style="{
-            top:    top(event),
-            left:   left(event),
-            height: height(event)}">
-          <div class="arrow" v-bind:class="{down: event.Index1 < event.Index2, up: event.Index1 > event.Index2}"></div>
-        </div>
-        <div class="event2"
-          v-for="event in events"
-          v-bind:id="event.UUID"
-          v-bind:class="event.Type"
-          v-bind:title="event.UUID + ' - ' + event.Type"
-          v-if="event.Task1 == event.Task2 || event.Task1 == ''"
-          v-bind:style="{
-            top:    top(event),
-            left:   left(event)}">
+          <div class="entity"
+            v-for="entity in entities"
+            v-on:mouseover="trace"
+             v-bind:style="{
+              'top':         (entity.Index*view.automation.line) + 'px',
+              'height':      view.automation.line + 'px',
+              'line-height': view.automation.line + 'px'}">
+            <div class="label"
+              v-bind:class="entity.Type"
+              v-bind:style="{height: view.automation.line + 'px'}">
+              {{entity.Name}}
+            </div>
+          </div>
+          <div id="cursor"></div>
+          <div class="task"
+            v-bind:id="task.UUID"
+            v-bind:title="'Task: ' + task.UUID + '<br/>State: ' + task.State + '<br/>Status: ' + task.Status"
+            v-tippy="{arrow: true, delay: 1}"
+            v-on:mouseover="trace"
+            v-for="task in tasks"
+            v-bind:style="{
+              left:  (100 + task.Started/range*view.automation.width) + 'px',
+              width: ((task.Latest-task.Started)/range*view.automation.width) + 'px',
+              top:   (task.Index*view.automation.line + (task.Layer+1)*view.automation.line/(task.Layers+1)-2) + 'px'}">
+          </div>
+          <div class="task2"
+            v-bind:id="task.UUID"
+            v-on:mouseover="trace"
+            v-bind:title="'Task: ' + task.UUID + '<br/>State: ' + task.State + '<br/>Status: ' + task.Status"
+            v-tippy="{arrow: true, delay: 1}"
+            v-for="task in tasks"
+            v-bind:style="{
+              left:  (100 + task.Started/range*view.automation.width) + 'px',
+              width: ((task.Completed-task.Started)/range*view.automation.width) + 'px',
+              top:   (task.Index*view.automation.line + (task.Layer+1)*view.automation.line/(task.Layers+1)-2) + 'px'}">
+          </div>
+          <div class="event"
+            v-for="event in events"
+            v-if="event.Task1 != event.Task2 && event.Task1 != ''"
+            v-bind:class="event.Type"
+            v-bind:id="event.UUID"
+            v-on:mouseover="trace"
+            v-bind:title="event.Type + ' - Event:<br/>' + event.UUID"
+            v-tippy="{placement: 'left', arrow: true, delay: 1}"
+            v-bind:style="{
+              top:    top(event),
+              left:   left(event),
+              height: height(event)}">
+            <div class="arrow" v-bind:class="{down: event.Index1 < event.Index2, up: event.Index1 > event.Index2}"></div>
+          </div>
+          <div class="event2"
+            v-for="event in events"
+            v-bind:id="event.UUID"
+            v-on:mouseover="trace"
+            v-bind:class="event.Type"
+            v-bind:title="event.Type + ' - Event:<br/>' + event.UUID"
+            v-tippy="{placement: 'top', arrow: true, delay: 1}"
+            v-if="event.Task1 == event.Task2 || event.Task1 == ''"
+            v-bind:style="{
+              top:    top(event),
+              left:   left(event)}">
+          </div>
         </div>
       </div>`
   }

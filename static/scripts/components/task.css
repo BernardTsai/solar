@@ -6,6 +6,52 @@
   bottom:         0px;
 }
 
+#task #time {
+  position:         absolute;
+  left:             0px;
+  right:            0px;
+  top:              0px;
+  height:           24px;
+  line-height:      24px;
+  vertical-align:   middle;
+  background-color: darkgrey;
+}
+
+#task #time #marker {
+  visibility:              hidden;
+  position:                absolute;
+  left:                 100px;
+  top:                    0px;
+  bottom:                 0px;
+  width:                  5px;
+  line-height:           24px;
+  vertical-align:          middle;
+  font-size:             12px;
+  white-space:             nowrap;
+  margin-left:           -2px;
+  background-position-y: 20px;
+  background-image:        url(../../images/down.png);
+  background-repeat:       no-repeat;
+}
+
+#task #trace {
+  position:       absolute;
+  left:           0px;
+  right:          0px;
+  top:           24px;
+  bottom:         0px;
+}
+
+#task #trace #cursor {
+  position:         absolute;
+  left:             100px;
+  top:              0px;
+  bottom:           0px;
+  width:            1px;
+  visibility:       hidden;
+  background-color: red;
+}
+
 #task div.entity {
   position:       absolute;
   left:           0px;
@@ -16,6 +62,10 @@
   color:          black;
 }
 
+#task div.entity:hover {
+  background-color: lightblue;
+}
+
 #task div.label {
   position:       absolute;
   left:           0px;
@@ -24,6 +74,13 @@
   white-space:    nowrap;
   text-overflow:  ellipsis;
   overflow:       hidden;
+}
+
+#task div.label.time {
+  /* background-color: darkblue; */
+  font-size:       12px;
+  padding-left:     4px;
+  font-weight:      bold;
 }
 
 #task div.label.administrator {
