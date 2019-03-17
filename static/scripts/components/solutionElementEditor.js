@@ -50,11 +50,41 @@ Vue.component(
         // determine cluster
         cluster = this.model.SolElement.Clusters[this.view.se.Cluster]
 
+        // determine instances
+        initial  = 0
+        inactive = 0
+        active   = 0
+        failure  = 0
+        other    = 0
+
+        for (var index in cluster.Instances) {
+          instance = cluster.Instances[index]
+          switch (instance.State) {
+            case "initial":
+              initial++
+              break;
+            case "inactive":
+              inactive++
+              break;
+            case "active":
+              active++
+              break;
+            case "failure":
+              failure++
+              break;
+            default:
+              other++
+          }
+        }
+        instances = "initial: " + initial + " inactive: " + inactive + " active: " + active + " failure:" + failure + " other: " + other
+
         // update the fields
-        this.view.se.State          = (cluster.State != "" ? cluster.State : "active")
-        this.view.se.Min            = (cluster.Min   != "" ? cluster.Min   : 1)
-        this.view.se.Max            = (cluster.Max   != "" ? cluster.Max   : 1)
-        this.view.se.Size           = (cluster.Size  != "" ? cluster.Size  : 1)
+        this.view.se.Target         = (cluster.Target != "" ? cluster.Target : "active")
+        this.view.se.State          = (cluster.State  != "" ? cluster.State  : "active")
+        this.view.se.Min            = (cluster.Min    != "" ? cluster.Min    : 1)
+        this.view.se.Max            = (cluster.Max    != "" ? cluster.Max    : 1)
+        this.view.se.Size           = (cluster.Size   != "" ? cluster.Size   : 1)
+        this.view.se.Instances      = instances
         this.view.se.Configuration2 = cluster.Configuration
         this.view.se.Relationship   = ""
         this.view.se.Dependency     = ""
@@ -168,6 +198,14 @@ Vue.component(
                 </td>
               </tr>
               <tr>
+                <td>&nbsp;Target State:</td>
+                <td>
+                  <select v-model="view.se.Target" v-on:change="stateChanged()" disabled>
+                    <option disabled>{{view.se.Target}}</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
                 <td>&nbsp;State:</td>
                 <td>
                   <select v-model="view.se.State" v-on:change="stateChanged()"
@@ -198,6 +236,12 @@ Vue.component(
                 <td>
                   <input class="long" type="number" min="0" v-model="view.se.Size" v-on:change="sizeChanged()"
                     :disabled="view.se.Component=='' || view.se.Cluster==''"></input>
+                </td>
+              </tr>
+              <tr>
+                <td>&nbsp;Instances:</td>
+                <td>
+                  <input class="long" v-model="view.se.Instances" disabled></input>
                 </td>
               </tr>
               <tr>

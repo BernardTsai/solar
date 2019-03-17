@@ -44,6 +44,7 @@ var view = {
     Component:      "",
     Configuration1: "",
     Cluster:        "",
+    Target:         "initial",
     State:          "initial",
     Min:            "1",
     Max:            "1",
