@@ -238,15 +238,15 @@ Vue.component(
         cluster = this.model.ArchElement.Clusters[this.view.ae.Cluster]
 
         // update the fields
-        this.view.ae.State=          (cluster.State == "" ? cluster.State : "active")
-        this.view.ae.Min=            (cluster.Min   == "" ? cluster.Min   : 1)
-        this.view.ae.Max=            (cluster.Max   == "" ? cluster.Max   : 1)
-        this.view.ae.Size=           (cluster.Size  == "" ? cluster.Size  : 1)
-        this.view.ae.Configuration2= cluster.Configuration
-        this.view.ae.Relationship=   ""
-        this.view.ae.Dependency=     ""
-        this.view.ae.RelElement=     ""
-        this.view.ae.Configuration3= ""
+        this.view.ae.State          = (cluster.State != "" ? cluster.State : "active")
+        this.view.ae.Min            = (cluster.Min   != "" ? cluster.Min   : 1)
+        this.view.ae.Max            = (cluster.Max   != "" ? cluster.Max   : 1)
+        this.view.ae.Size           = (cluster.Size  != "" ? cluster.Size  : 1)
+        this.view.ae.Configuration2 = cluster.Configuration
+        this.view.ae.Relationship   = ""
+        this.view.ae.Dependency     = ""
+        this.view.ae.RelElement     = ""
+        this.view.ae.Configuration3 = ""
 
         this.$forceUpdate()
       },

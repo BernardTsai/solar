@@ -51,15 +51,15 @@ Vue.component(
         cluster = this.model.SolElement.Clusters[this.view.se.Cluster]
 
         // update the fields
-        this.view.se.State=          (cluster.State == "" ? cluster.State : "active")
-        this.view.se.Min=            (cluster.Min   == "" ? cluster.Min   : 1)
-        this.view.se.Max=            (cluster.Max   == "" ? cluster.Max   : 1)
-        this.view.se.Size=           (cluster.Size  == "" ? cluster.Size  : 1)
-        this.view.se.Configuration2= cluster.Configuration
-        this.view.se.Relationship=   ""
-        this.view.se.Dependency=     ""
-        this.view.se.RelElement=     ""
-        this.view.se.Configuration3= ""
+        this.view.se.State          = (cluster.State != "" ? cluster.State : "active")
+        this.view.se.Min            = (cluster.Min   != "" ? cluster.Min   : 1)
+        this.view.se.Max            = (cluster.Max   != "" ? cluster.Max   : 1)
+        this.view.se.Size           = (cluster.Size  != "" ? cluster.Size  : 1)
+        this.view.se.Configuration2 = cluster.Configuration
+        this.view.se.Relationship   = ""
+        this.view.se.Dependency     = ""
+        this.view.se.RelElement     = ""
+        this.view.se.Configuration3 = ""
 
         this.$forceUpdate()
       },

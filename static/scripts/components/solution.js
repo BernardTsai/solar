@@ -2,6 +2,19 @@ Vue.component(
   'solution',
   {
     props: ['model', 'view'],
+    methods: {
+      // selectSolution pick a specific solution
+      selectSolution: function() {
+        view.solution = document.getElementById('solutionSelector').value
+
+        // load solution
+        if (view.domain != "" && view.solution != ""){
+          loadSolution(view.domain, view.solution)
+        } else {
+          model.Graph = null
+        }
+      }
+    },
     computed: {
       graph:  function() {
         // check solution
@@ -54,6 +67,15 @@ Vue.component(
     template: `
       <div id="solution" v-if="view.nav=='Solution'">
         {{graph}}
+        <div id="selector">
+          <div id="solution-selector">
+            <strong>Solution:</strong>
+            <select id="solutionSelector" v-model="view.solution" v-on:change="selectSolution">
+              <option selected value="">Please select one</option>
+              <option v-for="solution in model.Solutions">{{solution}}</option>
+            </select>
+          </div>
+        </div>
         <div id="container" v-if="model.Graph">
           <svg id="canvas" v-bind:style="{ width: model.Graph.Width + 'px', height: model.Graph.Height + 'px'}">
             <edge

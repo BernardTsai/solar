@@ -9,22 +9,8 @@ Vue.component( 'app',
             <div id="domain-selector">
               <strong>Domain:</strong>
               <select id="domainSelector" v-on:change="selectDomain">
-                <option disabled selected value="">Please select one</option>
+                <option selected value="">Please select one</option>
                 <option v-for="domain in model.Domains">{{domain}}</option>
-              </select>
-            </div>
-            <div id="architecture-selector" v-if="view.nav=='Architecture'">
-              <strong>Architecture:</strong>
-              <select id="architectureSelector" v-model="view.architecture" v-on:change="selectArchitecture">
-                <option disabled selected value="">Please select one</option>
-                <option v-for="architecture in model.Architectures">{{architecture}}</option>
-              </select>
-            </div>
-            <div id="solution-selector" v-if="view.nav=='Solution'">
-              <strong>Solution:</strong>
-              <select id="solutionSelector" v-model="view.solution" v-on:change="selectSolution">
-                <option disabled selected value="">Please select one</option>
-                <option v-for="solution in model.Solutions">{{solution}}</option>
               </select>
             </div>
           </div>
@@ -79,34 +65,6 @@ function selectDomain() {
     model.Solution  = null
   }
   view.solution = ""
-}
-
-//------------------------------------------------------------------------------
-
-// selectArchitecture pick a specific version of an architecture
-function selectArchitecture() {
-  view.architecture = document.getElementById('architectureSelector').value
-
-  // set solution
-  view.solution = getName(view.architecture)
-  view.version  = getVersion(view.architecture)
-
-  // load architectures
-  if (view.domain != "" && view.architecture != ""){
-    loadArchitecture(view.domain, view.architecture)
-  }
-}
-
-//------------------------------------------------------------------------------
-
-// selectSolution pick a specific solution
-function selectSolution() {
-  view.solution = document.getElementById('solutionSelector').value
-
-  // load architectures
-  if (view.domain != "" && view.solution != ""){
-    loadSolution(view.domain, view.solution)
-  }
 }
 
 //------------------------------------------------------------------------------

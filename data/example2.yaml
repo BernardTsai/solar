@@ -1,0 +1,104 @@
+Architecture: Example-Architecture
+Version: V1.0.1
+Configuration: ""
+Elements:
+  App-A:
+    Element: App-A
+    Component: Dummy
+    Configuration: ""
+    Clusters:
+      V1.0.0:
+        Version: V1.0.0
+        State: active
+        Min: 3
+        Max: 3
+        Size: 3
+        Configuration: ""
+        Relationships:
+          Host:
+            Relationship: Host
+            Dependency: Parent
+            Type: context
+            Element: Host-A
+            Version: V1.0.0
+            Configuration: ""
+  App-B:
+    Element: App-B
+    Component: Dummy
+    Configuration: ""
+    Clusters:
+      V1.0.0:
+        Version: V1.0.0
+        State: active
+        Min: 3
+        Max: 3
+        Size: 3
+        Configuration: ""
+        Relationships:
+          Host:
+            Relationship: Host
+            Dependency: Parent
+            Type: context
+            Element: Host-B
+            Version: V1.0.0
+            Configuration: ""
+          Service:
+            Relationship: Service
+            Dependency: Service
+            Type: service
+            Element: App-A
+            Version: V1.0.0
+            Configuration: ""
+  Host-A:
+    Element: Host-A
+    Component: Dummy
+    Configuration: ""
+    Clusters:
+      V1.0.0:
+        Version: V1.0.0
+        State: active
+        Min: 3
+        Max: 3
+        Size: 3
+        Configuration: ""
+        Relationships:
+          Tenant:
+            Relationship: Tenant
+            Dependency: Parent
+            Type: context
+            Element: Tenant
+            Version: V1.0.0
+            Configuration: ""
+  Host-B:
+    Element: Host-B
+    Component: Dummy
+    Configuration: ""
+    Clusters:
+      V1.0.0:
+        Version: V1.0.0
+        State: active
+        Min: 3
+        Max: 3
+        Size: 3
+        Configuration: ""
+        Relationships:
+          Tenant:
+            Relationship: Tenant
+            Dependency: Parent
+            Type: context
+            Element: Tenant
+            Version: V1.0.0
+            Configuration: ""
+  Tenant:
+    Element: Tenant
+    Component: Dummy
+    Configuration: ""
+    Clusters:
+      V1.0.0:
+        Version: V1.0.0
+        State: active
+        Min: 1
+        Max: 1
+        Size: 1
+        Configuration: ""
+        Relationships: {}

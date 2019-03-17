@@ -3,6 +3,26 @@ Vue.component(
   {
     props: ['model', 'view'],
     methods: {
+      // selectArchitecture pick a specific version of an architecture
+       selectArchitecture: function() {
+        view.architecture = document.getElementById('architectureSelector').value
+
+        if (view.architecture != "") {
+          // set solution
+          view.solution = getName(view.architecture)
+          view.version  = getVersion(view.architecture)
+
+          // load architectures
+          if (view.domain != "" && view.architecture != ""){
+            loadArchitecture(view.domain, view.architecture)
+          }
+        } else {
+          view.solution      = ""
+          view.version       = ""
+          model.Architecture = null
+        }
+      },
+      // addElement adds a new architecture element
       addElement: function() {
         // reset fields for architecture element editor
         this.view.ae = {
@@ -34,6 +54,15 @@ Vue.component(
     },
     template: `
       <div id="architecture" v-if="view.nav=='Architecture'">
+        <div id="selector">
+          <div id="architecture-selector">
+            <strong>Architecture:</strong>
+            <select id="architectureSelector" v-model="view.architecture" v-on:change="selectArchitecture">
+              <option selected value="">Please select one</option>
+              <option v-for="architecture in model.Architectures">{{architecture}}</option>
+            </select>
+          </div>
+        </div>
         <div id="container" v-if="model.Architecture">
           <architectureElement
             v-bind:model="model"
