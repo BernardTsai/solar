@@ -18,3 +18,93 @@
   display: inline-block;
   color:   lightgrey;
 }
+
+/*----------------------------------------------------------------------------*/
+
+#navigation #components #comps {
+  position:        absolute;
+  left:           0px;
+  width:        200px;
+  top:            0px;
+  bottom:         0px;
+  padding-top:    8px;
+
+  border-right:   1px solid lightgrey;
+
+  font-size:     14px;
+}
+
+/*----------------------------------------------------------------------------*/
+
+#comps .header h3 {
+  display:       inline-block;
+  margin-top:   0px;
+  padding-left: 8px;
+}
+
+/*----------------------------------------------------------------------------*/
+
+* {
+  box-sizing: border-box;
+}
+
+/*----------------------------------------------------------------------------*/
+
+#comps table {
+  overflow-x: hidden;
+  overflow-y: auto;
+  width:      100%;
+
+  border-collapse: collapse;
+  border-spacing:  0;
+  font-size:       12px;
+  text-align:      left;
+}
+
+#comps table thead, table tbody {
+  width:      100%;
+}
+
+#comps table tr {
+  background-color: #fff;
+  border-top:       1px solid #c6cbd1;
+}
+
+#comps table tr:nth-child(2n) {
+  background-color: #f6f8fa;
+}
+
+#comps table th, table td {
+  border:  1px solid #dfe2e5;
+  padding: 4px 4px;
+}
+
+#comps table th {
+  background-color: #f6f8fa;
+}
+
+#comps table tr td:last-child {
+  text-align: center;
+}
+
+#comps table.components th.center,
+#comps table.components td.center {
+  text-align: center;
+}
+
+
+#comps table tbody tr:hover {
+  background-color: #eef;
+}
+
+#comps #catalog {
+  width:          100%;
+  font-size:       14px;
+  font-weight:       bold;
+  text-align:        center;
+  height:          20px;
+  line-height:     20px;
+  background-color:  #f6f8fa;
+}
+
+/*----------------------------------------------------------------------------*/

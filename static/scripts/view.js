@@ -12,12 +12,9 @@ var view = {
     New:            false,
     Component:      "",
     Version:        "",
-    Configuration1: "",
     Dependency:     "",
-    DepType:        "",
-    DepComponent:   "",
-    DepVersion:     "",
-    Configuration2: ""
+    Configuration:  null,
+    ConfTitle:      ""
   },
 
   ae: {                          // fields for the architecture element editor
