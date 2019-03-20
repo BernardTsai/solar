@@ -19,7 +19,7 @@ var model = {
 // loadDomains retrieves a list of domain names from the the repository
 function loadDomains() {
   // determine domains
-  fetch("http://localhost/domain")
+  return fetch("http://localhost/domain")
     .then((response) => response.text())
     .then((text)     => jsyaml.safeLoad(text))
     .then((yaml)     => model.Domains = yaml)
@@ -31,7 +31,7 @@ function loadDomains() {
 // loadCatalog retrieves a list of components of a domain from the the repository
 function loadCatalog(domain) {
   // determine domains
-  fetch("http://localhost/catalog/" + domain)
+  return fetch("http://localhost/catalog/" + domain)
     .then((response) => response.text())
     .then((text)     => jsyaml.safeLoad(text))
     .then((yaml)     => yaml.sort((a,b) => (a.Component > b.Component) ? 1 : (a.Component < b.Component) ? -1 : 0))
@@ -43,7 +43,7 @@ function loadCatalog(domain) {
 // loadComponents retrieves a list of component names from the the repository
 function loadComponents(domain) {
   // determine domains
-  fetch("http://localhost/component/" + domain)
+  return fetch("http://localhost/component/" + domain)
     .then((response) => response.text())
     .then((text)     => jsyaml.safeLoad(text))
     .then((yaml)     => model.Components = yaml)
@@ -54,7 +54,7 @@ function loadComponents(domain) {
 // loadComponents retrieves a component from the the repository
 function loadComponent(domain, component) {
   // determine component
-  fetch("http://localhost/component/" + domain + "/" + component)
+  return fetch("http://localhost/component/" + domain + "/" + component)
     .then((response) => response.text())
     .then((text)     => jsyaml.safeLoad(text))
     .then((yaml)     => view.component = yaml)
@@ -66,7 +66,7 @@ function loadComponent(domain, component) {
 function saveComponent(domain, comp) {
   body      = jsyaml.safeDump(comp)
   component = comp.Component + " - " + comp.Version
-  fetch("http://localhost/component/" + domain, {method: "POST", body: body})
+  return fetch("http://localhost/component/" + domain, {method: "POST", body: body})
     .then((response) => response.text())
     .then((text)     => loadCatalog(domain))
 }
@@ -75,7 +75,7 @@ function saveComponent(domain, comp) {
 
 // deleteComponent removes a component from the the repository
 function deleteComponent(domain, component) {
-  fetch("http://localhost/component/" + domain + "/" + component, {method: "DELETE"})
+  return fetch("http://localhost/component/" + domain + "/" + component, {method: "DELETE"})
     .then((response) => response.text())
     .then((text)     => loadCatalog(domain))
 }
@@ -85,7 +85,7 @@ function deleteComponent(domain, component) {
 // loadArchitectures retrieves a list of architecture names from the the repository
 function loadArchitectures(domain) {
   // determine domains
-  fetch("http://localhost/architecture/" + domain)
+  return fetch("http://localhost/architecture/" + domain)
     .then((response) => response.text())
     .then((text)     => jsyaml.safeLoad(text))
     .then((yaml)     => model.Architectures = yaml)
@@ -96,7 +96,7 @@ function loadArchitectures(domain) {
 // loadArchitecture retrieves an  architecture from the the repository
 function loadArchitecture(domain, architecture) {
   // determine domains
-  fetch("http://localhost/architecture/" + domain + "/" + architecture)
+  return fetch("http://localhost/architecture/" + domain + "/" + architecture)
     .then((response) => response.text())
     .then((text)     => jsyaml.safeLoad(text))
     .then((yaml)     => model.Architecture = yaml)
@@ -107,7 +107,7 @@ function loadArchitecture(domain, architecture) {
 // loadSolutions retrieves a list of solution names from the the repository
 function loadSolutions(domain) {
   // determine domains
-  fetch("http://localhost/solution/" + domain)
+  return fetch("http://localhost/solution/" + domain)
     .then((response) => response.text())
     .then((text)     => jsyaml.safeLoad(text))
     .then((yaml)     => model.Solutions = yaml)
@@ -118,7 +118,7 @@ function loadSolutions(domain) {
 // loadSolution retrieves a solution from the the repository
 function loadSolution(domain, solution) {
   // determine domains
-  fetch("http://localhost/solution/" + domain + "/" + solution)
+  return fetch("http://localhost/solution/" + domain + "/" + solution)
     .then((response) => response.text())
     .then((text)     => jsyaml.safeLoad(text))
     .then((yaml)     => model.Solution = yaml)
@@ -176,7 +176,7 @@ function loadTasks(domain, solution, element, cluster, instance) {
   }
 
   // every parameter is defined
-  fetch("http://localhost/tasks/" + domain + "/" + solution + "/" + element + "/" + cluster + "/" + instance)
+  return fetch("http://localhost/tasks/" + domain + "/" + solution + "/" + element + "/" + cluster + "/" + instance)
     .then((response) => response.text())
     .then((text)     => jsyaml.safeLoad(text))
     .then((yaml)     => model.Tasks = yaml)
@@ -188,7 +188,7 @@ function loadTasks(domain, solution, element, cluster, instance) {
 // loadTrace retrieves a task trace from the the repository
 function loadTrace(domain, task) {
   // determine domains
-  fetch("http://localhost/task/" + domain + "/" + task)
+  return fetch("http://localhost/task/" + domain + "/" + task)
     .then((response) => response.text())
     .then((text)     => jsyaml.safeLoad(text))
     .then((yaml)     => model.Trace = yaml)

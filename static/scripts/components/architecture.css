@@ -47,13 +47,28 @@
 
 #navigation #architecture #container {
   position:     absolute;
-  left:        0px;
+  left:      200px;
   top:        32px;
 }
 
 #navigation #architecture #add {
   display: inline-block;
   color:   lightgrey;
+}
+
+/*----------------------------------------------------------------------------*/
+
+#navigation #architecture #comps {
+  position:        absolute;
+  left:           0px;
+  width:        200px;
+  top:           32px;
+  bottom:         0px;
+  padding-top:    8px;
+
+  border-right:   1px solid lightgrey;
+
+  font-size:     14px;
 }
 
 /*----------------------------------------------------------------------------*/

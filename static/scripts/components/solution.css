@@ -47,8 +47,91 @@
 
 #navigation #solution #container {
   position:     absolute;
-  left:        0px;
+  left:      200px;
   top:        32px;
+}
+
+/*----------------------------------------------------------------------------*/
+
+#navigation #solution #elements {
+  position:        absolute;
+  left:           0px;
+  width:        200px;
+  top:           32px;
+  bottom:         0px;
+  padding-top:    8px;
+
+  border-right:   1px solid lightgrey;
+
+  font-size:     14px;
+}
+
+/*----------------------------------------------------------------------------*/
+
+#elements .header h3 {
+  display:       inline-block;
+  margin-top:   0px;
+  padding-left: 8px;
+}
+
+/*----------------------------------------------------------------------------*/
+
+#elements table {
+  overflow-x: hidden;
+  overflow-y: auto;
+  width:      100%;
+
+  border-collapse: collapse;
+  border-spacing:  0;
+  font-size:       12px;
+  text-align:      left;
+}
+
+#elements table thead, table tbody {
+  width:      100%;
+}
+
+#elements table tr {
+  background-color: #fff;
+  border-top:       1px solid #c6cbd1;
+}
+
+#elements table tr:nth-child(2n) {
+  background-color: #f6f8fa;
+}
+
+#elements table th, table td {
+  border:  1px solid #dfe2e5;
+  padding: 4px 4px;
+}
+
+#elements table th {
+  background-color: #f6f8fa;
+}
+
+#elements table tr th:last-child,
+#elements table tr td:last-child {
+  text-align: center;
+}
+
+#elements table.components th.center,
+#elements table.components td.center {
+  text-align: center;
+}
+
+
+#elements table tbody tr:hover {
+  background-color: #eef;
+}
+
+#elements #catalog {
+  width:          100%;
+  font-size:       14px;
+  font-weight:       bold;
+  text-align:        center;
+  height:          20px;
+  line-height:     20px;
+  background-color:  #f6f8fa;
 }
 
 /*----------------------------------------------------------------------------*/

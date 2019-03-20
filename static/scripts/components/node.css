@@ -1,4 +1,4 @@
-#navigation #solution #container .node{
+#navigation #container .node{
   display:          inline-block;
   position:         absolute;
   width:            160px;
@@ -8,7 +8,11 @@
   border-radius:    8px;
 }
 
-#navigation #solution #container .node .name{
+#navigation #container .node:hover{
+  background-color: darkgrey;
+}
+
+#navigation #container .node .name{
   position:      absolute;
   left:          0px;
   top:           4px;
@@ -21,7 +25,7 @@
   text-overflow: ellipsis;
 }
 
-#navigation #solution #container .node .type{
+#navigation #container .node .type{
   position:      absolute;
   left:          0px;
   top:           20px;
@@ -36,29 +40,17 @@
 
 /*----------------------------------------------------------------------------*/
 
-#navigation #solution #container .node .destination {
-  position: absolute;
-  top:             -4px;
-  width:            8px;
-  height:           8px;
-  background-color: red;
-  border-radius:    4px;
-  border:           1px solid #eee;
+#navigation #container .destination {
+  fill-color: red;
 }
 
-#navigation #solution #container .node .destination.active {
-  background-color: green;
+#navigation #container .destination.active {
+  fill: green;
 }
 /*----------------------------------------------------------------------------*/
 
-#navigation #solution #container .node .source {
-  position: absolute;
-  bottom:          -4px;
-  width:            8px;
-  height:           8px;
-  background-color: blue;
-  border-radius:    4px;
-  border:           1px solid #eee;
+#navigation #container .source {
+  fill: blue;
 }
 
 /*----------------------------------------------------------------------------*/

@@ -15,10 +15,11 @@ Vue.component( 'app',
             </div>
           </div>
           <div id="nav" v-if="view.domain!=''">
-            <div v-on:click="navComponents"   :class="{selected: view.nav=='Components'}"   id="Components">Components     <i class="fas fa-cube  text-gray-300"></i></div>
-            <div v-on:click="navArchitecture" :class="{selected: view.nav=='Architecture'}" id="Architecture">Architecture <i class="fas fa-map   text-gray-300"></i></div>
-            <div v-on:click="navSolution"     :class="{selected: view.nav=='Solution'}"     id="Solution">Solution         <i class="fas fa-cubes text-gray-300"></i></div>
-            <div v-on:click="navAutomation"   :class="{selected: view.nav=='Automation'}"   id="Automation">Automation     <i class="fas fa-cogs  text-gray-300"></i></div>
+            <div v-on:click="navComponents"      :class="{selected: view.nav=='Components'}"     id="Components">Catalog            <i class="fas fa-cube   text-gray-300"></i></div>
+            <div v-on:click="navArchitecture"    :class="{selected: view.nav=='Architecture'}"   id="Architecture">Architecture     <i class="fas fa-map    text-gray-300"></i></div>
+            <div v-on:click="navSolution"        :class="{selected: view.nav=='Solution'}"       id="Solution">Solution             <i class="fas fa-cubes  text-gray-300"></i></div>
+            <div v-on:click="navAutomation"      :class="{selected: view.nav=='Automation'}"     id="Automation">Automation         <i class="fas fa-cogs   text-gray-300"></i></div>
+            <div v-on:click="navAdministration"  :class="{selected: view.nav=='Administration'}" id="Administration">Administration <i class="fas fa-wrench text-gray-300"></i></div>
           </div>
         </div>
         <navigation v-bind:model="model" v-bind:view="view"></navigation>
@@ -69,9 +70,16 @@ function selectDomain() {
 
 //------------------------------------------------------------------------------
 
-function navComponents()   { view.nav = "Components";   }
+function navComponents()   {
+  view.nav = "Components"
+
+  model.Component = null
+}
+
+//------------------------------------------------------------------------------
+
 function navArchitecture() { view.nav = "Architecture"; }
-function navSolution()     { view.nav = "Solution"; }
+function navSolution()     { view.nav = "Solution"; model.Element = null;}
 function navAutomation()   {
   view.nav = "Automation";
 
@@ -83,5 +91,6 @@ function navAutomation()   {
   model.Tasks = []
   model.Trace = null
 }
+function navAdministration() { view.nav = "Administration"; }
 
 //------------------------------------------------------------------------------

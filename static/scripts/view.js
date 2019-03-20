@@ -5,6 +5,7 @@ var view = {
   newComponent: false,           // indicates if a new component is to be designed
   solution:     "",              // name of architecture/solution
   version:      "",              // version of architecture/solution
+  element:      "",              // name of selected element
   cluster:      "",              // name of selected cluster
   relationship: "",              // name of selected relationship
 
@@ -64,7 +65,8 @@ var view = {
     port: {
       diameter: 8,
       border:   1
-    }
+    },
+    viewElement: null
   },
 
   automation: {

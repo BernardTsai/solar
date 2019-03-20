@@ -155,9 +155,10 @@ textare:focus, select:focus, input:focus {
   padding-right:    8px;
 }
 
-#header #nav #Components.selected   { color: green; }
-#header #nav #Architecture.selected { color: blue; }
-#header #nav #Solution.selected     { color: red; }
-#header #nav #Automation.selected   { color: orange; }
+#header #nav #Components.selected     { color: green; }
+#header #nav #Architecture.selected   { color: blue; }
+#header #nav #Solution.selected       { color: red; }
+#header #nav #Automation.selected     { color: orange; }
+#header #nav #Administration.selected { color: purple; }
 
 /*----------------------------------------------------------------------------*/
