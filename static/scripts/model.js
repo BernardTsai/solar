@@ -10,7 +10,25 @@ var model = {
   SolElement:    null,      // the solution element which is currently being viewed
   Tasks:         [],
   Task:          {},
-  Graph:         null,      // solution graph
+  Graph:         {          // solution graph
+    model         : null,
+    view          : null,
+    domain        : null ,
+    architecture  : null,
+    version       : null,
+    Components    : {},
+    Elements      : {},
+    Clusters      : {},
+    Relationships : {},
+    Nodes         : {},
+    Sources       : [],
+    Destinations  : [],
+    Edges         : {},
+    Layers        : [],
+    Columns       : [],
+    Width         : 0,
+    Height        : 0
+  },
   Trace:         null,      // task trace
 };
 
@@ -88,18 +106,76 @@ function loadArchitectures(domain) {
   return fetch("http://localhost/architecture/" + domain)
     .then((response) => response.text())
     .then((text)     => jsyaml.safeLoad(text))
-    .then((yaml)     => model.Architectures = yaml)
+    .then((yaml)     => model.Architectures = yaml.sort())
 }
 
 //------------------------------------------------------------------------------
 
-// loadArchitecture retrieves an  architecture from the the repository
+// loadArchitecture retrieves an architecture from the repository
 function loadArchitecture(domain, architecture) {
-  // determine domains
+  // retrieve architecture
   return fetch("http://localhost/architecture/" + domain + "/" + architecture)
     .then((response) => response.text())
     .then((text)     => jsyaml.safeLoad(text))
     .then((yaml)     => model.Architecture = yaml)
+}
+
+//------------------------------------------------------------------------------
+
+// saveArchitecture stores an architecture  into the repository
+function saveArchitecture(domain, architecture) {
+  // save architecture
+  return fetch("http://localhost/architecture/" + domain, {
+      method: "POST",
+      body:   jsyaml.safeDump(architecture)
+    })
+    .then((response) => response.text())
+}
+
+//------------------------------------------------------------------------------
+
+// deployArchitecture deploys or updates a solution based on the architecture
+function deployArchitecture(domain, architecture) {
+  name = architecture.Architecture + " - " + architecture.Version
+
+  // deploy architecture
+  return fetch("http://localhost/architecture/" + domain + "/" + name, {method: "POST"})
+    .then((response) => response.text())
+}
+
+//------------------------------------------------------------------------------
+
+// deleteArchitecture removes an architecture  from the repository
+function deleteArchitecture(domain, architecture) {
+  name = architecture.Architecture + " - " + architecture.Version
+
+  // delete architecture
+  return fetch("http://localhost/architecture/" + domain + "/" + name, {method: "DELETE"})
+    .then((response) => response.text())
+}
+
+//------------------------------------------------------------------------------
+
+// duplicateArchitecture creates a copy of an architecture with a different name
+function duplicateArchitecture(architecture, version) {
+  yaml = jsyaml.safeDump(architecture)
+  copy = jsyaml.safeLoad(yaml)
+
+  copy.Version = version
+
+  return copy
+}
+
+//------------------------------------------------------------------------------
+
+// duplicateElement creates a copy of an element with a different name
+function duplicateElement(element, name) {
+  yaml = jsyaml.safeDump(element)
+  copy = jsyaml.safeLoad(yaml)
+
+  copy.Element = name
+
+  return copy
 }
 
 //------------------------------------------------------------------------------

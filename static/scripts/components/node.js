@@ -61,31 +61,6 @@ Vue.component(
   'node',
   {
     props: ['model', 'view', 'node'],
-    methods: {
-      viewElement2: function() {
-        // reset fields for solution element editor
-        this.view.se = {
-          New:            false,
-          Element:        this.node.Element.Element,
-          Component:      this.node.Element.Component,
-          Configuration1: this.node.Element.Configuration,
-          Cluster:        "",
-          State:          "",
-          Min:            "",
-          Max:            "",
-          Size:           "",
-          Configuration2: "",
-          Relationship:   "",
-          Dependency:     "",
-          DepType:        "",
-          RelElement:     "",
-          Configuration3: ""
-        },
-
-        // initialise the architecture element of the model
-        this.model.SolElement = this.node.Element
-      }
-    },
     computed: {
       x: function() {
         var w   = this.view.graph.node.width
@@ -108,12 +83,18 @@ Vue.component(
         return this.node.Type
       }
     },
+    methods: {
+      // nodeSelected indicates that the node has been selected
+      nodeSelected: function() {
+        this.$emit('node-selected', this.node)
+      }
+    },
     template: `
       <g :transform="'translate(' + x + ',' + y + ')'">
         <foreignObject x=0 y=0 width=160 height=40>
           <div  class="node"
             :title="name"
-            @click="view.graph.viewElement(node.Element)">
+            @click="nodeSelected">
             <div class="name">{{name}}</div>
             <div class="type">{{type}}</div>
           </div>

@@ -20,13 +20,13 @@ function ArchitectureGraph(model, view, domain, architecture, version) {
   this.Height        = 0             // height of the graph
 
   // load catalog
-  loadCatalog(domain)
+  // loadCatalog(domain)
   // load architecture
-  .then(() => {
-    loadArchitecture(domain, architecture + " - " + version)
-  })
+  // .then(() => {
+  //   loadArchitecture(domain, architecture + " - " + version)
+  // })
   // initialise lookups of graph
-  .then(() => {
+  //.then(() => {
     this.calculateComponents()
     this.calculateElements()
     this.calculateClusters()
@@ -40,10 +40,12 @@ function ArchitectureGraph(model, view, domain, architecture, version) {
     this.calculateEdges()
     this.calculateDimensions()
     this.model.Graph = this
-  })
-  .catch((error) => {
-    console.log(error);
-  })
+  // })
+  // .catch((error) => {
+  //   console.log(error);
+  // })
+
+  return this
 }
 
 //------------------------------------------------------------------------------

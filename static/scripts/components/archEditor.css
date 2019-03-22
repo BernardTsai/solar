@@ -1,5 +1,5 @@
-.compEditor {
-  position:         absolute;
+.archEditor {
+  position:          absolute;
   top:             32px;
   bottom:           0px;
   left:             200px;
@@ -8,61 +8,62 @@
   padding-top:      8px;
   padding-left:      8px;
   padding-right:     8px;
+  background-color:   #eee;
 }
 
-.compEditor .header h3 {
+.archEditor .header h3 {
   margin-top: 0px;
   display:     inline-block;
 }
 
-.compEditor .header .close {
+.archEditor .header .close {
   float: right;
 }
 
-.compEditor table {
+.archEditor table {
   border-collapse: collapse;
 }
 
-.compEditor td, .compEditor th {
+.archEditor td, .archEditor th {
   vertical-align: top;
   border:         none;
 }
 
-.compEditor input,
-.compEditor select,
-.compEditor textarea {
+.archEditor input,
+.archEditor select,
+.archEditor textarea {
   width:     100%;
   font-size:  12px;
 }
 
-.compEditor .dependencies td,
-.compEditor .dependencies th {
+.archEditor .relationships td,
+.archEditor .relationships th {
   vertical-align:  top;
   border:         1px solid #dfe2e5;
   padding:        4px 4px;
 }
 
 
-.compEditor .dependencies input,
-.compEditor .dependencies select {
+.archEditor .relationships input,
+.archEditor .relationships select {
   width:            100%;
   font-size:         12px;
   border:              none;
   background-color:    inherit;
 }
 
-.compEditor textarea {
+.archEditor textarea {
   resize:    none;
   border:   1px solid lightgrey;
 }
 
-.compEditor input:disabled,
-.compEditor select:disabled,
-.compEditor textarea:disabled {
+.archEditor input:disabled,
+.archEditor select:disabled,
+.archEditor textarea:disabled {
   background-color: #eee
 }
 
-.compEditor table.dependencies  {
+.archEditor table.relationships  {
   overflow-x: hidden;
   overflow-y: auto;
   width:      100%;
@@ -73,46 +74,46 @@
   text-align:      left;
 }
 
-.compEditor table.dependencies thead,
-.compEditor table.dependencies tbody {
+.archEditor table.relationships thead,
+.archEditor table.relationships tbody {
   width:      100%;
 }
 
-.compEditor table.dependencies tr {
+.archEditor table.relationships tr {
   background-color: #fff;
   border-top:       1px solid #c6cbd1;
 }
 
-.compEditor table.dependencies tr:nth-child(2n) {
+.archEditor table.relationships tr:nth-child(2n) {
   background-color: #f6f8fa;
 }
 
-.compEditor table.dependencies th,
-.compEditor table.dependencies td {
+.archEditor table.relationships th,
+.archEditor table.relationships td {
   border:  1px solid #dfe2e5;
   padding: 4px 4px;
 }
 
-.compEditor table.dependencies  th {
+.archEditor table.relationships  th {
   background-color: #f6f8fa;
 }
 
-.compEditor table.dependencies tr td:last-child {
+.archEditor table.relationships tr td:last-child {
   text-align: center;
 }
 
-.compEditor table.dependencies tbody tr:hover {
+.archEditor table.relationships tbody tr:hover {
   background-color: #eef;
 }
 
-.compEditor table.dependencies th.center,
-.compEditor table.dependencies td.center {
+.archEditor table.relationships th.center,
+.archEditor table.relationships td.center {
   text-align: center;
 }
 
 /* -------------------------------------------------------------------------- */
 
-.compEditor .configurationEditor {
+.archEditor .configurationEditor {
   position:            absolute;
   left:               0px;
   right:              0px;
@@ -123,7 +124,7 @@
   padding-bottom:    96px;
 }
 
-.compEditor .configurationEditor .modal {
+.archEditor .configurationEditor .modal {
   width:             100%;
   background-color:     white;
   padding-top:         8px;
@@ -135,7 +136,7 @@
   transition:           all .3s ease;
 }
 
-.compEditor .configurationEditor textarea {
+.archEditor .configurationEditor textarea {
   width:             100%;
   height:            400px;
   margin-bottom:       8px;

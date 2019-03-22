@@ -4,7 +4,7 @@ Vue.component( 'app',
     template: `
       <div>
         <div id="header">
-          <div id="title" title="Simplified Orchestration of the Lifecycle Automation of Resources">SOLAR</div>
+          <div id="title" title="Simplified Orchestration of the Lifecycle Automation of Resources\nReference implementation - © Bernard Tsai 2018">SOLAR</div>
           <div id="selectors">
             <div id="domain-selector">
               <strong>Domain:</strong>
@@ -78,8 +78,18 @@ function navComponents()   {
 
 //------------------------------------------------------------------------------
 
-function navArchitecture() { view.nav = "Architecture"; }
-function navSolution()     { view.nav = "Solution"; model.Element = null;}
+function navArchitecture() {
+  view.nav = "Architecture";
+
+  model.ArchElement = null;
+  model.Graph       = null;
+}
+function navSolution()     {
+  view.nav = "Solution";
+
+  model.SolElement = null;
+  model.Graph      = null;
+}
 function navAutomation()   {
   view.nav = "Automation";
 

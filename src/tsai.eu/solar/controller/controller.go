@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"errors"
 	"sync"
 
 	"tsai.eu/solar/controller/demo"
@@ -40,10 +39,12 @@ func GetController(componentType string) (Controller, error) {
 		controllers["Dummy"] = dummy.NewController()
 	})
 
-	// determine controller
+	// determine controller (if unknown use the dummy controller)
 	controller, found := (controllers)[componentType]
 	if !found {
-		return nil, errors.New("unknown type")
+		// TODO: log unknown controller type and error
+		// return nil, errors.New("unknown type")
+		controller = controllers["Dummy"]
 	}
 
 	// success

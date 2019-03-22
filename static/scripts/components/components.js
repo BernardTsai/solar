@@ -39,6 +39,9 @@ Vue.component(
     },
     template: `
       <div id="components">
+        <div id="selector">
+        </div>
+
         <div id="comps">
           <div class="header">
             <h3>Catalog:</h3>

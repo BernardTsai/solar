@@ -1,0 +1,65 @@
+Schema: BT V1.0.0
+Name: Model
+Domains:
+  demo:
+    Name: demo
+    Components:
+      Application - V1.0.0:
+        Component: Application
+        Version: V1.0.0
+        Configuration: ""
+        Dependencies:
+          Server:
+            Dependency: Server
+            Type: context
+            Component: Server
+            Version: V1.0.0
+            Configuration: ""
+          Service:
+            Dependency: Service
+            Type: service
+            Component: Application
+            Version: V1.0.0
+            Configuration: ""
+      Network - V1.0.0:
+        Component: Network
+        Version: V1.0.0
+        Configuration: ""
+        Dependencies:
+          Tenant:
+            Dependency: Tenant
+            Type: context
+            Component: Tenant
+            Version: V1.0.0
+            Configuration: ""
+      Server - V1.0.0:
+        Component: Server
+        Version: V1.0.0
+        Configuration: ""
+        Dependencies:
+          Network:
+            Dependency: Network
+            Type: context
+            Component: Network
+            Version: V1.0.0
+            Configuration: ""
+          Tenant:
+            Dependency: Tenant
+            Type: context
+            Component: Tenant
+            Version: V1.0.0
+            Configuration: ""
+      Tenant - V1.0.0:
+        Component: Tenant
+        Version: V1.0.0
+        Configuration: ""
+        Dependencies: {}
+    Architectures:
+      VNF - V1.0.0:
+        Architecture: VNF
+        Version: V1.0.0
+        Configuration: ""
+        Elements: {}
+    Solutions: {}
+    Tasks: {}
+    Events: {}

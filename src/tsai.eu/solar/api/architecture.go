@@ -8,12 +8,13 @@ import (
   "github.com/gorilla/mux"
 
   "tsai.eu/solar/model"
+  "tsai.eu/solar/engine"
   "tsai.eu/solar/util"
 )
 
 //------------------------------------------------------------------------------
 
-// ArchitectureListHandler lists the domains of the model.
+// ArchitectureListHandler lists the architectures of a domain.
 func ArchitectureListHandler(w http.ResponseWriter, r *http.Request) {
   vars       := mux.Vars(r)
   domainName := vars["domain"]
@@ -45,7 +46,7 @@ func ArchitectureListHandler(w http.ResponseWriter, r *http.Request) {
 
 //------------------------------------------------------------------------------
 
-// ArchitectureSetHandler handles the uploading of a new component.
+// ArchitectureSetHandler handles the uploading of a new architecture.
 func ArchitectureSetHandler(w http.ResponseWriter, r *http.Request) {
   vars       := mux.Vars(r)
   domainName := vars["domain"]
@@ -83,7 +84,7 @@ func ArchitectureSetHandler(w http.ResponseWriter, r *http.Request) {
 
 //------------------------------------------------------------------------------
 
-// ArchitectureGetHandler retrieves a domain.
+// ArchitectureGetHandler retrieves an architecture.
 func ArchitectureGetHandler(w http.ResponseWriter, r *http.Request) {
   vars             := mux.Vars(r)
   domainName       := vars["domain"]
@@ -110,7 +111,7 @@ func ArchitectureGetHandler(w http.ResponseWriter, r *http.Request) {
 
 //------------------------------------------------------------------------------
 
-// ArchitectureDeleteHandler deletes a component.
+// ArchitectureDeleteHandler deletes an architecture.
 func ArchitectureDeleteHandler(w http.ResponseWriter, r *http.Request) {
   vars             := mux.Vars(r)
   domainName       := vars["domain"]
@@ -129,6 +130,65 @@ func ArchitectureDeleteHandler(w http.ResponseWriter, r *http.Request) {
     w.WriteHeader(http.StatusBadRequest)
     return
   }
+}
+
+//------------------------------------------------------------------------------
+
+// ArchitectureDeployHandler deploys an architecture.
+func ArchitectureDeployHandler(w http.ResponseWriter, r *http.Request) {
+  vars             := mux.Vars(r)
+  domainName       := vars["domain"]
+  architectureName := vars["architecture"]
+
+	// determine domain
+	domain, err := model.GetDomain(domainName)
+
+	if err != nil {
+    w.WriteHeader(http.StatusBadRequest)
+    io.WriteString(w, "domain can not be identified")
+    return
+	}
+
+	// determine architecture
+	architecture, err := domain.GetArchitecture(architectureName)
+
+	if err != nil {
+    w.WriteHeader(http.StatusBadRequest)
+    io.WriteString(w, "architecture can not be identified")
+    return
+	}
+
+	// determine solution (create new solution if not found)
+	solution, err := domain.GetSolution(architecture.Architecture)
+	if err != nil {
+		solution, _ = model.NewSolution(architecture.Architecture, architecture.Version, "")
+
+		domain.AddSolution(solution)
+	}
+
+	// update the target state of the solution
+	if err = solution.Update(domain.Name, architecture); err != nil {
+    w.WriteHeader(http.StatusInternalServerError)
+    io.WriteString(w, "unable to create or update the solution:\n" + err.Error())
+    return
+	}
+
+	// create task and start it by signalling an event
+	task, err := engine.NewSolutionTask(domain.Name, "", solution)
+	if err != nil {
+    w.WriteHeader(http.StatusInternalServerError)
+    io.WriteString(w, "task can not be created:\n" + err.Error())
+		return
+	}
+
+	// get event channel
+	channel := engine.GetEventChannel()
+
+	// create event
+	channel <- model.NewEvent(domain.Name, task.UUID, model.EventTypeTaskExecution, "", "initial")
+
+  // return the uuid of the task
+  io.WriteString(w, task.UUID)
 }
 
 //------------------------------------------------------------------------------

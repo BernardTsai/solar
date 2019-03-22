@@ -6,23 +6,15 @@ Vue.component(
       // viewElement displays an element in the editor
       viewElement: function(element) {
         // initialise the solution element of the model
-        view.Element  = element.Element
-        model.Element = element
-
-        this.$forceUpdate()
+        this.model.SolElement = element
       },
       // hidelement hides the editor
       hideElement: function(element) {
         // reset the solution element of the model
-        view.Element  = ""
-        model.Element = null
-
-        this.$forceUpdate()
+        this.model.SolElement = null
       },
       // selectSolution pick a specific solution
       selectSolution: function() {
-        // view.solution = document.getElementById('solutionSelector').value
-
         // load solution
         if (this.view.domain != "" && this.view.solution != ""){
           this.view.graph.viewElement = this.viewElement
@@ -32,9 +24,7 @@ Vue.component(
           this.model.Graph    = null
         }
         // reset element
-        this.model.Element = null
-
-        this.$forceUpdate()
+        this.model.SolElement = null
       }
     },
     computed: {
@@ -53,7 +43,7 @@ Vue.component(
         <div id="selector">
           <div id="solution-selector">
             <strong>Solution:</strong>
-            <select id="solutionSelector" v-model="view.solution" v-on:change="selectSolution">
+            <select id="solutionSelector" v-model="view.solution" @change="selectSolution">
               <option selected value="">Please select one</option>
               <option v-for="solution in model.Solutions">{{solution}}</option>
             </select>
@@ -73,7 +63,8 @@ Vue.component(
                 <th @click="hideElement()">
                   <i class="fas fa-eye-slash"></i>
                 </th>
-              </thead>
+              </tr>
+            </thead>
             <tbody>
               <tr v-for="element in model.Solution.Elements">
                 <td>{{element.Element}}</td>
@@ -103,7 +94,7 @@ Vue.component(
           </svg>
         </div>
 
-        <solEditor v-if="model.Element" :model="model" :view="view" :element="model.Element"/>
+        <solEditor v-if="model.SolElement" :model="model" :view="view" :element="model.SolElement"/>
       </div>`
   }
 )

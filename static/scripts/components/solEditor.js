@@ -30,7 +30,7 @@ Vue.component(
           this.view.se.Dependency    = rel.Dependency
         } else {
           this.view.se.ConfTitle     = "Configuration of element: "
-          this.view.se.Configuration = this.model.Element.Configuration
+          this.view.se.Configuration = this.element.Configuration
           this.view.se.Dependency    = ""
         }
         this.$forceUpdate()

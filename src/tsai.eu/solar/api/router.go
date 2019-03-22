@@ -38,6 +38,7 @@ func NewRouter() {
   router.HandleFunc("/architecture/{domain}",                ArchitectureSetHandler).Methods("POST")
   router.HandleFunc("/architecture/{domain}/{architecture}", ArchitectureGetHandler).Methods("GET")
   router.HandleFunc("/architecture/{domain}/{architecture}", ArchitectureDeleteHandler).Methods("DELETE")
+  router.HandleFunc("/architecture/{domain}/{architecture}", ArchitectureDeployHandler).Methods("POST")
 
   // solution
   router.HandleFunc("/solution/{domain}",                       SolutionListHandler).Methods("GET")
