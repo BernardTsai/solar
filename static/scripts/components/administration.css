@@ -1,0 +1,55 @@
+#navigation #administration {
+  position: absolute;
+  left:     0px;
+  right:    0px;
+  top:      0px;
+  bottom:   0px;
+}
+
+#navigation #administration #selector {
+  position:           absolute;
+  left:              0px;
+  right:             0px;
+  top:               0px;
+  height:           32px;
+  padding-left:      8px;
+  padding-right:     8px;
+  line-height:      31px;
+  vertical-align:     middle;
+  border-bottom:     1px solid grey;
+  font-size:        12px;
+  background-color:   lightgrey;
+}
+
+/*----------------------------------------------------------------------------*/
+
+#navigation #administration #actions {
+  position:           absolute;
+  left:              0px;
+  right:             0px;
+  top:              32px;
+  bottom             0px;
+}
+
+#navigation #administration #actions .action {
+  width:              200px;
+  height:              32px;
+  background-color:      lightgrey;
+  border-radius:       16px;
+  margin:               8px;
+  margin-left:        200px;
+  vertical-align:        middle;
+  text-align:            left;
+  line-height:         32px;
+  padding-left:        16px;
+}
+
+#navigation #administration #actions .action span{
+  width: 64px;
+}
+
+#navigation #administration #actions input{
+  display: none;
+}
+
+/*----------------------------------------------------------------------------*/

@@ -48,18 +48,18 @@ import (
 
 // Cluster describes the runtime configuration of a solution element cluster within a domain.
 type Cluster struct {
-	Version        string                   `yaml:"Version"`        // version of the solution element cluster
-	Target         string                   `yaml:"Target"`         // target state of the solution element cluster
-	State          string                   `yaml:"State"`          // state of the solution element cluster
-	Min            int                      `yaml:"Min"`            // min. size of the solution element cluster
-	Max            int                      `yaml:"Max"`            // max. size of the solution element cluster
-	Size           int                      `yaml:"Size"`           // size of the solution element cluster
-	Configuration  string                   `yaml:"Configuration"`  // runtime configuration of the solution element cluster
-	Endpoint       string                   `yaml:"Endpoint"`       // endpoint of the solution element cluster
-	Relationships  map[string]*Relationship `yaml:"Relationships"`  // relationships of the solution element cluster
-	RelationshipsX sync.RWMutex             `yaml:"RelationshipsX"` // mutex for relationships
-	Instances      map[string]*Instance     `yaml:"Instances"`      // instances of the solution element cluster
-	InstancesX     sync.RWMutex             `yaml:"InstancesX"`     // mutex for instances
+	Version        string                   `yaml:"Version"`                  // version of the solution element cluster
+	Target         string                   `yaml:"Target"`                   // target state of the solution element cluster
+	State          string                   `yaml:"State"`                    // state of the solution element cluster
+	Min            int                      `yaml:"Min"`                      // min. size of the solution element cluster
+	Max            int                      `yaml:"Max"`                      // max. size of the solution element cluster
+	Size           int                      `yaml:"Size"`                     // size of the solution element cluster
+	Configuration  string                   `yaml:"Configuration"`            // runtime configuration of the solution element cluster
+	Endpoint       string                   `yaml:"Endpoint"`                 // endpoint of the solution element cluster
+	Relationships  map[string]*Relationship `yaml:"Relationships"`            // relationships of the solution element cluster
+	RelationshipsX sync.RWMutex             `yaml:"RelationshipsX,omitempty"` // mutex for relationships
+	Instances      map[string]*Instance     `yaml:"Instances"`                // instances of the solution element cluster
+	InstancesX     sync.RWMutex             `yaml:"InstancesX,omitempty"`     // mutex for instances
 }
 
 //------------------------------------------------------------------------------

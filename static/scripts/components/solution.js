@@ -3,10 +3,29 @@ Vue.component(
   {
     props: ['model', 'view'],
     methods: {
+      // showTasks switches to the corresponding automation tasks
+      showTasks: function() {
+        model.Tasks = []
+        model.Trace = null
+
+        view.automation.solution = view.solution
+        view.automation.element  = ""
+        view.automation.cluster  = ""
+        view.automation.instance = ""
+
+        loadTasks(
+          view.domain,
+          view.automation.solution,
+          view.automation.element,
+          view.automation.cluster,
+          view.automation.instance)
+
+        view.nav = "Automation"
+      },
       // viewElement displays an element in the editor
-      viewElement: function(element) {
+      viewElement: function(node) {
         // initialise the solution element of the model
-        this.model.SolElement = element
+        this.model.SolElement = node.Element
       },
       // hidelement hides the editor
       hideElement: function(element) {
@@ -17,7 +36,6 @@ Vue.component(
       selectSolution: function() {
         // load solution
         if (this.view.domain != "" && this.view.solution != ""){
-          this.view.graph.viewElement = this.viewElement
           loadSolution(this.view.domain, this.view.solution)
         } else {
           this.model.Solution = null
@@ -25,20 +43,14 @@ Vue.component(
         }
         // reset element
         this.model.SolElement = null
-      }
-    },
-    computed: {
+      },
       // graph creates the solution graph
       graph: function() {
-        if (this.view.solution != '') {
-          sg = new SolutionGraph(this.model, this.view, this.view.domain, this.view.solution)
-        }
-        return ""
+        return new SolutionGraph(this.model, this.view, this.view.domain, this.view.solution)
       }
     },
     template: `
       <div id="solution" v-if="view.nav=='Solution'">
-        {{graph}}
 
         <div id="selector">
           <div id="solution-selector">
@@ -47,6 +59,12 @@ Vue.component(
               <option selected value="">Please select one</option>
               <option v-for="solution in model.Solutions">{{solution}}</option>
             </select>
+          </div>
+
+          <div class="buttons">
+            <button class="action" v-if="view.solution!=''" @click="showTasks()">
+              Tasks <i class="fas fa-cogs">
+            </button>
           </div>
         </div>
 
@@ -77,21 +95,8 @@ Vue.component(
           </table>
         </div>
 
-        <div id="container" v-if="model.Graph">
-          <svg id="canvas" v-bind:style="{ width: model.Graph.Width + 'px', height: model.Graph.Height + 'px'}">
-            <edge
-              :model="model"
-              :view="view"
-              :edge="edge"
-              v-for="edge in model.Graph.Edges">
-            </edge>
-            <node
-              :model="model"
-              :view="view"
-              :node="node"
-              v-for="node in model.Graph.Nodes">
-            </node>
-          </svg>
+        <div id="container" v-if="model.Solution">
+          <graph :model="model" :view="view" :graph="graph()" @node-selected="viewElement"/>
         </div>
 
         <solEditor v-if="model.SolElement" :model="model" :view="view" :element="model.SolElement"/>

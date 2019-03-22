@@ -1,14 +1,14 @@
 var view = {
-  nav:          "Components",    // selected view (Components,Architecture,Solution,Automation)
-  domain:       "",              // selected domain
-  component:    -1,              // index of selected component
-  newComponent: false,           // indicates if a new component is to be designed
-  architecture: "",              // name of architecture
-  solution:     "",              // name of architecture/solution
-  version:      "",              // version of architecture/solution
-  element:      "",              // name of selected element
-  cluster:      "",              // name of selected cluster
-  relationship: "",              // name of selected relationship
+  nav:          "Administration",  // selected view (Components,Architecture,Solution,Automation,Administration)
+  domain:       "",                // selected domain
+  component:    -1,                // index of selected component
+  newComponent: false,             // indicates if a new component is to be designed
+  architecture: "",                // name of architecture
+  solution:     "",                // name of architecture/solution
+  version:      "",                // version of architecture/solution
+  element:      "",                // name of selected element
+  cluster:      "",                // name of selected cluster
+  relationship: "",                // name of selected relationship
 
 
 

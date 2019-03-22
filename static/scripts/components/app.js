@@ -8,7 +8,7 @@ Vue.component( 'app',
           <div id="selectors">
             <div id="domain-selector">
               <strong>Domain:</strong>
-              <select id="domainSelector" v-on:change="selectDomain">
+              <select id="domainSelector" v-model="view.domain" @change="selectDomain">
                 <option selected value="">Please select one</option>
                 <option v-for="domain in model.Domains">{{domain}}</option>
               </select>
@@ -19,6 +19,8 @@ Vue.component( 'app',
             <div v-on:click="navArchitecture"    :class="{selected: view.nav=='Architecture'}"   id="Architecture">Architecture     <i class="fas fa-map    text-gray-300"></i></div>
             <div v-on:click="navSolution"        :class="{selected: view.nav=='Solution'}"       id="Solution">Solution             <i class="fas fa-cubes  text-gray-300"></i></div>
             <div v-on:click="navAutomation"      :class="{selected: view.nav=='Automation'}"     id="Automation">Automation         <i class="fas fa-cogs   text-gray-300"></i></div>
+          </div>
+          <div id="nav" v-if="view.domain==''">
             <div v-on:click="navAdministration"  :class="{selected: view.nav=='Administration'}" id="Administration">Administration <i class="fas fa-wrench text-gray-300"></i></div>
           </div>
         </div>
@@ -31,8 +33,6 @@ Vue.component( 'app',
 
 // selectArchitecture pick a specific version of an architecture
 function selectDomain() {
-  view.domain = document.getElementById('domainSelector').value
-
   // load catalog
   if (view.domain == ""){
     model.Catalog = []
@@ -66,6 +66,13 @@ function selectDomain() {
     model.Solution  = null
   }
   view.solution = ""
+
+  // activate administration if no domain has been selected
+  if (view.domain == "") {
+    navAdministration()
+  } else if (view.nav == "" || view.nav == "Administration") {
+    view.nav = "Components"
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -101,6 +108,8 @@ function navAutomation()   {
   model.Tasks = []
   model.Trace = null
 }
-function navAdministration() { view.nav = "Administration"; }
+function navAdministration() {
+  view.nav = "Administration";
+}
 
 //------------------------------------------------------------------------------

@@ -18,28 +18,21 @@ function SolutionGraph(model, view, domain, solution) {
   this.Width         = 0           // width of the graph
   this.Height        = 0           // height of the graph
 
-  //
-  // load catalog, architecture and solution
-  loadAll(domain, solution)
-  // initialise lookups of graph
-  .then(() => {
-    this.calculateComponents()
-    this.calculateElements()
-    this.calculateClusters()
-    this.calculateRelationships()
-    this.calculateNodes()
-    this.calculateSources()
-    this.calculateDestinations()
-    this.sortSources()
-    this.sortDestinations()
-    this.sortNodes()
-    this.calculateEdges()
-    this.calculateDimensions()
-    this.model.Graph = this
-  })
-  .catch((error) => {
-    console.log(error);
-  })
+  this.calculateComponents()
+  this.calculateElements()
+  this.calculateClusters()
+  this.calculateRelationships()
+  this.calculateNodes()
+  this.calculateSources()
+  this.calculateDestinations()
+  this.sortSources()
+  this.sortDestinations()
+  this.sortNodes()
+  this.calculateEdges()
+  this.calculateDimensions()
+  this.model.Graph = this
+
+  return this
 }
 
 //------------------------------------------------------------------------------

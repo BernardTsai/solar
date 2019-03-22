@@ -63,6 +63,7 @@ Vue.component(
         architecture = this.model.Architecture
 
         deployArchitecture(this.view.domain, architecture)
+        .then(() => { loadSolutions(this.view.domain) })
         .then((task) => {
           console.log(task)
         })
@@ -70,7 +71,7 @@ Vue.component(
       // viewElement displays an element in the editor
       viewElement: function(node) {
         // initialise the architecture element of the model
-        model.ArchElement = node.Element
+        this.model.ArchElement = node.Element
       },
       // hidelement hides the editor
       hideElement: function(element) {
