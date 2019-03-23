@@ -41,8 +41,8 @@ type ElementConfiguration struct {
 
 //------------------------------------------------------------------------------
 
-// NewElementConfiguratin creates a new element configuration
-func NewElementConfiguratin(name string, component string, configuration string) (*ElementConfiguration, error) {
+// NewElementConfiguration creates a new element configuration
+func NewElementConfiguration(name string, component string, configuration string) (*ElementConfiguration, error) {
 	var elementConfiguration ElementConfiguration
 
 	elementConfiguration.Element       = name

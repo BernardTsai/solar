@@ -151,7 +151,9 @@ func GetElementSetup(setup *Setup, elementName string) (*ElementSetup, error){
   // determine element configuration context
   elementConfiguration, err := architecture.GetElement(elementName)
   if err != nil {
-    return nil, err
+    // compensate for undefined configurations
+    // e.g. when an element has been removed
+    elementConfiguration, _ = NewElementConfiguration(elementName, "", element.Component)
   }
 
   // set context information
@@ -215,17 +217,21 @@ func GetClusterSetup(setup *Setup, elementName string, clusterName string) (*Clu
   // determine element configuration context
   elementConfiguration, err := architecture.GetElement(elementName)
   if err != nil {
-    return nil, err
+    // compensate for undefined configurations
+    // e.g. when an element has been removed
+    elementConfiguration, _ = NewElementConfiguration(elementName, "", element.Component)
   }
 
   // determine cluster configuration context
   clusterConfiguration, err := elementConfiguration.GetCluster(clusterName)
   if err != nil {
-    return nil, err
+    // compensate for undefined configurations
+    // e.g. when a cluster has been removed
+    clusterConfiguration, _ = NewClusterConfiguration(clusterName, InitialState, 0, 0, 0, "")
   }
 
   // determine component context
-  component, err := domain.GetComponent(element.Component+ " - " + clusterName)
+  component, err := domain.GetComponent(element.Component + " - " + clusterName)
   if err != nil {
     return nil, err
   }
@@ -308,19 +314,25 @@ func GetRelationshipSetup(setup *Setup, elementName string, clusterName string, 
   // determine element configuration context
   elementConfiguration, err := architecture.GetElement(elementName)
   if err != nil {
-    return nil, err
+    // compensate for undefined configurations
+    // e.g. when an element has been removed
+    elementConfiguration, _ = NewElementConfiguration(elementName, "", element.Component)
   }
 
   // determine cluster configuration context
   clusterConfiguration, err := elementConfiguration.GetCluster(clusterName)
   if err != nil {
-    return nil, err
+    // compensate for undefined configurations
+    // e.g. when a cluster has been removed
+    clusterConfiguration, _ = NewClusterConfiguration(clusterName, InitialState, 0, 0, 0, "")
   }
 
   // determine relationship configuration context
   relationshipConfiguration, err := clusterConfiguration.GetRelationship(relationshipName)
   if err != nil {
-    return nil, err
+    // compensate for undefined configurations
+    // e.g. when a relationship has been removed
+    relationshipConfiguration, _ = NewRelationshipConfiguration(relationshipName, "", "", "", "", "")
   }
 
   // determine component context
@@ -395,13 +407,17 @@ func GetInstanceSetup(setup *Setup, elementName string, clusterName string, inst
   // determine element configuration context
   elementConfiguration, err := architecture.GetElement(elementName)
   if err != nil {
-    return nil, err
+    // compensate for undefined configurations
+    // e.g. when an element has been removed
+    elementConfiguration, _ = NewElementConfiguration(elementName, "", element.Component)
   }
 
   // determine cluster configuration context
   clusterConfiguration, err := elementConfiguration.GetCluster(clusterName)
   if err != nil {
-    return nil, err
+    // compensate for undefined configurations
+    // e.g. when a cluster has been removed
+    clusterConfiguration, _ = NewClusterConfiguration(clusterName, InitialState, 0, 0, 0, "")
   }
 
   // determine component context
