@@ -23,12 +23,17 @@ Vue.component(
         view.nav = "Automation"
       },
       // viewElement displays an element in the editor
-      viewElement: function(node) {
+      viewElement: function(element) {
+        // initialise the solution element of the model
+        this.model.SolElement = element
+      },
+      // viewNode displays a nodes element in the editor
+      viewNode: function(node) {
         // initialise the solution element of the model
         this.model.SolElement = node.Element
       },
       // hidelement hides the editor
-      hideElement: function(element) {
+      hideElement: function() {
         // reset the solution element of the model
         this.model.SolElement = null
       },
@@ -96,7 +101,7 @@ Vue.component(
         </div>
 
         <div id="container" v-if="model.Solution">
-          <graph :model="model" :view="view" :graph="graph()" @node-selected="viewElement"/>
+          <graph :model="model" :view="view" :graph="graph()" @node-selected="viewNode"/>
         </div>
 
         <solEditor v-if="model.SolElement" :model="model" :view="view" :element="model.SolElement"/>

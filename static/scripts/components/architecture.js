@@ -63,18 +63,16 @@ Vue.component(
         architecture = this.model.Architecture
 
         deployArchitecture(this.view.domain, architecture)
-        .then(() => { loadSolutions(this.view.domain) })
-        .then((task) => {
-          console.log(task)
-        })
+        .then(() => loadSolutions(this.view.domain) )
+        .then(() => navSolution() )
       },
-      // viewElement displays an element in the editor
-      viewElement: function(node) {
+      // viewNode displays a nodes element in the editor
+      viewNode: function(node) {
         // initialise the architecture element of the model
         this.model.ArchElement = node.Element
       },
       // hidelement hides the editor
-      hideElement: function(element) {
+      hideElement: function() {
         // reset the architecture element of the model
         this.model.ArchElement = null
 
@@ -219,7 +217,7 @@ Vue.component(
         </div>
 
         <div id="container" v-if="model.Architecture">
-          <graph :model="model" :view="view" :graph="graph()" @node-selected="viewElement"/>
+          <graph :model="model" :view="view" :graph="graph()" @node-selected="viewNode"/>
         </div>
 
         <archEditor v-if="model.ArchElement" :model="model" :view="view" :element="model.ArchElement"/>

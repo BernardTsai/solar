@@ -9,7 +9,8 @@ Vue.component( 'app',
             <div id="domain-selector">
               <strong>Domain:</strong>
               <select id="domainSelector" v-model="view.domain" @change="selectDomain">
-                <option selected value="">Please select one</option>
+                <option selected value="">Administration</option>
+                <option disabled value=""><hr/></option>
                 <option v-for="domain in model.Domains">{{domain}}</option>
               </select>
             </div>
@@ -91,12 +92,35 @@ function navArchitecture() {
   model.ArchElement = null;
   model.Graph       = null;
 }
-function navSolution()     {
-  view.nav = "Solution";
 
-  model.SolElement = null;
-  model.Graph      = null;
+//------------------------------------------------------------------------------
+
+function navSolution()     {
+  view.nav = "Solution"
+
+
+  model.SolElement = null // no element to be displayed
+  model.Graph      = null // reset graph
+
+  // check if the solution selection needs to be updated
+  if (!model.Solutions) {
+    loadSolutions(view.domain)
+    .then(() => {
+      // load solution if necessary
+      if (model.Solutions.includes(view.solution) && !model.Solution) {
+        loadSolution(view.domain, view.solution)
+      }
+    })
+  } else {
+    // load solution if necessary
+    if (model.Solutions.includes(view.solution) && !model.Solution) {
+      loadSolution(view.domain, view.solution)
+    }    
+  }
 }
+
+//------------------------------------------------------------------------------
+
 function navAutomation()   {
   view.nav = "Automation";
 
@@ -108,6 +132,9 @@ function navAutomation()   {
   model.Tasks = []
   model.Trace = null
 }
+
+//------------------------------------------------------------------------------
+
 function navAdministration() {
   view.nav = "Administration";
 }
