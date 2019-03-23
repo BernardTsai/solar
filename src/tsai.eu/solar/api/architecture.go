@@ -55,6 +55,7 @@ func ArchitectureSetHandler(w http.ResponseWriter, r *http.Request) {
   body, err := ioutil.ReadAll(r.Body)
   if err != nil {
     w.WriteHeader(http.StatusBadRequest)
+    io.WriteString(w, "unable to read architecture:\n" + err.Error())
     return
   }
 
@@ -62,6 +63,7 @@ func ArchitectureSetHandler(w http.ResponseWriter, r *http.Request) {
   domain, err := model.GetDomain(domainName)
   if err != nil {
     w.WriteHeader(http.StatusBadRequest)
+    io.WriteString(w, "domain can not be identified")
     return
   }
 
@@ -71,6 +73,7 @@ func ArchitectureSetHandler(w http.ResponseWriter, r *http.Request) {
   err = architecture.Load2(string(body))
   if err != nil {
     w.WriteHeader(http.StatusBadRequest)
+    io.WriteString(w, "unable to parse architecture:\n" + err.Error())
     return
   }
 
@@ -78,6 +81,7 @@ func ArchitectureSetHandler(w http.ResponseWriter, r *http.Request) {
   err = domain.AddArchitecture(architecture)
   if err != nil {
     w.WriteHeader(http.StatusInternalServerError)
+    io.WriteString(w, "unable to add architecture:\n" + err.Error())
     return
   }
 }

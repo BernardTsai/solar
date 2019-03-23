@@ -44,6 +44,10 @@
   padding-left:        16px;
 }
 
+#navigation #administration #actions .action:hover {
+  background-color:      darkgrey;
+}
+
 #navigation #administration #actions .action span{
   width: 64px;
 }

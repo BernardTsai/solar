@@ -36,6 +36,15 @@ Vue.component(
       update: function() {
         architecture = this.model.Architecture
 
+        // cleanup strings which should be numbers
+        Object.values(architecture.Elements).forEach((element) => {
+          Object.values(element.Clusters).forEach((cluster) => {
+            cluster.Min  = parseInt(cluster.Min)
+            cluster.Max  = parseInt(cluster.Max)
+            cluster.Size = parseInt(cluster.Size)
+          })
+        })
+
         saveArchitecture(this.view.domain, architecture)
         .then(() => {
           this.view.architecture = architecture.Architecture + " - " + architecture.Version
@@ -48,6 +57,15 @@ Vue.component(
         version = prompt("Version of the architecture:")
         if (version != null && version != "" && version != "null") {
           architecture = duplicateArchitecture(this.model.Architecture, version)
+
+          // cleanup strings which should be numbers
+          Object.values(architecture.Elements).forEach((element) => {
+            Object.values(element.Clusters).forEach((cluster) => {
+              cluster.Min  = parseInt(cluster.Min)
+              cluster.Max  = parseInt(cluster.Max)
+              cluster.Size = parseInt(cluster.Size)
+            })
+          })
 
           // save the new architecture and switch to it
           saveArchitecture(this.view.domain, architecture)

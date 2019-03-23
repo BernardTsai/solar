@@ -64,7 +64,6 @@ Vue.component(
           }
         }
 
-
         // update GUI
         this.$forceUpdate()
       },
@@ -265,19 +264,19 @@ Vue.component(
           <tr v-if="view.ae.Cluster != ''">
             <td>&nbsp;Minimum Size:</td>
             <td>
-              <input type="text" v-model="element.Clusters[view.ae.Cluster].Min"/>
+              <input type="number" v-model="element.Clusters[view.ae.Cluster].Min"/>
             </td>
           </tr>
           <tr v-if="view.ae.Cluster != ''">
             <td>&nbsp;Maximum Size:</td>
             <td>
-              <input type="text" v-model="element.Clusters[view.ae.Cluster].Max"/>
+              <input type="number" v-model="element.Clusters[view.ae.Cluster].Max"/>
             </td>
           </tr>
           <tr v-if="view.ae.Cluster != ''">
             <td>&nbsp;Current Size:</td>
             <td>
-              <input type="text" v-model="element.Clusters[view.ae.Cluster].Size"/>
+              <input type="number" v-model="element.Clusters[view.ae.Cluster].Size"/>
             </td>
           </tr>
           <tr v-if="view.ae.Cluster != ''">
