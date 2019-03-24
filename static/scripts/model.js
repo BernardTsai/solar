@@ -232,14 +232,56 @@ function loadSolution(domain, solution) {
   return fetch("http://" + window.location.hostname + "/solution/" + domain + "/" + solution)
     .then((response) => response.text())
     .then((text)     => jsyaml.safeLoad(text))
-    .then((yaml)     => model.Solution = yaml)
+    .then((solution) => {
+      // augment clusters and instances with newState, newMin, newMax and newSize
+      Object.values(solution.Elements).forEach((e) => {
+        Object.values(e.Clusters).forEach((c) => {
+          if ( !("NewMin"   in c) ) { c.NewMin   = c.Min   }
+          if ( !("NewMax"   in c) ) { c.NewMax   = c.Max   }
+          if ( !("NewSize"  in c) ) { c.NewSize  = c.Size  }
+          if ( !("NewState" in c) ) { c.NewState = c.State }
+
+          Object.values(c.Instances).forEach((i) => {
+            if ( !("NewState" in i) ) { i.NewState = i.State }
+          })
+        })
+      })
+      return solution
+    })
+    .then((solution) => model.Solution = solution)
+}
+
+//------------------------------------------------------------------------------
+
+// updateCluster adjusts a cluster regarding dimensions and state
+function updateCluster(domain, solution, element, cluster, state, min, max, size) {
+  body = jsyaml.safeDump({
+    State: state,
+    Min:   min,
+    Max:   max,
+    Size:  size
+  })
+  return fetch("http://" + window.location.hostname + "/cluster/" + domain + "/" + solution + "/" + element + "/" + cluster, {method: "PUT", body: body})
+  .then((response) => response.text())
+  .then((text)     => jsyaml.safeLoad(text))
+}
+
+//------------------------------------------------------------------------------
+
+// updateInstance adjusts an instance regarding state
+function updateInstance(domain, solution, element, cluster, instance, state) {
+  body = jsyaml.safeDump({
+    State: state
+  })
+  return fetch("http://" + window.location.hostname + "/instance/" + domain + "/" + solution + "/" + element + "/" + cluster + "/" + instance, {method: "PUT", body: body})
+  .then((response) => response.text())
+  .then((text)     => jsyaml.safeLoad(text))
 }
 
 //------------------------------------------------------------------------------
 
 // loadAll retrieves a solution, the architecture and the catalog from the the repository
 function loadAll(domain, solution) {
-  // determine domains
   return fetch("http://" + window.location.hostname + "/catalog/" + domain)
   .then((response) => response.text())
   .then((text)     => jsyaml.safeLoad(text))

@@ -47,6 +47,12 @@ func NewRouter() {
   router.HandleFunc("/solution/{domain}/{solution}",            SolutionDeleteHandler).Methods("DELETE")
   router.HandleFunc("/solution/{domain}/{solution}/{version}",  SolutionDeployHandler).Methods("POST")
 
+  // cluster
+  router.HandleFunc("/cluster/{domain}/{solution}/{element}/{cluster}", ClusterUpdateHandler).Methods("PUT")
+
+  // instance
+  router.HandleFunc("/instance/{domain}/{solution}/{element}/{cluster}/{instance}", InstanceUpdateHandler).Methods("PUT")
+
   // task
   router.HandleFunc("/tasks/{domain}/{solution}/{element}/{cluster}/{instance}", TaskListHandler).Methods("GET")
   router.HandleFunc("/tasks/{domain}/{solution}/{element}/{cluster}",            TaskListHandler).Methods("GET")

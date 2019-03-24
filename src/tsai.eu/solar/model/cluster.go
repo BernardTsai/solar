@@ -31,6 +31,7 @@ import (
 //   - cluster.Load
 //   - cluster.Save
 //   - cluster.Update
+//   - cluster.Resize
 //   - cluster.Reset
 //   - cluster.OK
 //   - cluster.Pools
@@ -216,14 +217,11 @@ func (cluster *Cluster) DeleteInstance(uuid string) {
 func (cluster *Cluster) Update(domainName string, solutionName string, elementName string, clusterConfiguration *ClusterConfiguration) error {
 	// check if the names are compatible
 	if cluster.Version != clusterConfiguration.Version {
-		return errors.New("Version of cluster does match the version defined in the cluster configuration")
+		return errors.New("Version of cluster does not match the version defined in the cluster configuration")
 	}
 
 	// update target state and sizes
 	cluster.Target = clusterConfiguration.State
-	cluster.Min    = clusterConfiguration.Min
-	cluster.Max    = clusterConfiguration.Max
-	cluster.Size   = clusterConfiguration.Size
 
 	// check compatability of all relationships
 	relationshipNames, _ := clusterConfiguration.ListRelationships()
@@ -255,8 +253,23 @@ func (cluster *Cluster) Update(domainName string, solutionName string, elementNa
 	}
 
 	// add missing instances
+	cluster.Resize(clusterConfiguration.Min, clusterConfiguration.Max, clusterConfiguration.Size)
+
+	// success
+	return nil
+}
+
+//------------------------------------------------------------------------------
+
+// Resize adjusts the dimensions of the cluster and adds instances if necessary.
+func (cluster *Cluster) Resize(min int, max int, size int) {
+	cluster.Min    = min
+	cluster.Max    = max
+	cluster.Size   = size
+
+	// add missing instances
 	instanceNames, _ := cluster.ListInstances()
-	targetSize       := clusterConfiguration.Max
+	targetSize       := max
 	currentSize      := len(instanceNames)
 	for currentSize < targetSize {
 		// add new instance to cluster in its initial state
@@ -266,8 +279,6 @@ func (cluster *Cluster) Update(domainName string, solutionName string, elementNa
 		currentSize = currentSize + 1
 	}
 
-	// success
-	return nil
 }
 
 //------------------------------------------------------------------------------

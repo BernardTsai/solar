@@ -22,6 +22,23 @@ Vue.component(
 
         view.nav = "Automation"
       },
+      // refresh reloads the solution
+      refresh: function() {
+        if (this.view.domain != "" && this.view.solution != ""){
+          loadSolution(this.view.domain, this.view.solution)
+          .then(() => {
+            // update selected element if necessary
+            if (this.model.SolElement)
+            {
+              element = this.model.SolElement.Element
+
+              this.model.SolElement = this.model.Solution.Elements[element]
+            }
+          })
+        }
+        // reset element
+        // this.model.SolElement = null
+      },
       // viewElement displays an element in the editor
       viewElement: function(element) {
         // initialise the solution element of the model
@@ -67,6 +84,9 @@ Vue.component(
           </div>
 
           <div class="buttons">
+            <button class="action" v-if="view.solution!=''" @click="refresh()">
+              Refresh <i class="fas fa-recycle">
+            </button>
             <button class="action" v-if="view.solution!=''" @click="showTasks()">
               Tasks <i class="fas fa-cogs">
             </button>

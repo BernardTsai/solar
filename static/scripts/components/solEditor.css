@@ -144,6 +144,86 @@
 
 /* -------------------------------------------------------------------------- */
 
+.solEditor #solutionConfiguration {
+  display: none;
+}
+
+.solEditor #solutionStatus table {
+
+  border-collapse: separate;
+}
+
+.solEditor #solutionStatus table th {
+  text-align:  left;
+}
+
+.solEditor #solutionStatus table td,
+.solEditor #solutionStatus table th {
+  white-space: nowrap;
+  border-radius:  8px;
+  padding:        0px 2px;
+}
+
+.solEditor #solutionStatus table td.number input,
+.solEditor #solutionStatus table td.number,
+.solEditor #solutionStatus table th.number {
+  width:      8em;
+  text-align: right;
+  padding:    0px 2px;
+}
+
+.solEditor #solutionStatus table td.state {
+  width:          8em;
+  text-align:     center;
+  vertical-align: middle;
+  opacity:        0.2;
+}
+
+.solEditor #solutionStatus table td.state.selected {
+  opacity: 1;
+}
+
+.solEditor #solutionStatus table td.state:hover {
+  opacity: 1;
+  box-shadow: 1px 1px 1px grey;
+}
+
+.solEditor #solutionStatus table td.state.initial {
+  background-color: grey;
+  color:            white;
+}
+
+.solEditor #solutionStatus table td.state.inactive {
+  background-color: orange;
+  color:            black;
+}
+
+.solEditor #solutionStatus table td.state.active {
+  background-color: green;
+  color:            white;
+}
+
+.solEditor #solutionStatus table td.state.failure {
+  background-color: red;
+  color:            white;
+}
+
+.solEditor #solutionStatus table th:first-child{
+  text-align:  left;
+  white-space: nowrap;
+}
+
+.solEditor #solutionStatus table th:last-child,
+.solEditor #solutionStatus table td:last-child{
+  witdh: 32px;
+}
+
+.solEditor #solutionStatus .cluster {
+  border-bottom: 1px solid darkgrey;
+}
+
+/* -------------------------------------------------------------------------- */
+
 .modal-default-button {
   float:        right;
   margin-left:  8px;
