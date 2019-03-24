@@ -3,9 +3,14 @@ Vue.component(
   {
     props: ['model', 'view'],
     methods: {
+      // showTask displays the task trace
       showTask: function(task) {
         loadTrace(this.view.domain, task)
         this.view.automation.task = task
+      },
+      // hideTask displays the task selection window
+      hideTask: function() {
+        model.Trace = null
       },
       selectSolution: function() {
         this.view.solution = this.view.automation.solution
@@ -106,6 +111,8 @@ Vue.component(
             </select>
           </div>
 
+          <div @click="hideTask" v-if="model.Trace"><i class="fas fa-eye-slash"></i></div>
+
         </div>
 
         <table id="tasks" v-if="!model.Trace">
@@ -117,19 +124,21 @@ Vue.component(
             <th>Completed</th>
             <th>Latest</th>
             <th>Status</th>
+            <th>&nbsp;</th>
           </tr>
           <tr v-for="task in model.Tasks">
             <td>{{task.Type}}</td>
-            <td @click="showTask(task.UUID)">{{task.UUID}}</td>
+            <td>{{task.UUID}}</td>
             <td v-if="task.Type != 'InstanceTask'">{{task.Version}}</td>
             <td v-if="task.Type == 'InstanceTask'">{{task.State}}</td>
             <td>{{task.Started}}</td>
             <td>{{task.Completed}}</td>
             <td>{{task.Latest}}</td>
             <td class="status" :class="task.Status">{{task.Status}}</td>
+            <td @click="showTask(task.UUID)"><i class="fas fa-eye"></i></td>
           </tr>
           <tr v-if="model.Tasks.length == 0">
-            <td colspan=7 class="noentries">no tasks</td>
+            <td colspan=8 class="noentries">no tasks</td>
           </tr>
         </table>
         <task v-if="model.Trace"
