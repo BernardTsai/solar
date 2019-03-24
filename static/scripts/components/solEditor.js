@@ -55,14 +55,17 @@ Vue.component(
       // updateClusterSize starts a task to update the size of a cluster
       updateClusterSize: function(cluster, min, max, size) {
         updateCluster(this.view.domain, this.view.solution, this.model.SolElement.Element, cluster.Version, cluster.State, min, max, size)
+        this.$emit('refresh')
       },
       // updateClusterState starts a task to update the state of a cluster
       updateClusterState: function(cluster, state) {
         updateCluster(this.view.domain, this.view.solution, this.model.SolElement.Element, cluster.Version, state, cluster.Min, cluster.Max, cluster.Size)
+        this.$emit('refresh')
       },
       // updateInstanceState starts a task to update the state of an instance
       updateInstanceState: function(cluster, instance, state) {
         updateInstance(this.view.domain, this.view.solution, this.model.SolElement.Element, cluster.Version, instance.UUID, state)
+        this.$emit('refresh')
       }
     },
     template: `
@@ -219,10 +222,10 @@ Vue.component(
                       <input type="text" v-model="cluster.NewMin"/>
                     </td>
                     <td class="number">
-                      <input type="text" v-model="cluster.NewSize"/>
+                      <input type="text" v-model="cluster.NewMax"/>
                     </td>
                     <td class="number">
-                      <input type="text" v-model="cluster.NewMax"/>
+                      <input type="text" v-model="cluster.NewSize"/>
                     </td>
                     <td>
                       <button class="modal-default-button"
@@ -243,7 +246,7 @@ Vue.component(
                       :class="{selected: cluster.State=='active'}"
                       @click="updateClusterState(cluster,'active')">active</td>
                   </tr>
-                  <tr v-for="instance in cluster.Instances">
+                  <tr v-for="instance in _.orderBy(cluster.Instances, 'UUID')">
                     <td>&nbsp;&nbsp;&bullet; {{instance.UUID}}</td>
                     <td class="state initial"
                       :class="{selected: instance.State=='initial'}"

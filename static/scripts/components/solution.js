@@ -124,7 +124,7 @@ Vue.component(
           <graph :model="model" :view="view" :graph="graph()" @node-selected="viewNode"/>
         </div>
 
-        <solEditor v-if="model.SolElement" :model="model" :view="view" :element="model.SolElement"/>
+        <solEditor v-if="model.SolElement" :model="model" :view="view" :element="model.SolElement" @refresh="refresh"/>
       </div>`
   }
 )
