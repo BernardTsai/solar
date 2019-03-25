@@ -169,59 +169,51 @@ function abovePath(model, view, edge) {
 
   // curve left
   x3 = x2 + r
-  y3 = y2
-  x4 = x2 + r
-  y4 = y2 + r
+  y3 = y2 + r
 
-  path += "A " + x3 + " " + y3 + " 0 0 0 " + x4 + " " + y4
+  path += "A " + r + " " + r + " 0 0 0 " + x3 + " " + y3
 
   // line along source channel
-  x5 = dx + (edge.SrcCol+1) * w3 + r + (edge.Channel2+1)/(columns[edge.SrcCol]+1) * cx - r
-  y5 = y4
+  x4 = dx + (edge.SrcCol+1) * w3 + r + (edge.Channel2+1)/(columns[edge.SrcCol]+1) * cx - r
+  y4 = y3
 
-  path += "L " + x5 + " " + y5
+  path += "L " + x4 + " " + y4
 
   // curve up
-  x6 = x5
-  y6 = y5 - r
-  x7 = x5 + r
-  y7 = y5 - r
+  x5 = x4 + r
+  y5 = y4 - r
 
-  path += "A " + x6 + " " + y6 + " 0 0 0 " + x7 + " " + y7
+  path += "A " + r + " " + r + " 0 0 0 " + x5 + " " + y5
 
   // line along vertical channel
-  x8 = x7
-  y8 = edge.DestRow * h3 + r + r + (edge.Channel3+1)/(layers[edge.DestRow]+1) * cy + r
+  x6 = x5
+  y6 = edge.DestRow * h3 + r + r + (edge.Channel3+1)/(layers[edge.DestRow]+1) * cy + r
+
+  path += "L " + x6 + " " + y6
+
+  // curve left
+  x7 = x6 - r
+  y7 = y6 - r
+
+  path += "A " + r + " " + r + " 0 0 0 " + x7 + " " + y7
+
+  // line along destination channel
+  x8 = dx + edge.DestCol * w3 + r + (edge.DestIndex+1)/(dest.Destinations.length+1) * w2 + r
+  y8 = y7
 
   path += "L " + x8 + " " + y8
 
-  // curve left
-  x9  = x8 - r
-  y9  = y8
-  x10 = x8 - r
-  y10 = y8 - r
-
-  path += "A " + x6 + " " + y6 + " 0 0 0 " + x7 + " " + y7
-
-  // line along destination channel
-  x11 = dx + edge.DestCol * w3 + r + (edge.DestIndex+1)/(dest.Destinations.length+1) * w2 + r
-  y11 = y10
-
-  path += "L " + x11 + " " + y11
-
   // curve down
-  x12 = x11
-  y12 = y11 + r
-  x13 = x11 - r
-  y13 = y11 + r
+  x9 = x8 - r
+  y9 = y8 + r
 
-  path += "A " + x12 + " " + y12 + " 0 0 0 " + x13 + " " + y13
+  path += "A " + r + " " + r + " 0 0 0 " + x9 + " " + y9
 
   // end point above destination port
-  x14 = dx + edge.DestCol * w3 + r + (edge.DestIndex+1)/(dest.Destinations.length+1) * w2
-  y14 = dy + edge.DestRow * h3 - r
+  x10 = dx + edge.DestCol * w3 + r + (edge.DestIndex+1)/(dest.Destinations.length+1) * w2
+  y10 = dy + edge.DestRow * h3 - r
 
-  path += "L " + x14 + " " + y14
+  path += "L " + x10 + " " + y10
 
   // finished
   return path

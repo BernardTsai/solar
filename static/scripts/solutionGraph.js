@@ -331,7 +331,7 @@ SolutionGraph.prototype.sortNodes = function() {
 
   // initialise layers and columns paths
   // these indicate how many relationships pass through this path
-  for (var i = 0; i < maxLayer; i++) {
+  for (var i = 0; i <= maxLayer; i++) {
     this.Layers.push(0)
   }
   for (var i = 0; i <= maxColumn; i++) {
