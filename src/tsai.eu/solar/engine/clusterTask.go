@@ -251,7 +251,7 @@ func triggerClusterTask(task *model.Task, relationship *model.Relationship)  {
 	channel := GetEventChannel()
 
 	// create task to update the cluster
-	subtask, _ := NewClusterTask(relationship.Domain, task.UUID, relationship.Solution, relationship.Version,relationship.Element, relationship.Version)
+	subtask, _ := NewClusterTask(relationship.Domain, task.UUID, task.Solution, task.Version, relationship.Element, relationship.Version)
 
 	task.AddSubtask(&subtask)
 

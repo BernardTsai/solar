@@ -55,24 +55,65 @@ Domains:
         Configuration: ""
         Dependencies: {}
     Architectures:
-      VNF - V1.0.0:
-        Architecture: VNF
-        Version: V1.0.0
+      app - V0.0.0:
+        Architecture: app
+        Version: V0.0.0
         Configuration: ""
         Elements:
-          OAM:
-            Element: OAM
-            Component: Network
+          APP:
+            Element: APP
+            Component: Application
             Configuration: ""
             Clusters:
               V1.0.0:
                 Version: V1.0.0
                 State: active
                 Min: 1
-                Max: 1
-                Size: 1
+                Max: 3
+                Size: 3
                 Configuration: ""
                 Relationships:
+                  DB:
+                    Relationship: DB
+                    Dependency: Service
+                    Type: service
+                    Element: DB
+                    Version: V1.0.0
+                    Configuration: ""
+                  Server:
+                    Relationship: Server
+                    Dependency: Server
+                    Type: context
+                    Element: APP-Server
+                    Version: V1.0.0
+                    Configuration: ""
+          APP-Server:
+            Element: APP-Server
+            Component: Server
+            Configuration: ""
+            Clusters:
+              V1.0.0:
+                Version: V1.0.0
+                State: active
+                Min: 1
+                Max: 3
+                Size: 3
+                Configuration: ""
+                Relationships:
+                  M2M:
+                    Relationship: M2M
+                    Dependency: Network
+                    Type: context
+                    Element: M2M
+                    Version: V1.0.0
+                    Configuration: ""
+                  OAM:
+                    Relationship: OAM
+                    Dependency: Network
+                    Type: context
+                    Element: OAM
+                    Version: V1.0.0
+                    Configuration: ""
                   Tenant:
                     Relationship: Tenant
                     Dependency: Tenant
@@ -80,24 +121,128 @@ Domains:
                     Element: Tenant
                     Version: V1.0.0
                     Configuration: ""
-          Tenant:
-            Element: Tenant
-            Component: Tenant
+          DB:
+            Element: DB
+            Component: Application
             Configuration: ""
             Clusters:
               V1.0.0:
                 Version: V1.0.0
                 State: active
                 Min: 1
-                Max: 1
-                Size: 1
+                Max: 3
+                Size: 3
                 Configuration: ""
-                Relationships: {}
-      VNF - V2.0.0:
-        Architecture: VNF
-        Version: V2.0.0
-        Configuration: ""
-        Elements:
+                Relationships:
+                  Server:
+                    Relationship: Server
+                    Dependency: Server
+                    Type: context
+                    Element: DB-Server
+                    Version: V1.0.0
+                    Configuration: ""
+          DB-Server:
+            Element: DB-Server
+            Component: Server
+            Configuration: ""
+            Clusters:
+              V1.0.0:
+                Version: V1.0.0
+                State: active
+                Min: 1
+                Max: 3
+                Size: 3
+                Configuration: ""
+                Relationships:
+                  M2M:
+                    Relationship: M2M
+                    Dependency: Network
+                    Type: context
+                    Element: M2M
+                    Version: V1.0.0
+                    Configuration: ""
+                  OAM:
+                    Relationship: OAM
+                    Dependency: Network
+                    Type: context
+                    Element: OAM
+                    Version: V1.0.0
+                    Configuration: ""
+                  Tenant:
+                    Relationship: Tenant
+                    Dependency: Tenant
+                    Type: context
+                    Element: Tenant
+                    Version: V1.0.0
+                    Configuration: ""
+          FW:
+            Element: FW
+            Component: Application
+            Configuration: ""
+            Clusters:
+              V1.0.0:
+                Version: V1.0.0
+                State: active
+                Min: 1
+                Max: 3
+                Size: 3
+                Configuration: ""
+                Relationships:
+                  Server:
+                    Relationship: Server
+                    Dependency: Server
+                    Type: context
+                    Element: FW-Server
+                    Version: V1.0.0
+                    Configuration: ""
+                  Service:
+                    Relationship: Service
+                    Dependency: Service
+                    Type: service
+                    Element: APP
+                    Version: V1.0.0
+                    Configuration: ""
+          FW-Server:
+            Element: FW-Server
+            Component: Server
+            Configuration: ""
+            Clusters:
+              V1.0.0:
+                Version: V1.0.0
+                State: active
+                Min: 1
+                Max: 3
+                Size: 3
+                Configuration: ""
+                Relationships:
+                  M2M:
+                    Relationship: M2M
+                    Dependency: Network
+                    Type: context
+                    Element: M2M
+                    Version: V1.0.0
+                    Configuration: ""
+                  OAM:
+                    Relationship: OAM
+                    Dependency: Network
+                    Type: context
+                    Element: OAM
+                    Version: V1.0.0
+                    Configuration: ""
+                  PUB:
+                    Relationship: PUB
+                    Dependency: Network
+                    Type: context
+                    Element: PUB
+                    Version: V1.0.0
+                    Configuration: ""
+                  Tenant:
+                    Relationship: Tenant
+                    Dependency: Tenant
+                    Type: context
+                    Element: Tenant
+                    Version: V1.0.0
+                    Configuration: ""
           M2M:
             Element: M2M
             Component: Network

@@ -54,12 +54,7 @@ Domains:
         Version: V1.0.0
         Configuration: ""
         Dependencies: {}
-    Architectures:
-      VNF - V1.0.0:
-        Architecture: VNF
-        Version: V1.0.0
-        Configuration: ""
-        Elements: {}
+    Architectures: {}
     Solutions: {}
     Tasks: {}
     Events: {}
