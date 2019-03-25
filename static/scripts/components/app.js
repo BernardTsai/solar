@@ -9,20 +9,17 @@ Vue.component( 'app',
             <div id="domain-selector">
               <strong>Domain:</strong>
               <select id="domainSelector" v-model="view.domain" @change="selectDomain">
-                <option selected value="">Administration</option>
-                <option disabled value=""><hr/></option>
+                <option disabled value="">Please select one</option>
                 <option v-for="domain in model.Domains">{{domain}}</option>
               </select>
             </div>
           </div>
-          <div id="nav" v-if="view.domain!=''">
-            <div v-on:click="navComponents"      :class="{selected: view.nav=='Components'}"     id="Components">Catalog            <i class="fas fa-cube   text-gray-300"></i></div>
-            <div v-on:click="navArchitecture"    :class="{selected: view.nav=='Architecture'}"   id="Architecture">Architecture     <i class="fas fa-map    text-gray-300"></i></div>
-            <div v-on:click="navSolution"        :class="{selected: view.nav=='Solution'}"       id="Solution">Solution             <i class="fas fa-cubes  text-gray-300"></i></div>
-            <div v-on:click="navAutomation"      :class="{selected: view.nav=='Automation'}"     id="Automation">Automation         <i class="fas fa-cogs   text-gray-300"></i></div>
-          </div>
-          <div id="nav" v-if="view.domain==''">
-            <div v-on:click="navAdministration"  :class="{selected: view.nav=='Administration'}" id="Administration">Administration <i class="fas fa-wrench text-gray-300"></i></div>
+          <div id="nav">
+            <div v-if="view.domain!=''" @click="navComponents"     :class="{selected: view.nav=='Components'}"     id="Components">Catalog            <i class="fas fa-cube   text-gray-300"></i></div>
+            <div v-if="view.domain!=''" @click="navArchitecture"   :class="{selected: view.nav=='Architecture'}"   id="Architecture">Architecture     <i class="fas fa-map    text-gray-300"></i></div>
+            <div v-if="view.domain!=''" @click="navSolution"       :class="{selected: view.nav=='Solution'}"       id="Solution">Solution             <i class="fas fa-cubes  text-gray-300"></i></div>
+            <div v-if="view.domain!=''" @click="navAutomation"     :class="{selected: view.nav=='Automation'}"     id="Automation">Automation         <i class="fas fa-cogs   text-gray-300"></i></div>
+            <div                        @click="navAdministration" :class="{selected: view.nav=='Administration'}" id="Administration">Administration <i class="fas fa-wrench text-gray-300"></i></div>
           </div>
         </div>
         <navigation v-bind:model="model" v-bind:view="view"></navigation>
@@ -115,7 +112,7 @@ function navSolution()     {
     // load solution if necessary
     if (model.Solutions.includes(view.solution) && !model.Solution) {
       loadSolution(view.domain, view.solution)
-    }    
+    }
   }
 }
 

@@ -6,6 +6,8 @@ Vue.component(
       // clearModel deletes the current model
       clearModel: function() {
         resetModel()
+        .then(() => loadDomains())
+        .then(() => alert("Model has been reset"))
       },
       // importModel imports a new model from an uploaded file
       importModel: function() {
@@ -21,6 +23,7 @@ Vue.component(
         reader.onload = ((e) => {
           saveModel(e.target.result)
           .then(() => loadDomains())
+          .then(() => alert("Model has been imported"))
         })
 
         // Klartext mit Zeichenkodierung UTF-8 auslesen.
@@ -51,6 +54,7 @@ Vue.component(
         if (name != null && name != "" && name != "null") {
           deleteDomain(name)
           .then(() => loadDomains())
+          .then(() => alert("Domain has been removed"))
           .then(() => {
             view.domain = ""
           })
@@ -64,6 +68,14 @@ Vue.component(
         </div>
 
         <div id="actions">
+          <div class="action" @click="createDomain">
+            <i class="fas fa-plus-square fa-lg"></i>&nbsp;Create Domain
+          </div>
+
+          <div class="action" @click="removeDomain">
+            <i class="fas fa-minus-square fa-lg"></i>&nbsp;Remove Domain
+          </div>
+
           <div class="action" @click="clearModel">
             <i class="fas fa-window-close fa-lg"></i>&nbsp;Reset Model
           </div>
@@ -75,14 +87,6 @@ Vue.component(
 
           <div class="action" @click="exportModel">
             <i class="fas fa-caret-square-down fa-lg"></i>&nbsp;Export Model
-          </div>
-
-          <div class="action" @click="createDomain">
-            <i class="fas fa-plus-square fa-lg"></i>&nbsp;Create Domain
-          </div>
-
-          <div class="action" @click="removeDomain">
-            <i class="fas fa-minus-square fa-lg"></i>&nbsp;Remove Domain
           </div>
         </div>
 
