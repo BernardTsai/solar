@@ -14,12 +14,13 @@ import (
 type Dispatcher struct {
 	Model   *model.Model           // repository
 	Channel chan model.Event       // the channel for event notification
+	Active   bool                  // indicates if the dispatcher loop should be active
 }
 
 //------------------------------------------------------------------------------
 
 // StartDispatcher creates a dispatcher and returns a channel for new tasks.
-func StartDispatcher(m *model.Model) chan model.Event {
+func StartDispatcher(m *model.Model) (*Dispatcher) {
 
 	// create the communication channel
 	channel := GetEventChannel()
@@ -28,12 +29,13 @@ func StartDispatcher(m *model.Model) chan model.Event {
 	dispatcher := Dispatcher{
 		Model:   m,
 		Channel: channel,
+		Active:  true,
 	}
 
 	// start the dispatcher
 	go dispatcher.Run()
 
-	return channel
+	return &dispatcher
 }
 
 //------------------------------------------------------------------------------
@@ -41,7 +43,7 @@ func StartDispatcher(m *model.Model) chan model.Event {
 // Run starts the dispatcher loop receiving events and triggering tasks.
 func (d *Dispatcher) Run() {
 	// loop until exit is requested
-	for {
+	for d.Active {
 		// get next event
 		event := <-d.Channel
 
@@ -103,6 +105,13 @@ func (d *Dispatcher) Run() {
 			go task.Terminate()
 		}
 	}
+}
+
+//------------------------------------------------------------------------------
+
+// Stop will flag the dispatcher to stop execution
+func (d *Dispatcher) Stop() {
+  d.Active = false
 }
 
 //------------------------------------------------------------------------------

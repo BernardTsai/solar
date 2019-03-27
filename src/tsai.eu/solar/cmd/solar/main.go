@@ -6,6 +6,7 @@ import (
 	"tsai.eu/solar/engine"
 	"tsai.eu/solar/model"
 	"tsai.eu/solar/api"
+	"tsai.eu/solar/monitor"
 	"tsai.eu/solar/msg"
 	"tsai.eu/solar/cli"
 	"tsai.eu/solar/util"
@@ -41,7 +42,12 @@ func main() {
 	m := model.GetModel()
 
 	// start the main event loop
-	engine.StartDispatcher(m)
+	dispatcher := engine.StartDispatcher(m)
+	defer dispatcher.Stop()
+
+	// start the monitoring loop
+	moni := monitor.StartMonitor(m, dispatcher.Channel)
+	defer moni.Stop()
 
 	// start the API
 	go api.NewRouter()
