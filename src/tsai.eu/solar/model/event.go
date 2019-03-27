@@ -3,7 +3,6 @@ package model
 import (
 	"time"
 
-	"github.com/google/uuid"
 	"tsai.eu/solar/util"
 )
 
@@ -45,7 +44,7 @@ func NewEvent(domain string, task string, etype string, source string, comment s
 	var event Event
 
 	event.Domain  = domain
-	event.UUID    = uuid.New().String()
+	event.UUID    = util.UUID()
 	event.Task    = task
 	event.Type    = etype
 	event.Source  = source

@@ -3,7 +3,9 @@ package engine
 import (
 	"fmt"
 
+	"tsai.eu/solar/util"
 	"tsai.eu/solar/model"
+	"tsai.eu/solar/msg"
 )
 
 //------------------------------------------------------------------------------
@@ -12,7 +14,6 @@ import (
 type Dispatcher struct {
 	Model   *model.Model           // repository
 	Channel chan model.Event       // the channel for event notification
-	Tasks   map[string]*model.Task // map of running tasks
 }
 
 //------------------------------------------------------------------------------
@@ -27,7 +28,6 @@ func StartDispatcher(m *model.Model) chan model.Event {
 	dispatcher := Dispatcher{
 		Model:   m,
 		Channel: channel,
-		Tasks:   map[string]*model.Task{},
 	}
 
 	// start the dispatcher
@@ -59,6 +59,10 @@ func (d *Dispatcher) Run() {
 
 		// save event
 		domain.AddEvent(&event)
+
+		// publish event
+		yaml, _ := util.ConvertToYAML(event)
+		msg.Publish("event", yaml)
 
 		// get task
 		task, err := domain.GetTask(event.Task)
