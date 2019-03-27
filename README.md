@@ -116,3 +116,7 @@ Solar will terminate after it has received the "exit" command and return control
 >>> exit
 >
 ```
+
+**Web-UI**
+
+SOLAR will in addition expose a REST interface and a web-based UI which can be accessed via the URL: http://localhost/solar/index.html.

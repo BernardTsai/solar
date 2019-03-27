@@ -30,6 +30,7 @@ import (
 //   - element.Update
 //   - element.Reset
 //   - element.OK
+//   - element.SetState
 //
 //   - element.ListClusters
 //   - element.GetCluster
@@ -228,6 +229,15 @@ func (element *Element) OK() bool {
 
 	// element is ok
 	return true
+}
+
+//------------------------------------------------------------------------------
+
+// SetState updates the current state of the element
+func (element *Element) SetState(newState string)  {
+	if newState == InitialState || newState == InactiveState || newState == ActiveState || newState == FailureState {
+		element.State = newState
+	}
 }
 
 //------------------------------------------------------------------------------

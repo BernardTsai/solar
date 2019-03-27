@@ -1,4 +1,6 @@
 MSG:
-  Events:  events
-  Status:  status
+  Notifications:  notifications
+  Monitoring:     monitoring
   Address: 127.0.0.1:9092
+CORE:
+  IDENTIFIER: solar

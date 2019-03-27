@@ -9,16 +9,24 @@ import (
 
 // MsgConfiguration holds all configuration information for the MSG module
 type MsgConfiguration struct {
-  Events  string
-  Status  string
-  Address string
+  Notifications string
+  Monitoring    string
+  Address       string
+}
+
+//------------------------------------------------------------------------------
+
+// CoreConfiguration holds all configuration information related to the orchestrator
+type CoreConfiguration struct {
+  Identifier  string
 }
 
 //------------------------------------------------------------------------------
 
 // Configuration holds all configuration information for the application
 type Configuration struct {
-  MSG MsgConfiguration
+  MSG  MsgConfiguration
+  CORE CoreConfiguration
 }
 
 //------------------------------------------------------------------------------
@@ -53,7 +61,8 @@ func readConfiguration() (*Configuration, error) {
   viper.AddConfigPath(".")
 
   // set default values
-  viper.SetDefault("MSG", map[string]string{"Events": "events", "Status": "status", "Address": "127.0.0.1:9092"})
+  viper.SetDefault("MSG",  map[string]string{"Notifications": "notifications", "Monitoring": "monitoring", "Address": "127.0.0.1:9092"})
+  viper.SetDefault("CORE", map[string]string{"Identifier": "solar"})
 
   // read configuration (ignore any errors)
 	viper.ReadInConfig()

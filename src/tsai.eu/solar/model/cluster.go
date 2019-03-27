@@ -35,6 +35,7 @@ import (
 //   - cluster.Reset
 //   - cluster.OK
 //   - cluster.Pools
+//   - cluster.SetState
 //
 //   - cluster.ListRelationships
 //   - cluster.GetRelationship
@@ -417,6 +418,15 @@ func (cluster *Cluster) Pools() (initial int, inactive int, active int, failure 
 
 	// finished
 	return initial, inactive, active, failure, other
+}
+
+//------------------------------------------------------------------------------
+
+// SetState updates the current state of the cluster
+func (cluster *Cluster) SetState(newState string)  {
+	if newState == InitialState || newState == InactiveState || newState == ActiveState || newState == FailureState {
+		cluster.State = newState
+	}
 }
 
 //------------------------------------------------------------------------------

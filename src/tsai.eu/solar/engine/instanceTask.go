@@ -6,6 +6,7 @@ import (
 	ctrl "tsai.eu/solar/controller"
 	"tsai.eu/solar/model"
 	"tsai.eu/solar/util"
+	"tsai.eu/solar/msg"
 )
 
 //------------------------------------------------------------------------------
@@ -134,7 +135,16 @@ func ExecuteInstanceTask(task *model.Task) {
 
 	// update status
 	if status != nil {
+		// remember current state
+		currentState := instance.State
+
+		// update status
 		model.SetStatus(status)
+
+		// notify if instance state has changed
+		if instance.State != currentState {
+			msg.Notify( "Instance", status.Domain + "/" + status.Element + "/" + status.Cluster + "/" + status.Instance + "/" + instance.State)
+		}
 	}
 
 	// check for errors and reexecute the task until the desired state has been reached

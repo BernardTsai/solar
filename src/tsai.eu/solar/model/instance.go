@@ -23,6 +23,7 @@ import (
 //   - instance.Save
 //   - instance.Reset
 //   - instance.OK
+//   - instance.SetState
 //------------------------------------------------------------------------------
 
 // Instance describes the runtime configuration of an solution element cluster instance within a domain.
@@ -87,6 +88,15 @@ func (instance *Instance) OK() bool {
 	}
 
 	return false
+}
+
+//------------------------------------------------------------------------------
+
+// SetState updates the current state of the instance
+func (instance *Instance) SetState(newState string)  {
+	if newState == InitialState || newState == InactiveState || newState == ActiveState || newState == FailureState {
+		instance.State = newState
+	}
 }
 
 //------------------------------------------------------------------------------

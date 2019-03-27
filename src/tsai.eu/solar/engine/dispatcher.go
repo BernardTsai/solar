@@ -3,9 +3,7 @@ package engine
 import (
 	"fmt"
 
-	"tsai.eu/solar/util"
 	"tsai.eu/solar/model"
-	"tsai.eu/solar/msg"
 )
 
 //------------------------------------------------------------------------------
@@ -61,10 +59,6 @@ func (d *Dispatcher) Run() {
 
 		// save event
 		domain.AddEvent(&event)
-
-		// publish event
-		yaml, _ := util.ConvertToYAML(event)
-		msg.Publish("event", yaml)
 
 		// get task
 		task, err := domain.GetTask(event.Task)

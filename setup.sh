@@ -30,7 +30,7 @@ go get github.com/gorilla/mux
 go get github.com/segmentio/kafka-go
 
 # install binaries
-cd $SRCDIR
+# cd $SRCDIR
 go install tsai.eu/solar/cmd/solar
 
 # change to root directory

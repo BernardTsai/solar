@@ -1,80 +1,205 @@
 package msg
 
 import (
- "time"
+  "fmt"
   "sync"
   "context"
   "errors"
+  "strings"
 
 	"github.com/segmentio/kafka-go"
 
+  "tsai.eu/solar/model"
   "tsai.eu/solar/util"
 )
 
 //------------------------------------------------------------------------------
 
-var msgAddress  string      // kafka bus
-var msgTopic    string      // topic to which the message will be published
-var msgInit     sync.Once   // do once sync for connection initialisation
-var msgConn    *kafka.Conn  // message connection
-
-//------------------------------------------------------------------------------
-
-// Open establishes a connection to the message bus
-func Open() (error) {
-  // initialise once
-  msgInit.Do(func() {
-    configuration, _ := util.GetConfiguration()
-
-    msgTopic   = configuration.MSG.Events
-    msgAddress = configuration.MSG.Address
-
-    conn, err := kafka.DialLeader(context.Background(), "tcp", msgAddress, msgTopic, 0)
-    if err == nil {
-      msgConn = conn
-    } else {
-      msgConn = nil
-    }
-  })
-
-  // check the result of the initialisation
-  if msgConn == nil {
-    return errors.New("Unable to connect to the message bus: " + msgAddress + " / topic: " + msgTopic)
-  }
-
-  // success
-  return nil
+// MSG represents the messaging interface to a kafka bus.
+type MSG struct {
+  Address              string        // address of the kafka bus
+  NotificationTopic    string        // topic to which the notifications will be published
+  NotificationWriter  *kafka.Writer  // notification connection
+  MonitoringTopic      string        // topic from which the message will be published
+  MonitoringReader    *kafka.Reader  // monitoring connection
 }
 
 //------------------------------------------------------------------------------
 
-// Publish writes data to the message bus
-func Publish(key string, value string)  {
+var msg     *MSG          // messaging interface singleton
+var msgInit  sync.Once    // do once sync for connection initialisation
+
+//------------------------------------------------------------------------------
+
+// NewMSG creates a new messaging interface.
+func NewMSG() (*MSG, error){
+  // determine configuration
+  configuration, _ := util.GetConfiguration()
+
+  identifier        := configuration.CORE.Identifier
+  msgbusAddress     := configuration.MSG.Address
+  notificationTopic := configuration.MSG.Notifications
+  monitoringTopic   := configuration.MSG.Monitoring
+
+  // construct the messaging interface
+  msg := MSG{
+    Address:            msgbusAddress,
+    NotificationTopic:  notificationTopic,
+    NotificationWriter: nil,
+    MonitoringTopic:    monitoringTopic,
+    MonitoringReader:   nil,
+  }
+
+  // create the notication writer
+  msg.NotificationWriter = kafka.NewWriter(kafka.WriterConfig{
+    Brokers:  []string{msgbusAddress},
+    Topic:    notificationTopic,
+    Balancer: &kafka.LeastBytes{},
+  })
+
+  // creating the monitoring reader
+  msg.MonitoringReader = kafka.NewReader(kafka.ReaderConfig{
+    Brokers:   []string{msgbusAddress},
+    GroupID:   identifier,
+    Topic:     monitoringTopic,
+    MinBytes:  10e3, // 10KB
+    MaxBytes:  10e6, // 10MB
+  })
+
+  // check the result of the initialisation
+  if msg.NotificationWriter == nil {
+    return nil, errors.New("Unable to connect to the message bus: " + msgbusAddress + " / topic: " + notificationTopic + "\n")
+  }
+
+  // check the result of the initialisation
+  if msg.MonitoringReader == nil {
+    return nil, errors.New("Unable to connect to the message bus: " + msgbusAddress + " / topic: " + monitoringTopic + "\n")
+  }
+
+	// start the messaging interface
+	go msg.Run()
+
+	return &msg, nil
+}
+
+//------------------------------------------------------------------------------
+
+// Run starts the listener of the messaging interface
+func (m *MSG) Run() {
   // handle issues with the message bus
   defer func() {
     if r := recover(); r != nil {
-      msgConn = nil
+      fmt.Printf("Aborting listener due to error\n")
+      if msg != nil {
+
+        msg.MonitoringReader = nil
+      }
+    }
+  }()
+
+  // listen while reader is available
+  for m.MonitoringReader != nil {
+    message, err := m.MonitoringReader.ReadMessage(context.Background())
+    if err != nil {
+        break
+    }
+
+    // depending on the message key identify the correct entity to update
+    entity := string(message.Key)
+    value  := string(message.Value)
+
+    switch entity {
+      case "Element":
+        names := strings.Split(value, "/")
+
+        if len(names) == 4 {
+          element, err := model.GetElement(names[0], names[1], names[2])
+          if err == nil {
+            element.SetState( names[3] )
+          }
+        }
+      case "Cluster":
+        names := strings.Split(value, "/")
+
+        if len(names) == 5 {
+          cluster, _ := model.GetCluster(names[0], names[1], names[2], names[3])
+          if err == nil {
+            cluster.SetState( names[4] )
+          }
+        }
+      case "Instance":
+        names := strings.Split(value, "/")
+
+        if len(names) == 6 {
+          instance, _ := model.GetInstance(names[0], names[1], names[2], names[3], names[4])
+          if err == nil {
+            instance.SetState( names[5] )
+          }
+        }
+    }
+  }
+}
+
+//------------------------------------------------------------------------------
+
+// Stop shuts down the messaging interface
+func (m *MSG) Stop() {
+  if m.NotificationWriter != nil {
+    m.NotificationWriter.Close()
+    m.NotificationWriter = nil
+  }
+
+  if m.MonitoringReader != nil {
+    m.MonitoringReader.Close()
+    m.MonitoringReader = nil
+  }
+}
+
+//------------------------------------------------------------------------------
+
+// StartMSG creates and return the core new messaging interface.
+func StartMSG() (*MSG, error){
+  // initialise singleton once
+	msgInit.Do(func() {
+    msgBus, err := NewMSG()
+
+    if err != nil {
+      msg = nil
+    } else {
+      msg = msgBus
+    }
+	})
+
+  // the attempt to connect to the message bus has failed before
+  if msg == nil {
+    return nil, errors.New("Unable to connect to the message bus")
+  }
+
+  // return
+  return msg, nil
+}
+
+//------------------------------------------------------------------------------
+
+// Notify writes data to the message bus
+func Notify(key string, value string)  {
+  // handle issues with the message bus
+  defer func() {
+    if r := recover(); r != nil {
+      if msg != nil {
+        msg.NotificationWriter = nil
+      }
     }
   }()
 
   // only publish if a message connection was established
-  if msgConn != nil {
-    msgConn.SetWriteDeadline(time.Now().Add(500*time.Millisecond))
-    msgConn.WriteMessages(
+  if msg != nil && msg.NotificationWriter != nil {
+    msg.NotificationWriter.WriteMessages(
+        context.Background(),
         kafka.Message{
           Key:   []byte(key),
           Value: []byte(value)},
     )
-  }
-}
-
-//------------------------------------------------------------------------------
-
-// Close shuts down the connection to the message bus
-func Close() {
-  if msgConn != nil {
-    msgConn.Close()
-    msgConn = nil
   }
 }
 

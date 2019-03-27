@@ -24,13 +24,6 @@ func main() {
 		return
 	}
 
-	// attempt to connect to the message bus
-	err = msg.Open()
-	if err != nil {
-		fmt.Println(err)
-	} else {
-		defer msg.Close()
-	}
 
 	// initialise command line options
 	util.ParseCommandLineOptions()
@@ -44,6 +37,15 @@ func main() {
 	// start the main event loop
 	dispatcher := engine.StartDispatcher(m)
 	defer dispatcher.Stop()
+
+	// start the messaging interface listener
+	msg, err := msg.StartMSG()
+	if err == nil {
+		defer msg.Stop()
+	} else {
+		fmt.Println("Unable to start the messaging interface")
+		fmt.Println(err)
+	}
 
 	// start the monitoring loop
 	moni := monitor.StartMonitor(m, dispatcher.Channel)
