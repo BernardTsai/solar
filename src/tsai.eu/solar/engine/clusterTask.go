@@ -14,7 +14,7 @@ func NewClusterTask(domain string, parent string, solution string, version strin
 	var task model.Task
 
 	// TODO: check parameters if context exists
-	task.Type         = "ClusterTask"
+	task.Type         = "Cluster"
 	task.Domain       = domain
 	task.Solution     = solution
 	task.Version      = version

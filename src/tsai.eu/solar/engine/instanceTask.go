@@ -16,7 +16,7 @@ func NewInstanceTask(domain string, parent string, solution string, version stri
 	var task model.Task
 
 	// TODO: check parameters if context exists
-	task.Type     = "InstanceTask"
+	task.Type     = "Instance"
 	task.Domain   = domain
 	task.Solution = solution
 	task.Version  = version

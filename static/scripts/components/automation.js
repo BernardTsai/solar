@@ -124,9 +124,8 @@ Vue.component(
             <th>Completed</th>
             <th>Latest</th>
             <th>Status</th>
-            <th>&nbsp;</th>
           </tr>
-          <tr v-for="task in model.Tasks">
+          <tr v-for="task in model.Tasks" @click="showTask(task.UUID)">
             <td>{{task.Type}}</td>
             <td>{{task.UUID}}</td>
             <td v-if="task.Type != 'InstanceTask'">{{task.Version}}</td>
@@ -135,10 +134,9 @@ Vue.component(
             <td>{{task.Completed}}</td>
             <td>{{task.Latest}}</td>
             <td class="status" :class="task.Status">{{task.Status}}</td>
-            <td @click="showTask(task.UUID)"><i class="fas fa-eye"></i></td>
           </tr>
           <tr v-if="model.Tasks.length == 0">
-            <td colspan=8 class="noentries">no tasks</td>
+            <td colspan=7 class="noentries">no tasks</td>
           </tr>
         </table>
         <task v-if="model.Trace"

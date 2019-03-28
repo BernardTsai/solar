@@ -183,6 +183,14 @@ func StartMSG() (*MSG, error){
 
 // Notify writes data to the message bus
 func Notify(key string, value string)  {
+  // only publish if a message connection was established
+  if msg != nil && msg.NotificationWriter != nil {
+    notify(key, value)
+  }
+}
+
+// notify writes data to the message bus
+func notify(key string, value string)  {
   // handle issues with the message bus
   defer func() {
     if r := recover(); r != nil {
@@ -193,14 +201,12 @@ func Notify(key string, value string)  {
   }()
 
   // only publish if a message connection was established
-  if msg != nil && msg.NotificationWriter != nil {
-    msg.NotificationWriter.WriteMessages(
-        context.Background(),
-        kafka.Message{
-          Key:   []byte(key),
-          Value: []byte(value)},
+  go msg.NotificationWriter.WriteMessages(
+      context.Background(),
+      kafka.Message{
+        Key:   []byte(key),
+        Value: []byte(value)},
     )
-  }
 }
 
 //------------------------------------------------------------------------------

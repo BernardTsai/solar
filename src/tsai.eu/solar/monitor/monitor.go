@@ -62,15 +62,20 @@ func (m *Monitor) Run() {
           // check if the element needs to be updated
       		if !element.OK() {
 
-            // TODO: check if no task is currently being executed
+            // only update if no solution related task is currently being executed
+            if !runningSolutionTasks(domain, solution) {
+              // create task to update the element
+        			task, _ := engine.NewSolutionTask(domainName, "", solution)
 
-      			// create task to update the element
-      			subtask, _ := engine.NewElementTask(domainName, "", solutionName, solution.Version, elementName)
+        			// trigger the task
+        			channel <- model.NewEvent(domainName, task.UUID, model.EventTypeTaskExecution, "", "Solution: " + solutionName + "/Element: " + elementName)
 
-      			// trigger the task
-      			channel <- model.NewEvent(domainName, subtask.UUID, model.EventTypeTaskExecution, "", "Monitoring")
+              // mark that a mismatch has been found
+              mismatch = true
 
-            mismatch = true
+              // exit from elements loop
+              break
+            }
       		}
         } // end of loop over all elements
       } // end of loop over all solutions
@@ -78,9 +83,27 @@ func (m *Monitor) Run() {
 
     // sleep a bit if no mismatch between current state and target state has been found
     if !mismatch {
-      time.Sleep(1000 * time.Millisecond)
+      time.Sleep(100 * time.Millisecond)
     }
   } // end of while active loop
+}
+
+//------------------------------------------------------------------------------
+
+// runningSolutionTasks checks if there are any currently running solution tasks
+func runningSolutionTasks(domain *model.Domain, solution *model.Solution) (bool) {
+  // go through task list and find matching tasks
+  taskNames, _ := domain.ListTasks()
+  for _, taskName := range taskNames {
+    task, _ := domain.GetTask(taskName)
+
+    if task.GetType() == "Solution" && task.GetSolution() == solution.Solution &&
+       (task.GetStatus() == model.TaskStatusInitial || task.GetStatus() == model.TaskStatusExecuting) {
+      return true
+    }
+  }
+
+  return false
 }
 
 //------------------------------------------------------------------------------

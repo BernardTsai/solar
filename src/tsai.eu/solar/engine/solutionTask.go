@@ -14,7 +14,7 @@ func NewSolutionTask(domain string, parent string, solution *model.Solution) (mo
 	var task model.Task
 
 	// TODO: check parameters if context exists
-	task.Type         = "SolutionTask"
+	task.Type         = "Solution"
 	task.Domain       = domain
 	task.Solution     = solution.Solution
 	task.Version      = solution.Version

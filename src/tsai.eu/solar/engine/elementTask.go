@@ -14,7 +14,7 @@ func NewElementTask(domain string, parent string, solution string, version strin
 	var task model.Task
 
 	// TODO: check parameters if context exists
-	task.Type         = "ElementTask"
+	task.Type         = "Element"
 	task.Domain       = domain
 	task.Solution     = solution
 	task.Version      = version
