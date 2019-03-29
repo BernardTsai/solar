@@ -3,6 +3,19 @@ Vue.component(
   {
     props: ['model', 'view'],
     methods: {
+      // refresh reloads the current view
+      refresh: function() {
+        if (model.Trace) {
+          loadTrace(this.view.domain, this.view.automation.task)
+        } else {
+          loadTasks(
+            this.view.domain,
+            this.view.automation.solution,
+            this.view.automation.element,
+            this.view.automation.cluster,
+            this.view.automation.instance)
+        }
+      },
       // showTask displays the task trace
       showTask: function(task) {
         loadTrace(this.view.domain, task)
@@ -10,7 +23,8 @@ Vue.component(
       },
       // hideTask displays the task selection window
       hideTask: function() {
-        model.Trace = null
+        model.Trace               = null
+        this.view.automation.task = null
       },
       selectSolution: function() {
         this.view.solution = this.view.automation.solution
@@ -112,6 +126,7 @@ Vue.component(
           </div>
 
           <div @click="hideTask" v-if="model.Trace"><i class="fas fa-eye-slash"></i></div>
+          <div @click="refresh"  v-if="view.solution!=''"><i class="fas fa-recycle"></i></div>
 
         </div>
 

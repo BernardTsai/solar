@@ -16,6 +16,25 @@ Vue.component( 'task',
       left: function(event) {
         return (100 + event.Time/this.model.Trace.Range*view.automation.width) + 'px'
       },
+      // pick displays the entity in the solution tab
+      pick(entity) {
+        names = entity.ID.split("/")
+
+        switch (entity.Type) {
+          case "element":
+          case "cluster":
+          case "instance":
+            model   = this.model
+            element = names[0]
+
+            loadSolution(view.domain, view.solution)
+            .then(() => {
+              model.SolElement = model.Solution.Elements[element]
+              view.nav = "Solution"
+            })
+            return
+        }
+      },
       trace: function(event) {
         x = event.clientX;
         c = document.getElementById('cursor')
@@ -176,14 +195,15 @@ Vue.component( 'task',
               'height':      view.automation.line + 'px',
               'line-height': view.automation.line + 'px'}">
             <div class="label administrator"
-              v-on:mouseover="trace"
+              @mouseover="trace"
               v-bind:style="{height: view.automation.line + 'px'}">
               Administrator
             </div>
           </div>
           <div class="entity"
             v-for="entity in entities"
-            v-on:mouseover="trace"
+             @click="pick(entity)"
+             @mouseover="trace"
              v-bind:style="{
               'top':         (entity.Index*view.automation.line) + 'px',
               'height':      view.automation.line + 'px',
