@@ -213,8 +213,8 @@ Vue.component(
                   <tr>
                     <td class="label">&nbsp;&nbsp;&nbsp;&nbsp;current&nbsp;size</td>
                     <td class="number">{{cluster.Min}}</td>
-                    <td class="number">{{cluster.Size}}</td>
                     <td class="number">{{cluster.Max}}</td>
+                    <td class="number">{{cluster.Size}}</td>
                   </tr>
                   <tr>
                     <td class="label">&nbsp;&nbsp;&nbsp;&nbsp;target&nbsp;size</td>

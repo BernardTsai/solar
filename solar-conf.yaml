@@ -4,3 +4,5 @@ MSG:
   Address: 127.0.0.1:9092
 CORE:
   IDENTIFIER: solar
+CTRL:
+  dummy: localhost:10000

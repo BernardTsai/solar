@@ -11,7 +11,7 @@ Building the docker image
 Invoke the script "build.sh" and verify that an image with the tag "tsai/solar" has been created .
 
 ```
-> docker/build.sh
+> build.sh
 > docker images | grep tsai/solar
 tsai/solar          latest              323ed9638e49        4 seconds ago       19.5MB
 >
@@ -23,7 +23,7 @@ tsai/solar          latest              323ed9638e49        4 seconds ago       
 Invoke the script "start.sh"
 
 ```
-> docker/start.sh
+> start.sh
 ```
 
 Then open the following URL in a browser http://localhost/solar/index.html to verify that SOLAR is running. The browser should display the main administration screen.
@@ -37,7 +37,7 @@ Attaching to the SOLAR command line interface
 Invoke the script "attach.sh". The command will provide acces to the SOLAR command line interface
 
 ```
-> docker/attach.sh
+> attach.sh
 >>>
 >>> help
 
@@ -65,5 +65,5 @@ Stopping SOLAR
 Invoke the script "stop.sh". After executing the script the container will be removed automatically.
 
 ```
-> docker/start.sh
+> stop.sh
 ```

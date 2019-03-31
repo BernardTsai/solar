@@ -113,6 +113,8 @@ func ExecuteInstanceTask(task *model.Task) {
 	controller, err := ctrl.GetController(component.Component)
 	if err != nil {
 		channel <- model.NewEvent(task.Domain, task.UUID, model.EventTypeTaskFailure, task.UUID, "unknon controller: " + component.Component)
+		util.Print(err.Error())
+		return
 	}
 
 	// execute the required transition
@@ -150,6 +152,7 @@ func ExecuteInstanceTask(task *model.Task) {
 	// check for errors and reexecute the task until the desired state has been reached
 	if err != nil {
 		channel <- model.NewEvent(task.Domain, task.UUID, model.EventTypeTaskFailure, task.UUID, err.Error())
+		util.Print("%s\n", err.Error())
 	} else {
 		channel <- model.NewEvent(task.Domain, task.UUID, model.EventTypeTaskExecution, task.UUID, "")
 	}

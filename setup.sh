@@ -28,6 +28,8 @@ go get gopkg.in/abiosoft/ishell.v2
 go get github.com/spf13/viper
 go get github.com/gorilla/mux
 go get github.com/segmentio/kafka-go
+go get google.golang.org/grpc
+go get github.com/golang/protobuf/protoc-gen-go
 
 # install binaries
 # cd $SRCDIR

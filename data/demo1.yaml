@@ -4,53 +4,53 @@ Domains:
   demo:
     Name: demo
     Components:
-      Application - V1.0.0:
-        Component: Application
+      application - V1.0.0:
+        Component: application
         Version: V1.0.0
         Configuration: ""
         Dependencies:
           Server:
-            Dependency: Server
+            Dependency: server
             Type: context
-            Component: Server
+            Component: server
             Version: V1.0.0
             Configuration: ""
           Service:
-            Dependency: Service
+            Dependency: service
             Type: service
-            Component: Application
+            Component: application
             Version: V1.0.0
             Configuration: ""
-      Network - V1.0.0:
-        Component: Network
+      network - V1.0.0:
+        Component: network
         Version: V1.0.0
         Configuration: ""
         Dependencies:
           Tenant:
-            Dependency: Tenant
+            Dependency: tenant
             Type: context
-            Component: Tenant
+            Component: tenant
             Version: V1.0.0
             Configuration: ""
-      Server - V1.0.0:
-        Component: Server
+      server - V1.0.0:
+        Component: server
         Version: V1.0.0
         Configuration: ""
         Dependencies:
           Network:
-            Dependency: Network
+            Dependency: network
             Type: context
-            Component: Network
+            Component: network
             Version: V1.0.0
             Configuration: ""
           Tenant:
-            Dependency: Tenant
+            Dependency: tenant
             Type: context
-            Component: Tenant
+            Component: tenant
             Version: V1.0.0
             Configuration: ""
-      Tenant - V1.0.0:
-        Component: Tenant
+      tenant - V1.0.0:
+        Component: tenant
         Version: V1.0.0
         Configuration: ""
         Dependencies: {}

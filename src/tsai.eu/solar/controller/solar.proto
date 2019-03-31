@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package tsai.eu;
+
+option go_package = "tsai.eu/solar/controller";
+
+service Controller {
+  rpc Create      (SetupMessage) returns (StatusMessage) {}
+  rpc Destroy     (SetupMessage) returns (StatusMessage) {}
+  rpc Start       (SetupMessage) returns (StatusMessage) {}
+  rpc Stop        (SetupMessage) returns (StatusMessage) {}
+  rpc Configure   (SetupMessage) returns (StatusMessage) {}
+  rpc Reconfigure (SetupMessage) returns (StatusMessage) {}
+  rpc Reset       (SetupMessage) returns (StatusMessage) {}
+  rpc Status      (SetupMessage) returns (StatusMessage) {}
+}
+
+message SetupMessage {
+  string Setup = 1;
+}
+
+message StatusMessage {
+  string Status = 1;
+}
