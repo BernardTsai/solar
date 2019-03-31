@@ -61,10 +61,10 @@ func GetController(componentType string) (Controller, error) {
 	}
 
 	// try to use the dummy controller
-	controller, found = controllers["dummy"]
-	if found {
-		return controller, nil
-	}
+	// controller, found = controllers["dummy"]
+	// if found {
+	// 	return controller, nil
+	// }
 
 	// offer the default controller
 	return defController, nil

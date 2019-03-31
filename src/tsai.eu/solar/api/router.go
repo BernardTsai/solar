@@ -7,6 +7,13 @@ import (
 
 //------------------------------------------------------------------------------
 
+// redirect forwards requests to main entry URL
+func redirect(w http.ResponseWriter, r *http.Request) {
+    http.Redirect(w, r, "/solar/index.html", 301)
+}
+
+//------------------------------------------------------------------------------
+
 // NewRouter creates and starts the API
 func NewRouter() {
   router := mux.NewRouter()
@@ -63,6 +70,9 @@ func NewRouter() {
   router.HandleFunc("/task/{domain}/{task}",                                     TaskTraceHandler).Methods("GET")
   router.HandleFunc("/task/{domain}/{task}/{level}",                             TaskGetHandler).Methods("GET")
   router.HandleFunc("/task/{domain}/{task}",                                     TaskTerminateHandler).Methods("DELETE")
+
+  router.HandleFunc("/solar", redirect).Methods("GET")
+  router.HandleFunc("/",      redirect).Methods("GET")
 
   // static files
   router.PathPrefix("/solar/").Handler(http.StripPrefix("/solar/", http.FileServer(http.Dir("./static/"))))
