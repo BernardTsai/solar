@@ -83,7 +83,7 @@ func (m *Monitor) Run() {
 
     // sleep a bit if no mismatch between current state and target state has been found
     if !mismatch {
-      time.Sleep(100 * time.Millisecond)
+      time.Sleep(10000 * time.Millisecond)
     }
   } // end of while active loop
 }

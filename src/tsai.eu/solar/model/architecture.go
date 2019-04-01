@@ -2,8 +2,8 @@ package model
 
 import (
 	"sync"
-
-	"github.com/pkg/errors"
+	"errors"
+	
 	"tsai.eu/solar/util"
 )
 

@@ -3,8 +3,8 @@ package model
 import (
 	"fmt"
 	"sync"
+	"errors"
 
-	"github.com/pkg/errors"
 	"tsai.eu/solar/util"
 )
 

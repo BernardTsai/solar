@@ -22,7 +22,6 @@ fi
 
 # import required libraries
 go get github.com/google/uuid
-go get github.com/pkg/errors
 go get gopkg.in/yaml.v2
 go get gopkg.in/abiosoft/ishell.v2
 go get github.com/spf13/viper

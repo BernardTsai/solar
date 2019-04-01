@@ -2,8 +2,8 @@ package model
 
 import (
 	"sync"
+	"errors"
 
-	"github.com/pkg/errors"
 	"tsai.eu/solar/util"
 )
 
@@ -510,7 +510,7 @@ func (domain *Domain) AddEvent(event *Event) error {
 		domain.TasksX.Lock()
 		task = domain.Tasks[event.Source]
 		task.AddEvent(event)
-		domain.TasksX.Unlock()		
+		domain.TasksX.Unlock()
 	}
 
 	// success

@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"strconv"
+	"errors"
 
 	"github.com/google/uuid"
-	"github.com/pkg/errors"
 	"gopkg.in/yaml.v2"
 )
 
@@ -19,7 +19,7 @@ func ConvertToJSON(entity interface{}) (string, error) {
 	bytes, err := json.MarshalIndent(entity, "", "  ")
 
 	if err != nil {
-		return "", errors.Wrap(err, "invalid entity")
+		return "", errors.New("invalid entity:" + err.Error())
 	}
 
 	// success
@@ -121,7 +121,7 @@ func LoadYAML(filename string, entity interface{}) (err error) {
 	yamlbytes, err := ioutil.ReadFile(filename)
 
 	if err != nil {
-		return errors.Wrap(err, "unable to load data")
+		return errors.New("unable to load data: " + err.Error())
 	}
 
 	err = errors.New("invalid structure")
@@ -130,7 +130,7 @@ func LoadYAML(filename string, entity interface{}) (err error) {
 	err = yaml.Unmarshal(yamlbytes, entity)
 
 	if err != nil {
-		return errors.Wrap(err, "invalid structure")
+		return errors.New("invalid structure: " + err.Error())
 	}
 
 	// success
@@ -145,14 +145,14 @@ func SaveYAML(filename string, entity interface{}) error {
 	bytes, err := yaml.Marshal(entity)
 
 	if err != nil {
-		return errors.Wrap(err, "invalid entity")
+		return errors.New("invalid entity:" + err.Error())
 	}
 
 	// write the entity
 	err = ioutil.WriteFile(filename, bytes, 0644)
 
 	if err != nil {
-		return errors.Wrap(err, "unable to save entity")
+		return errors.New("unable to save entity: " + err.Error())
 	}
 
 	// success
@@ -181,14 +181,14 @@ func ConvertFromYAML(yaml string, entity interface{}) error {
 	jsonbytes, err := ConvertYAMLToJSON([]byte(yaml))
 
 	if err != nil {
-		return errors.Wrap(err, "invalid data format")
+		return errors.New("invalid data format:" + err.Error())
 	}
 
 	// unmarshal data
 	err = json.Unmarshal(jsonbytes, entity)
 
 	if err != nil {
-		return errors.Wrap(err, "invalid structure")
+		return errors.New("invalid structure: " + err.Error())
 	}
 
 	// success
@@ -203,7 +203,7 @@ func ConvertToYAML(entity interface{}) (string, error) {
 	bytes, err := yaml.Marshal(entity)
 
 	if err != nil {
-		return "", errors.Wrap(err, "invalid entity")
+		return "", errors.New("invalid entity: " + err.Error())
 	}
 
 	// success
@@ -244,7 +244,7 @@ func UUID() string {
 
 //------------------------------------------------------------------------------
 
-// Print outputs the
+// Print outputs a message
 func Print(format string, args ...interface{} )  {
 	fmt.Printf(format, args...)
 }
