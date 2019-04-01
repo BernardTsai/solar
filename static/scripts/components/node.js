@@ -20,8 +20,8 @@ Vue.component(
         :class="destination.State"
         :cx="cx"
         cy=0
-        r=4
-        :title="tag">
+        r=4>
+        <title>Cluster: {{tag}}</title>
       </circle>`
   }
 )
@@ -49,8 +49,8 @@ Vue.component(
       <circle class="source"
         :cx="cx"
         cy=40
-        r=4
-        :title="tag">
+        r=4>
+        <title>Dependency: {{tag}}</title>
       </circle>`
   }
 )

@@ -47,7 +47,28 @@ Vue.component( 'task',
           m.style.visibility = "visible"
           m.style.left       = x + "px"
 
-          time = Math.round((x-100)/1000 * this.model.Trace.Range) + ' [ns]'
+          timeNanoSeconds  = Math.round((x-100)/1000 * this.model.Trace.Range)
+          timeMicroSeconds = Math.floor(timeNanoSeconds/1000)
+          timeMilliSeconds = Math.floor(timeMicroSeconds/1000)
+          timeSeconds      = Math.floor(timeMilliSeconds/1000)
+          timeMinutes      = Math.floor(timeSeconds/60)
+          timeHours        = Math.floor(timeMinutes/60)
+          timeDays         = Math.floor(timeHours/24)
+          timeHours        = timeHours % 24
+          timeMinutes      = timeMinutes % 60
+          timeSeconds      = timeSeconds % 60
+          timeMilliSeconds = timeMilliSeconds % 1000
+          timeMicroSeconds = timeMicroSeconds % 1000
+          timeNanoSeconds  = timeNanoSeconds % 1000
+
+          time =  (timeDays         > 0) ? timeDays         + " D "   : ""
+          time += (timeHours        > 0) ? timeHours        + " H "   : ""
+          time += (timeMinutes      > 0) ? timeMinutes      + " min " : ""
+          time += (timeSeconds      > 0) ? timeSeconds      + " sec " : ""
+          time += (timeMilliSeconds > 0) ? timeMilliSeconds + " ms "  : ""
+          time += (timeMicroSeconds > 0) ? timeMicroSeconds + " µs "  : ""
+          time += (timeNanoSeconds  > 0) ? timeNanoSeconds  + " ns "  : ""
+
           m.innerText = time
         } else {
           c.style.visibility = "hidden"
