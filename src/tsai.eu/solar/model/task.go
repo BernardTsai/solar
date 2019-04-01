@@ -1,10 +1,80 @@
 package model
 
 import (
+	"sort"
 	"errors"
 
 	"tsai.eu/solar/util"
 )
+
+//------------------------------------------------------------------------------
+
+// TaskInfo specifies the basic behaviour of a task
+type TaskInfo struct {
+	Type         string      `yaml:"Type"`         // type of task
+	Domain       string      `yaml:"Domain"`       // domain of task
+	Solution     string      `yaml:"Solution"`     // architecture of entity
+	Version      string      `yaml:"Version"`      // architecture version of entity
+	Element      string      `yaml:"Element"`      // element of entity
+	Cluster      string      `yaml:"Cluster"`      // cluster of entity
+	Instance     string      `yaml:"Instance"`     // instance of entity
+	State        string      `yaml:"State"`        // desired state of entity
+	UUID         string      `yaml:"UUID"`         // uuid of task
+	Parent       string      `yaml:"Parent"`       // uuid of parent task
+	Status       string      `yaml:"Status"`       // status of task: (execution/completion/failure)
+	Phase        int         `yaml:"Phase"`        // phase of task
+	Subtasks     []*TaskInfo `yaml:"Subtasks"`     // list of subtasks
+	Events       []*Event    `yaml:"Events"`       // list of events
+}
+
+//------------------------------------------------------------------------------
+
+// NewTaskInfo derives a taskinfo object from a task.
+func NewTaskInfo(task *Task, level int) (*TaskInfo) {
+	taskinfo := TaskInfo{
+		Type:       task.Type,
+		Domain:     task.Domain,
+		Solution:   task.Solution,
+		Version:    task.Version,
+		Element:    task.Element,
+		Cluster:    task.Cluster,
+		Instance:   task.Instance,
+		State:      task.State,
+		UUID:       task.UUID,
+		Parent:     task.Parent,
+		Status:     task.Status,
+		Phase:      task.Phase,
+		Subtasks:   []*TaskInfo{},
+		Events:     []*Event{},
+	}
+
+	// add events
+	domain, _ := GetDomain(task.Domain)
+
+	for _, eventUUID := range task.Events {
+		event, _ := domain.GetEvent(eventUUID)
+
+		taskinfo.Events = append(taskinfo.Events, event)
+	}
+	sort.SliceStable(taskinfo.Events, func(i, j int) bool { return taskinfo.Events[i].Time < taskinfo.Events[j].Time })
+
+	// check if details are needed (depends on level)
+	if level == 0 || level > 1 {
+		sublevel := 0
+		if level > 1 {
+			sublevel = level - 1
+		}
+
+		// add subtasks
+		for _, subtaskUUID := range task.Subtasks {
+			subtask, _ := GetTask(task.Domain, subtaskUUID)
+
+			taskinfo.Subtasks = append(taskinfo.Subtasks, NewTaskInfo(subtask, sublevel))
+		}
+	}
+
+	return &taskinfo
+}
 
 //------------------------------------------------------------------------------
 

@@ -11,7 +11,6 @@ import (
 
   "tsai.eu/solar/model"
   "tsai.eu/solar/util"
-  "tsai.eu/solar/cli"
   "tsai.eu/solar/engine"
 )
 
@@ -139,7 +138,7 @@ func TaskTraceHandler(w http.ResponseWriter, r *http.Request) {
   }
 
   // retrieve the task information
-  trace := cli.NewTrace(task)
+  trace := model.NewTrace(task)
   yaml, err := util.ConvertToYAML(trace)
   if err != nil {
     w.WriteHeader(http.StatusInternalServerError)
@@ -184,7 +183,7 @@ func TaskGetHandler(w http.ResponseWriter, r *http.Request) {
   }
 
   // retrieve the task information
-  taskinfo := cli.NewTaskInfo(task, level)
+  taskinfo := model.NewTaskInfo(task, level)
   yaml, err := util.ConvertToYAML(taskinfo)
   if err != nil {
     w.WriteHeader(http.StatusInternalServerError)
