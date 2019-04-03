@@ -1,9 +1,17 @@
 package api
 
 import (
+  "context"
   "net/http"
   "github.com/gorilla/mux"
 )
+
+//------------------------------------------------------------------------------
+
+// API represents the web interface
+type API struct {
+  Server *http.Server     // web server
+}
 
 //------------------------------------------------------------------------------
 
@@ -14,8 +22,29 @@ func redirect(w http.ResponseWriter, r *http.Request) {
 
 //------------------------------------------------------------------------------
 
-// NewRouter creates and starts the API
-func NewRouter() {
+// StartAPI starts the web interface
+func StartAPI(ctx context.Context) (*API) {
+  api := API{}
+
+  // start web interface
+  api.Server = NewServer()
+
+  // create a process to check if the server needs to shutdown
+  go func() {
+    select {
+    case <-ctx.Done():
+      api.Server.Shutdown(context.Background())
+    }
+  }()
+
+  // success
+  return &api
+}
+
+//------------------------------------------------------------------------------
+
+// NewServer creates and starts the API
+func NewServer() *http.Server{
   router := mux.NewRouter()
 
   // model
@@ -79,7 +108,13 @@ func NewRouter() {
 
   // start processing
   http.Handle("/", router)
-  http.ListenAndServe(":80", nil)
+
+  srv := &http.Server{Addr: ":80"}
+
+  go srv.ListenAndServe()
+
+  // initialisation completed
+  return srv
 }
 
 //------------------------------------------------------------------------------

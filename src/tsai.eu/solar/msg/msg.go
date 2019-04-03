@@ -17,11 +17,12 @@ import (
 
 // MSG represents the messaging interface to a kafka bus.
 type MSG struct {
-  Address              string        // address of the kafka bus
-  NotificationTopic    string        // topic to which the notifications will be published
-  NotificationWriter  *kafka.Writer  // notification connection
-  MonitoringTopic      string        // topic from which the message will be published
-  MonitoringReader    *kafka.Reader  // monitoring connection
+  Context              context.Context  // runtime context
+  Address              string           // address of the kafka bus
+  NotificationTopic    string           // topic to which the notifications will be published
+  NotificationWriter  *kafka.Writer     // notification connection
+  MonitoringTopic      string           // topic from which the message will be published
+  MonitoringReader    *kafka.Reader     // monitoring connection
 }
 
 //------------------------------------------------------------------------------
@@ -32,7 +33,7 @@ var msgInit  sync.Once    // do once sync for connection initialisation
 //------------------------------------------------------------------------------
 
 // NewMSG creates a new messaging interface.
-func NewMSG() (*MSG, error){
+func NewMSG(ctx context.Context) (*MSG, error){
   // determine configuration
   configuration, _ := util.GetConfiguration()
 
@@ -43,6 +44,7 @@ func NewMSG() (*MSG, error){
 
   // construct the messaging interface
   msg := MSG{
+    Context:            ctx,
     Address:            msgbusAddress,
     NotificationTopic:  notificationTopic,
     NotificationWriter: nil,
@@ -99,7 +101,7 @@ func (m *MSG) Run() {
 
   // listen while reader is available
   for m.MonitoringReader != nil {
-    message, err := m.MonitoringReader.ReadMessage(context.Background())
+    message, err := m.MonitoringReader.ReadMessage(m.Context)
     if err != nil {
         break
     }
@@ -158,10 +160,10 @@ func (m *MSG) Stop() {
 //------------------------------------------------------------------------------
 
 // StartMSG creates and return the core new messaging interface.
-func StartMSG() (*MSG, error){
+func StartMSG(ctx context.Context) (*MSG, error){
   // initialise singleton once
 	msgInit.Do(func() {
-    msgBus, err := NewMSG()
+    msgBus, err := NewMSG(ctx)
 
     if err != nil {
       msg = nil
@@ -202,7 +204,7 @@ func notify(key string, value string)  {
 
   // only publish if a message connection was established
   go msg.NotificationWriter.WriteMessages(
-      context.Background(),
+      msg.Context,
       kafka.Message{
         Key:   []byte(key),
         Value: []byte(value)},

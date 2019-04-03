@@ -1,6 +1,7 @@
 package model
 
 import (
+	"context"
 	"sort"
 	"errors"
 
@@ -265,7 +266,7 @@ func (task *Task) SetExecute(handler TaskHandler) {
 //------------------------------------------------------------------------------
 
 // Execute processes a task
-func (task *Task) Execute() {
+func (task *Task) Execute(ctx context.Context) {
 	// execute task if appropriate handler has been defined
 	if task.execute != nil {
 		task.execute(task)
@@ -282,7 +283,7 @@ func (task *Task) SetTerminate(handler TaskHandler) {
 //------------------------------------------------------------------------------
 
 // Terminate stops a task
-func (task *Task) Terminate() {
+func (task *Task) Terminate(ctx context.Context) {
 	// execute task if appropriate handler has been defined
 	if task.terminate != nil {
 		task.terminate(task)
@@ -299,7 +300,7 @@ func (task *Task) SetFailed(handler TaskHandler) {
 //------------------------------------------------------------------------------
 
 // Failed handles the failure of the task
-func (task *Task) Failed() {
+func (task *Task) Failed(ctx context.Context) {
 	// execute task if appropriate handler has been defined
 	if task.failed != nil {
 		task.failed(task)
@@ -316,7 +317,7 @@ func (task *Task) SetTimeout(handler TaskHandler) {
 //------------------------------------------------------------------------------
 
 // Timeout handles the timeput of the task
-func (task *Task) Timeout() {
+func (task *Task) Timeout(ctx context.Context) {
 	// execute task if appropriate handler has been defined
 	if task.timeout != nil {
 		task.timeout(task)
@@ -333,7 +334,7 @@ func (task *Task) SetCompleted(handler TaskHandler) {
 //------------------------------------------------------------------------------
 
 // Completed handles the completion of the task
-func (task *Task) Completed() {
+func (task *Task) Completed(ctx context.Context) {
 	// execute task if appropriate handler has been defined
 	if task.completed != nil {
 		task.completed(task)

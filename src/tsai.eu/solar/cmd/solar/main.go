@@ -1,10 +1,10 @@
 package main
 
 import (
+	"context"
 	"fmt"
 
 	"tsai.eu/solar/engine"
-	"tsai.eu/solar/model"
 	"tsai.eu/solar/api"
 	"tsai.eu/solar/monitor"
 	"tsai.eu/solar/msg"
@@ -14,9 +14,37 @@ import (
 
 //------------------------------------------------------------------------------
 
+// Control holds a handle to all running process
+type Control struct {
+	Cancel     context.CancelFunc      // process context
+	Dispatcher *engine.Dispatcher      // the orchestration engine
+	MSG        *msg.MSG                // messaging interface
+	Monitor    *monitor.Monitor	       // monitoring process
+	API        *api.API                // web API
+}
+
+//------------------------------------------------------------------------------
+
 // main entry point for the orchestrator
 func main() {
-	// parse configuration file 'solar-conf.yaml' in local directory
+	control := Control{
+		Cancel:     nil,
+		Dispatcher: nil,
+		MSG:        nil,
+		Monitor:    nil,
+	}
+
+	// Create a background context
+  ctx := context.Background()
+
+  //Derive a context with cancel
+  mainCtx, cancelFunction := context.WithCancel(ctx)
+	control.Cancel = cancelFunction
+
+	// defer canceling so that all the resources are freed up for this and the derived contexts
+  defer func() { terminate(&control) }()
+
+	//parse configuration file 'solar-conf.yaml' in local directory
 	_, err := util.GetConfiguration()
 	if err != nil {
 		fmt.Println("Unable to read the configuration file")
@@ -24,40 +52,36 @@ func main() {
 		return
 	}
 
-
 	// initialise command line options
 	util.ParseCommandLineOptions()
 
 	// display progam information
 	fmt.Println("SOLAR Version 1.0.0")
 
-	// create model
-	m := model.GetModel()
-
 	// start the main event loop
-	dispatcher := engine.StartDispatcher(m)
-	defer dispatcher.Stop()
+	control.Dispatcher = engine.StartDispatcher(mainCtx)
 
 	// start the messaging interface listener
-	msg, err := msg.StartMSG()
-	if err == nil {
-		defer msg.Stop()
-	} else {
-		fmt.Println("Unable to start the messaging interface")
-		fmt.Println(err)
-	}
+	control.MSG, _ = msg.StartMSG(mainCtx)
 
 	// start the monitoring loop
-	moni := monitor.StartMonitor(m, dispatcher.Channel)
-	defer moni.Stop()
+	control.Monitor = monitor.StartMonitor(mainCtx)
 
 	// start the API
-	go api.NewRouter()
+	control.API = api.StartAPI(mainCtx)
 
 	// get the command line interface
-	shell := cli.Shell(m)
+	shell := cli.Shell()
 
 	shell.Run()
+}
+
+//------------------------------------------------------------------------------
+
+// terminate frees all resources
+func terminate(control *Control) {
+	// close the main process context
+	control.Cancel()
 }
 
 //------------------------------------------------------------------------------

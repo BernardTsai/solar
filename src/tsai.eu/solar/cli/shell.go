@@ -18,7 +18,10 @@ var outputEnabled bool
 //------------------------------------------------------------------------------
 
 // Shell creates a command line interface which can be run.
-func Shell(m *model.Model) *ishell.Shell{
+func Shell() *ishell.Shell{
+	// get model
+	m := model.GetModel()
+
 	// create new shell which by default includes 'exit', 'help' and
 	// 'clear' commands
 	shell := ishell.New()

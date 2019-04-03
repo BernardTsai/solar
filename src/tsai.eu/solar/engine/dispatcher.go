@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"context"
 	"fmt"
 
 	"tsai.eu/solar/model"
@@ -10,28 +11,20 @@ import (
 
 // Dispatcher receives events from a channel and triggers a task coroutine.
 type Dispatcher struct {
-	Model   *model.Model           // repository
 	Channel chan model.Event       // the channel for event notification
-	Active   bool                  // indicates if the dispatcher loop should be active
 }
 
 //------------------------------------------------------------------------------
 
 // StartDispatcher creates a dispatcher and returns a channel for new tasks.
-func StartDispatcher(m *model.Model) (*Dispatcher) {
-
-	// create the communication channel
-	channel := GetEventChannel()
-
+func StartDispatcher(c context.Context) (*Dispatcher) {
 	// create the dispatcher
 	dispatcher := Dispatcher{
-		Model:   m,
-		Channel: channel,
-		Active:  true,
+		Channel: GetEventChannel(),
 	}
 
 	// start the dispatcher
-	go dispatcher.Run()
+	go dispatcher.Run(c)
 
 	return &dispatcher
 }
@@ -39,73 +32,70 @@ func StartDispatcher(m *model.Model) (*Dispatcher) {
 //------------------------------------------------------------------------------
 
 // Run starts the dispatcher loop receiving events and triggering tasks.
-func (d *Dispatcher) Run() {
-	// loop until exit is requested
-	for d.Active {
-		// get next event
-		event := <-d.Channel
-
-		// terminate if domain is empty = exit request
-		if event.Domain == "" {
+func (d *Dispatcher) Run(ctx context.Context) {
+	// loop forever until context is shut down
+	for {
+		select {
+		// context has been shut down
+		case <-ctx.Done():
 			return
-		}
+		// get next event
+		case event := <-d.Channel:
+			// terminate if domain is empty = exit request
+			if event.Domain == "" {
+				return
+			}
 
-		// get corresponding domain from the model
-		domain, err := d.Model.GetDomain(event.Domain)
-		if err != nil {
-			// TODO: log unknown domain
-			continue
-		}
+			// get corresponding domain from the model
+			domain, err := model.GetDomain(event.Domain)
+			if err != nil {
+				// TODO: log unknown domain
+				continue
+			}
 
-		// save event
-		domain.AddEvent(&event)
+			// save event
+			domain.AddEvent(&event)
 
-		// get task
-		task, err := domain.GetTask(event.Task)
-		if err != nil {
-			fmt.Println(err)
-			// TODO: log unknown task
-			continue
-		}
+			// get task
+			task, err := domain.GetTask(event.Task)
+			if err != nil {
+				fmt.Println(err)
+				// TODO: log unknown task
+				continue
+			}
 
-		// determine action by type of event
-		// Event types: execute, completed, failed, timeout, terminate
-		// Task types can be:
-		// - set component state
-		// - set instance state
-		// - transition component
-		// - transition instance
-		// - parallel execute tasks
-		// - sequentially execute tasks
-		switch event.Type {
-		// execute the task
-		case model.EventTypeTaskExecution:
-			go task.Execute()
+			// determine action by type of event
+			// Event types: execute, completed, failed, timeout, terminate
+			// Task types can be:
+			// - set component state
+			// - set instance state
+			// - transition component
+			// - transition instance
+			// - parallel execute tasks
+			// - sequentially execute tasks
+			switch event.Type {
+			// execute the task
+			case model.EventTypeTaskExecution:
+				go task.Execute(ctx)
 
-		// handle task completion
-		case model.EventTypeTaskCompletion:
-			go task.Completed()
+			// handle task completion
+			case model.EventTypeTaskCompletion:
+				go task.Completed(ctx)
 
-		// handle task failure
-		case model.EventTypeTaskFailure:
-			go task.Failed()
+			// handle task failure
+			case model.EventTypeTaskFailure:
+				go task.Failed(ctx)
 
-		// handle timeout of a task
-		case model.EventTypeTaskTimeout:
-			go task.Timeout()
+			// handle timeout of a task
+			case model.EventTypeTaskTimeout:
+				go task.Timeout(ctx)
 
-		// handle termination of a task
-		case model.EventTypeTaskTermination:
-			go task.Terminate()
+			// handle termination of a task
+			case model.EventTypeTaskTermination:
+				go task.Terminate(ctx)
+			}
 		}
 	}
-}
-
-//------------------------------------------------------------------------------
-
-// Stop will flag the dispatcher to stop execution
-func (d *Dispatcher) Stop() {
-  d.Active = false
 }
 
 //------------------------------------------------------------------------------

@@ -18,6 +18,7 @@ import (
 //
 // Functions:
 //   - GetModel
+//   - GetDomains
 //   - GetDomain
 //   - GetComponent
 //   - GetArchitecture
@@ -194,13 +195,14 @@ func (model *Model) DeleteDomain(name string) error {
 
 // GetDomain get a domain by name
 func GetDomain(domainName string) (*Domain, error) {
-	domain, err := GetModel().GetDomain(domainName)
-	if err != nil {
-		return nil, errors.New("domain not found")
-	}
+	return GetModel().GetDomain(domainName)
+}
 
-	// success
-	return domain, nil
+//------------------------------------------------------------------------------
+
+// GetDomains lists all domains of a model
+func GetDomains() ([]string, error) {
+	return GetModel().ListDomains()
 }
 
 //------------------------------------------------------------------------------
