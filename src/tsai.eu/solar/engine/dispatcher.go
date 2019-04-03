@@ -3,6 +3,7 @@ package engine
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"tsai.eu/solar/model"
 )
@@ -76,6 +77,7 @@ func (d *Dispatcher) Run(ctx context.Context) {
 			switch event.Type {
 			// execute the task
 			case model.EventTypeTaskExecution:
+				go monitorTask(ctx, task, d.Channel)
 				go task.Execute(ctx)
 
 			// handle task completion
@@ -94,6 +96,33 @@ func (d *Dispatcher) Run(ctx context.Context) {
 			case model.EventTypeTaskTermination:
 				go task.Terminate(ctx)
 			}
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
+// monitorTask creates a context for timeout and cancelation of a task
+func monitorTask(ctx context.Context, task *model.Task, channel chan model.Event) {
+	// derive new timeout context
+	monitorCtx, cancel := context.WithTimeout(ctx, 10 * time.Second)
+	defer cancel()
+
+	select {
+	case <- monitorCtx.Done():
+		// check status of task
+		status := task.GetStatus()
+
+		if status != model.TaskStatusInitial && status != model.TaskStatusExecuting {
+			return
+		}
+
+		// task may still be active
+		switch monitorCtx.Err().Error() {
+		case "context canceled":               // termination of processes
+			channel <- model.NewEvent(task.Domain, task.UUID, model.EventTypeTaskTermination, task.UUID, "termination")
+		default:                               // timeout
+			channel <- model.NewEvent(task.Domain, task.UUID, model.EventTypeTaskTimeout, task.UUID, "timeout")
 		}
 	}
 }
