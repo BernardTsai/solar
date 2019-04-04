@@ -32,8 +32,8 @@ var msgInit  sync.Once    // do once sync for connection initialisation
 
 //------------------------------------------------------------------------------
 
-// NewMSG creates a new messaging interface.
-func NewMSG(ctx context.Context) (*MSG, error){
+// newMSG creates a new messaging interface.
+func newMSG(ctx context.Context) (*MSG, error){
   // determine configuration
   configuration, _ := util.GetConfiguration()
 
@@ -79,7 +79,7 @@ func NewMSG(ctx context.Context) (*MSG, error){
   }
 
 	// start the messaging interface
-	go msg.Run()
+	go msg.run()
 
 	return &msg, nil
 }
@@ -87,7 +87,7 @@ func NewMSG(ctx context.Context) (*MSG, error){
 //------------------------------------------------------------------------------
 
 // Run starts the listener of the messaging interface
-func (m *MSG) Run() {
+func (m *MSG) run() {
   // handle issues with the message bus
   defer func() {
     if r := recover(); r != nil {
@@ -163,7 +163,7 @@ func (m *MSG) Stop() {
 func StartMSG(ctx context.Context) (*MSG, error){
   // initialise singleton once
 	msgInit.Do(func() {
-    msgBus, err := NewMSG(ctx)
+    msgBus, err := newMSG(ctx)
 
     if err != nil {
       msg = nil

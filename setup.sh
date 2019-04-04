@@ -29,6 +29,7 @@ go get github.com/gorilla/mux
 go get github.com/segmentio/kafka-go
 go get google.golang.org/grpc
 go get github.com/golang/protobuf/protoc-gen-go
+go get github.com/rs/zerolog/log
 
 # install binaries
 # cd $SRCDIR

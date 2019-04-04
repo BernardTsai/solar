@@ -44,13 +44,8 @@ func main() {
 	// defer canceling so that all the resources are freed up for this and the derived contexts
   defer func() { terminate(&control) }()
 
-	//parse configuration file 'solar-conf.yaml' in local directory
-	_, err := util.GetConfiguration()
-	if err != nil {
-		fmt.Println("Unable to read the configuration file")
-		fmt.Println(err)
-		return
-	}
+	// parse configuration file 'solar-conf.yaml' in local directory and initiate logging
+	util.StartLogging()
 
 	// initialise command line options
 	util.ParseCommandLineOptions()

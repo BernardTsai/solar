@@ -6,6 +6,7 @@ import (
 
   "tsai.eu/solar/model"
   "tsai.eu/solar/engine"
+  "tsai.eu/solar/util"
 )
 
 //------------------------------------------------------------------------------
@@ -30,6 +31,7 @@ func StartMonitor(ctx context.Context) (*Monitor) {
 
 	// start the monitor
 	go monitor.Run(ctx)
+  util.LogInfo("main", "MON", "monitoring started")
 
   // success
   return &monitor
@@ -116,9 +118,10 @@ func runningSolutionTasks(domain *model.Domain, solution *model.Solution) (bool)
 
 //------------------------------------------------------------------------------
 
-// Stop will flag the monitor to resume execution
+// Start will flag the monitor to resume execution
 func (m *Monitor) Start() {
   m.Active = true
+  util.LogInfo("main", "MON", "monitoring activated")
 }
 
 //------------------------------------------------------------------------------
@@ -126,6 +129,7 @@ func (m *Monitor) Start() {
 // Stop will flag the monitor to pause execution
 func (m *Monitor) Stop() {
   m.Active = false
+  util.LogInfo("main", "MON", "monitoring deactivated")
 }
 
 //------------------------------------------------------------------------------

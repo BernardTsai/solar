@@ -19,6 +19,7 @@ type MsgConfiguration struct {
 // CoreConfiguration holds all configuration information related to the orchestrator
 type CoreConfiguration struct {
   Identifier  string
+  LogLevel    string
 }
 
 //------------------------------------------------------------------------------
@@ -63,7 +64,7 @@ func readConfiguration() (*Configuration, error) {
 
   // set default values
   viper.SetDefault("MSG",  map[string]string{"Notifications": "notifications", "Monitoring": "monitoring", "Address": "127.0.0.1:9092"})
-  viper.SetDefault("CORE", map[string]string{"Identifier": "solar"})
+  viper.SetDefault("CORE", map[string]string{"Identifier": "solar", "LogLevel": ""})
   viper.SetDefault("CTRL", map[string]string{})
 
   // read configuration (ignore any errors)
