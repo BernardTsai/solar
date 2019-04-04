@@ -88,6 +88,22 @@ Vue.component(
       viewNode: function(node) {
         // initialise the architecture element of the model
         this.model.ArchElement = node.Element
+
+        // add missing clusters
+        Object.values(this.model.Catalog).forEach((c) => {
+          if (c.Component == node.Element.Component && !node.Element.Clusters[c.Version]) {
+            node.Element.Clusters[c.Version] = {
+              Version:       c.Version,
+              State:         "initial",
+              Min:           0,
+              Max:           0,
+              Size:          0,
+              Configuration: "",
+              Relationships: {}
+            }
+          }
+        })
+
       },
       // hidelement hides the editor
       hideElement: function() {
