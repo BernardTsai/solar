@@ -23,7 +23,7 @@ rm -rf dist/*
 docker run --rm -v "$PWD":"/go/" -w "/go/src" iron/go:dev go build -o ../dist/solar tsai.eu/solar/cmd/solar
 
 # copy configuration file
-cp solar-conf.yaml dist/
+cp docker/solar/solar-conf.yaml dist/
 
 # copy static web content
 cp -r static/ dist/static/

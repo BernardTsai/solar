@@ -36,7 +36,7 @@ var model = {
 
 // resetModel deletes the current model
 function resetModel() {
-  return fetch("http://" + window.location.hostname + "/model", {method: "PUT"})
+  return fetch("http://" + window.location.hostname + ":" + window.location.port + "/model", {method: "PUT"})
     .then((response) => response.text())
     .then((text)     => jsyaml.safeLoad(text))
 }
@@ -45,7 +45,7 @@ function resetModel() {
 
 // saveModel imports a model written in yaml
 function saveModel(model) {
-  return fetch("http://" + window.location.hostname + "/model", {method: "POST", body: model})
+  return fetch("http://" + window.location.hostname + ":" + window.location.port + "/model", {method: "POST", body: model})
     .then((response) => response.text())
     .then((text)     => jsyaml.safeLoad(text))
 }
@@ -55,7 +55,7 @@ function saveModel(model) {
 // loadDomains retrieves a list of domain names from the the repository
 function loadDomains() {
   // determine domains
-  return fetch("http://" + window.location.hostname + "/domain")
+  return fetch("http://" + window.location.hostname + ":" + window.location.port + "/domain")
     .then((response) => response.text())
     .then((text)     => jsyaml.safeLoad(text))
     .then((yaml)     => model.Domains = yaml)
@@ -65,7 +65,7 @@ function loadDomains() {
 
 // saveDomain creates a new domain
 function saveDomain(domain) {
-  return fetch("http://" + window.location.hostname + "/domain/" + domain, {method: "POST"})
+  return fetch("http://" + window.location.hostname + ":" + window.location.port + "/domain/" + domain, {method: "POST"})
     .then((response) => response.text())
     .then((text)     => jsyaml.safeLoad(text))
 }
@@ -74,7 +74,7 @@ function saveDomain(domain) {
 
 // deleteDomain removes an existing domain
 function deleteDomain(domain) {
-  return fetch("http://" + window.location.hostname + "/domain/" + domain, {method: "DELETE"})
+  return fetch("http://" + window.location.hostname + ":" + window.location.port + "/domain/" + domain, {method: "DELETE"})
     .then((response) => response.text())
     .then((text)     => jsyaml.safeLoad(text))
 }
@@ -84,7 +84,7 @@ function deleteDomain(domain) {
 // loadCatalog retrieves a list of components of a domain from the the repository
 function loadCatalog(domain) {
   // determine domains
-  return fetch("http://" + window.location.hostname + "/catalog/" + domain)
+  return fetch("http://" + window.location.hostname + ":" + window.location.port + "/catalog/" + domain)
     .then((response) => response.text())
     .then((text)     => jsyaml.safeLoad(text))
     .then((yaml)     => yaml.sort((a,b) => (a.Component > b.Component) ? 1 : (a.Component < b.Component) ? -1 : 0))
@@ -96,7 +96,7 @@ function loadCatalog(domain) {
 // loadComponents retrieves a list of component names from the the repository
 function loadComponents(domain) {
   // determine domains
-  return fetch("http://" + window.location.hostname + "/component/" + domain)
+  return fetch("http://" + window.location.hostname + ":" + window.location.port + "/component/" + domain)
     .then((response) => response.text())
     .then((text)     => jsyaml.safeLoad(text))
     .then((yaml)     => model.Components = yaml)
@@ -107,7 +107,7 @@ function loadComponents(domain) {
 // loadComponents retrieves a component from the the repository
 function loadComponent(domain, component) {
   // determine component
-  return fetch("http://" + window.location.hostname + "/component/" + domain + "/" + component)
+  return fetch("http://" + window.location.hostname + ":" + window.location.port + "/component/" + domain + "/" + component)
     .then((response) => response.text())
     .then((text)     => jsyaml.safeLoad(text))
     .then((yaml)     => view.component = yaml)
@@ -119,7 +119,7 @@ function loadComponent(domain, component) {
 function saveComponent(domain, comp) {
   body      = jsyaml.safeDump(comp)
   component = comp.Component + " - " + comp.Version
-  return fetch("http://" + window.location.hostname + "/component/" + domain, {method: "POST", body: body})
+  return fetch("http://" + window.location.hostname + ":" + window.location.port + "/component/" + domain, {method: "POST", body: body})
     .then((response) => response.text())
     .then((text)     => loadCatalog(domain))
 }
@@ -128,7 +128,7 @@ function saveComponent(domain, comp) {
 
 // deleteComponent removes a component from the the repository
 function deleteComponent(domain, component) {
-  return fetch("http://" + window.location.hostname + "/component/" + domain + "/" + component, {method: "DELETE"})
+  return fetch("http://" + window.location.hostname + ":" + window.location.port + "/component/" + domain + "/" + component, {method: "DELETE"})
     .then((response) => response.text())
     .then((text)     => loadCatalog(domain))
 }
@@ -138,7 +138,7 @@ function deleteComponent(domain, component) {
 // loadArchitectures retrieves a list of architecture names from the the repository
 function loadArchitectures(domain) {
   // determine domains
-  return fetch("http://" + window.location.hostname + "/architecture/" + domain)
+  return fetch("http://" + window.location.hostname + ":" + window.location.port + "/architecture/" + domain)
     .then((response) => response.text())
     .then((text)     => jsyaml.safeLoad(text))
     .then((yaml)     => model.Architectures = yaml.sort())
@@ -149,7 +149,7 @@ function loadArchitectures(domain) {
 // loadArchitecture retrieves an architecture from the repository
 function loadArchitecture(domain, architecture) {
   // retrieve architecture
-  return fetch("http://" + window.location.hostname + "/architecture/" + domain + "/" + architecture)
+  return fetch("http://" + window.location.hostname + ":" + window.location.port + "/architecture/" + domain + "/" + architecture)
     .then((response) => response.text())
     .then((text)     => jsyaml.safeLoad(text))
     .then((yaml)     => model.Architecture = yaml)
@@ -160,7 +160,7 @@ function loadArchitecture(domain, architecture) {
 // saveArchitecture stores an architecture  into the repository
 function saveArchitecture(domain, architecture) {
   // save architecture
-  return fetch("http://" + window.location.hostname + "/architecture/" + domain, {
+  return fetch("http://" + window.location.hostname + ":" + window.location.port + "/architecture/" + domain, {
       method: "POST",
       body:   jsyaml.safeDump(architecture)
     })
@@ -174,7 +174,7 @@ function deployArchitecture(domain, architecture) {
   name = architecture.Architecture + " - " + architecture.Version
 
   // deploy architecture
-  return fetch("http://" + window.location.hostname + "/architecture/" + domain + "/" + name, {method: "POST"})
+  return fetch("http://" + window.location.hostname + ":" + window.location.port + "/architecture/" + domain + "/" + name, {method: "POST"})
     .then((response) => response.text())
 }
 
@@ -185,7 +185,7 @@ function deleteArchitecture(domain, architecture) {
   name = architecture.Architecture + " - " + architecture.Version
 
   // delete architecture
-  return fetch("http://" + window.location.hostname + "/architecture/" + domain + "/" + name, {method: "DELETE"})
+  return fetch("http://" + window.location.hostname + ":" + window.location.port + "/architecture/" + domain + "/" + name, {method: "DELETE"})
     .then((response) => response.text())
 }
 
@@ -218,7 +218,7 @@ function duplicateElement(element, name) {
 // loadSolutions retrieves a list of solution names from the the repository
 function loadSolutions(domain) {
   // determine domains
-  return fetch("http://" + window.location.hostname + "/solution/" + domain)
+  return fetch("http://" + window.location.hostname + ":" + window.location.port + "/solution/" + domain)
     .then((response) => response.text())
     .then((text)     => jsyaml.safeLoad(text))
     .then((yaml)     => model.Solutions = yaml)
@@ -229,7 +229,7 @@ function loadSolutions(domain) {
 // loadSolution retrieves a solution from the the repository
 function loadSolution(domain, solution) {
   // determine domains
-  return fetch("http://" + window.location.hostname + "/solution/" + domain + "/" + solution)
+  return fetch("http://" + window.location.hostname + ":" + window.location.port + "/solution/" + domain + "/" + solution)
     .then((response) => response.text())
     .then((text)     => jsyaml.safeLoad(text))
     .then((solution) => {
@@ -261,7 +261,7 @@ function updateCluster(domain, solution, element, cluster, state, min, max, size
     Max:   max,
     Size:  size
   })
-  return fetch("http://" + window.location.hostname + "/cluster/" + domain + "/" + solution + "/" + element + "/" + cluster, {method: "PUT", body: body})
+  return fetch("http://" + window.location.hostname + ":" + window.location.port + "/cluster/" + domain + "/" + solution + "/" + element + "/" + cluster, {method: "PUT", body: body})
   .then((response) => response.text())
   .then((text)     => jsyaml.safeLoad(text))
 }
@@ -273,7 +273,7 @@ function updateInstance(domain, solution, element, cluster, instance, state) {
   body = jsyaml.safeDump({
     State: state
   })
-  return fetch("http://" + window.location.hostname + "/instance/" + domain + "/" + solution + "/" + element + "/" + cluster + "/" + instance, {method: "PUT", body: body})
+  return fetch("http://" + window.location.hostname + ":" + window.location.port + "/instance/" + domain + "/" + solution + "/" + element + "/" + cluster + "/" + instance, {method: "PUT", body: body})
   .then((response) => response.text())
   .then((text)     => jsyaml.safeLoad(text))
 }
@@ -282,16 +282,16 @@ function updateInstance(domain, solution, element, cluster, instance, state) {
 
 // loadAll retrieves a solution, the architecture and the catalog from the the repository
 function loadAll(domain, solution) {
-  return fetch("http://" + window.location.hostname + "/catalog/" + domain)
+  return fetch("http://" + window.location.hostname + ":" + window.location.port + "/catalog/" + domain)
   .then((response) => response.text())
   .then((text)     => jsyaml.safeLoad(text))
   .then((yaml)     => yaml.sort((a,b) => (a.Component > b.Component) ? 1 : (a.Component < b.Component) ? -1 : 0))
   .then((list)     => model.Catalog = list)
-  .then(()         => fetch("http://" + window.location.hostname + "/solution/" + domain + "/" + solution))
+  .then(()         => fetch("http://" + window.location.hostname + ":" + window.location.port + "/solution/" + domain + "/" + solution))
   .then((response) => response.text())
   .then((text)     => jsyaml.safeLoad(text))
   .then((yaml)     => model.Solution = yaml)
-  .then(()         => fetch("http://" + window.location.hostname + "/architecture/" + domain + "/" + model.Solution.Solution + " - " +  model.Solution.Version))
+  .then(()         => fetch("http://" + window.location.hostname + ":" + window.location.port + "/architecture/" + domain + "/" + model.Solution.Solution + " - " +  model.Solution.Version))
   .then((response) => response.text())
   .then((text)     => jsyaml.safeLoad(text))
   .then((yaml)     => model.Architecture = yaml)
@@ -303,7 +303,7 @@ function loadAll(domain, solution) {
 function loadTasks(domain, solution, element, cluster, instance) {
   // case: only domain and solution are defined
   if (element == "") {
-    fetch("http://" + window.location.hostname + "/tasks/" + domain + "/" + solution)
+    fetch("http://" + window.location.hostname + ":" + window.location.port + "/tasks/" + domain + "/" + solution)
       .then((response) => response.text())
       .then((text)     => jsyaml.safeLoad(text))
       .then((yaml)     => model.Tasks = yaml)
@@ -312,7 +312,7 @@ function loadTasks(domain, solution, element, cluster, instance) {
 
   // case: only domain, solution and element are defined
   if (cluster == "") {
-    fetch("http://" + window.location.hostname + "/tasks/" + domain + "/" + solution + "/" + element)
+    fetch("http://" + window.location.hostname + ":" + window.location.port + "/tasks/" + domain + "/" + solution + "/" + element)
       .then((response) => response.text())
       .then((text)     => jsyaml.safeLoad(text))
       .then((yaml)     => model.Tasks = yaml)
@@ -321,7 +321,7 @@ function loadTasks(domain, solution, element, cluster, instance) {
 
   // case: only domain, solution, element and cluster are defined
   if (instance == "") {
-    fetch("http://" + window.location.hostname + "/tasks/" + domain + "/" + solution + "/" + element + "/" + cluster)
+    fetch("http://" + window.location.hostname + ":" + window.location.port + "/tasks/" + domain + "/" + solution + "/" + element + "/" + cluster)
       .then((response) => response.text())
       .then((text)     => jsyaml.safeLoad(text))
       .then((yaml)     => model.Tasks = yaml)
@@ -329,7 +329,7 @@ function loadTasks(domain, solution, element, cluster, instance) {
   }
 
   // every parameter is defined
-  return fetch("http://" + window.location.hostname + "/tasks/" + domain + "/" + solution + "/" + element + "/" + cluster + "/" + instance)
+  return fetch("http://" + window.location.hostname + ":" + window.location.port + "/tasks/" + domain + "/" + solution + "/" + element + "/" + cluster + "/" + instance)
     .then((response) => response.text())
     .then((text)     => jsyaml.safeLoad(text))
     .then((yaml)     => model.Tasks = yaml)
@@ -341,7 +341,7 @@ function loadTasks(domain, solution, element, cluster, instance) {
 // loadTrace retrieves a task trace from the the repository
 function loadTrace(domain, task) {
   // determine domains
-  return fetch("http://" + window.location.hostname + "/task/" + domain + "/" + task)
+  return fetch("http://" + window.location.hostname + ":" + window.location.port + "/task/" + domain + "/" + task)
     .then((response) => response.text())
     .then((text)     => jsyaml.safeLoad(text))
     .then((yaml)     => model.Trace = yaml)

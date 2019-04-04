@@ -54,16 +54,16 @@ func main() {
 	fmt.Println("SOLAR Version 1.0.0")
 
 	// start the main event loop
-	control.Dispatcher = engine.StartDispatcher(mainCtx)
+	control.Dispatcher = engine.Start(mainCtx)
 
 	// start the messaging interface listener
-	control.MSG, _ = msg.StartMSG(mainCtx)
+	control.MSG, _ = msg.Start(mainCtx)
 
 	// start the monitoring loop
-	control.Monitor = monitor.StartMonitor(mainCtx)
+	control.Monitor = monitor.Start(mainCtx)
 
 	// start the API
-	control.API = api.StartAPI(mainCtx)
+	control.API = api.Start(mainCtx)
 
 	// get the command line interface
 	shell := cli.Shell()

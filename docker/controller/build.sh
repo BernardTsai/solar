@@ -30,6 +30,3 @@ cd dist
 
 # build docker image
 docker build -q -t tsai/solar-grpc-controller:V1.0.0 .
-
-# start container
-#  docker run --rm -itd -p 80:80 tsai/solar

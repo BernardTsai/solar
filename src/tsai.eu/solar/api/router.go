@@ -4,6 +4,8 @@ import (
   "context"
   "net/http"
   "github.com/gorilla/mux"
+
+  "tsai.eu/solar/util"
 )
 
 //------------------------------------------------------------------------------
@@ -22,8 +24,8 @@ func redirect(w http.ResponseWriter, r *http.Request) {
 
 //------------------------------------------------------------------------------
 
-// StartAPI starts the web interface
-func StartAPI(ctx context.Context) (*API) {
+// Start starts the web interface
+func Start(ctx context.Context) (*API) {
   api := API{}
 
   // start web interface
@@ -33,6 +35,7 @@ func StartAPI(ctx context.Context) (*API) {
   go func() {
     select {
     case <-ctx.Done():
+      util.LogInfo("main", "API", "api initial")
       api.Server.Shutdown(context.Background())
     }
   }()
@@ -114,6 +117,7 @@ func NewServer() *http.Server{
   go srv.ListenAndServe()
 
   // initialisation completed
+  util.LogInfo("main", "API", "api active")
   return srv
 }
 

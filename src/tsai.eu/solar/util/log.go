@@ -17,36 +17,30 @@ func StartLogging() {
 	if err != nil {
     LogError("main", "CORE", "unable to read the configuration")
 	} else {
-    switch config.CORE.LogLevel {
-    case "panic":
-      LogLevel(zerolog.PanicLevel)
-    case "fatal":
-      LogLevel(zerolog.FatalLevel)
-    case "error":
-      LogLevel(zerolog.ErrorLevel)
-    case "warn":
-      LogLevel(zerolog.WarnLevel)
-    case "info":
-      LogLevel(zerolog.InfoLevel)
-    case "debug":
-      LogLevel(zerolog.DebugLevel)
-    default:
-      LogLevel(zerolog.ErrorLevel)
-    }
+    LogLevel(config.CORE.LogLevel)
   }
 }
 
 //------------------------------------------------------------------------------
 
 // LogLevel sets the LogLevel
-//     panic (zerolog.PanicLevel, 5)
-//     fatal (zerolog.FatalLevel, 4)
-//     error (zerolog.ErrorLevel, 3)
-//     warn  (zerolog.WarnLevel,  2)
-//     info  (zerolog.InfoLevel,  1)
-//     debug (zerolog.DebugLevel, 0)
-func LogLevel(level zerolog.Level) {
-  zerolog.SetGlobalLevel(level)
+func LogLevel(level string) {
+  switch level {
+  case "panic":
+    zerolog.SetGlobalLevel(zerolog.PanicLevel)
+  case "fatal":
+    zerolog.SetGlobalLevel(zerolog.FatalLevel)
+  case "error":
+    zerolog.SetGlobalLevel(zerolog.ErrorLevel)
+  case "warn":
+    zerolog.SetGlobalLevel(zerolog.WarnLevel)
+  case "info":
+    zerolog.SetGlobalLevel(zerolog.InfoLevel)
+  case "debug":
+    zerolog.SetGlobalLevel(zerolog.DebugLevel)
+  default:
+    zerolog.SetGlobalLevel(zerolog.ErrorLevel)
+  }
 }
 
 //------------------------------------------------------------------------------

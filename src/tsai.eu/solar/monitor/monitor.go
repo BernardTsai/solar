@@ -20,18 +20,18 @@ type Monitor struct {
 
 //------------------------------------------------------------------------------
 
-// StartMonitor creates a process to monitor the consistency of the model.
-func StartMonitor(ctx context.Context) (*Monitor) {
+// Start creates a process to monitor the consistency of the model.
+func Start(ctx context.Context) (*Monitor) {
 	// create the monitor
 	monitor := Monitor{
     Channel: engine.GetEventChannel(),
     Ticker:  time.NewTicker(10 * time.Second),
-    Active:  true,
+    Active:  false,
 	}
 
 	// start the monitor
 	go monitor.Run(ctx)
-  util.LogInfo("main", "MON", "monitoring started")
+  monitor.Start()
 
   // success
   return &monitor
@@ -46,6 +46,7 @@ func (m *Monitor) Run(ctx context.Context) {
     select {
     // check if context has expired
     case <-ctx.Done():
+      util.LogInfo("main", "MON", "monitoring initial")
       m.Ticker.Stop()
       return
     // wait for next tick and monitor solutions
@@ -121,7 +122,7 @@ func runningSolutionTasks(domain *model.Domain, solution *model.Solution) (bool)
 // Start will flag the monitor to resume execution
 func (m *Monitor) Start() {
   m.Active = true
-  util.LogInfo("main", "MON", "monitoring activated")
+  util.LogInfo("main", "MON", "monitoring active")
 }
 
 //------------------------------------------------------------------------------
@@ -129,7 +130,7 @@ func (m *Monitor) Start() {
 // Stop will flag the monitor to pause execution
 func (m *Monitor) Stop() {
   m.Active = false
-  util.LogInfo("main", "MON", "monitoring deactivated")
+  util.LogInfo("main", "MON", "monitoring inactive")
 }
 
 //------------------------------------------------------------------------------

@@ -34,6 +34,7 @@ go get github.com/rs/zerolog/log
 # install binaries
 # cd $SRCDIR
 go install tsai.eu/solar/cmd/solar
+go install tsai.eu/solar/controller/gRPC
 
 # change to root directory
 cd $ROOTDIR

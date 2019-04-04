@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"tsai.eu/solar/model"
+	"tsai.eu/solar/util"
+	"tsai.eu/solar/controller"
 )
 
 //------------------------------------------------------------------------------
@@ -17,15 +19,20 @@ type Dispatcher struct {
 
 //------------------------------------------------------------------------------
 
-// StartDispatcher creates a dispatcher and returns a channel for new tasks.
-func StartDispatcher(c context.Context) (*Dispatcher) {
+// Start creates a dispatcher and returns a channel for new tasks.
+func Start(c context.Context) (*Dispatcher) {
 	// create the dispatcher
 	dispatcher := Dispatcher{
 		Channel: GetEventChannel(),
 	}
 
+	// preload the controllers
+	controller.GetController("default")
+
 	// start the dispatcher
 	go dispatcher.Run(c)
+
+	util.LogInfo("main", "ENG", "engine active")
 
 	return &dispatcher
 }

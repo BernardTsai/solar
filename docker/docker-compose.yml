@@ -1,0 +1,43 @@
+version: '3'
+services:
+  portainer:
+    image: portainer/portainer
+    restart: "always"
+    command: --admin-password $$2y$$05$$2gStjL0xVm5iKLQw1hPCueMH4xp6fNFaCvaoi3.2FtyTH.7qINGuy
+    ports:
+      - "9000:9000"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+  zookeeper:
+    image: wurstmeister/zookeeper
+    ports:
+      - "2181:2181"
+  kafka:
+    image: wurstmeister/kafka
+    ports:
+      - "9092:9092"
+    expose:
+    - "9093"
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: INSIDE://kafka:9093,OUTSIDE://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+      KAFKA_LISTENERS: INSIDE://0.0.0.0:9093,OUTSIDE://0.0.0.0:9092
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+  controller:
+    image:   tsai/solar-grpc-controller:V1.0.0
+    hostname: controller
+    restart: "unless-stopped"
+    ports:
+     - "10000:10000"
+  solar:
+    image:   tsai/solar:V1.0.0
+    hostname: solar
+    restart: "unless-stopped"
+    tty: true
+    ports:
+     - "80:80"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"

@@ -2,7 +2,6 @@ package controller
 
 import (
 	"sync"
-	"fmt"
 
 	"tsai.eu/solar/model"
 	"tsai.eu/solar/util"
@@ -40,6 +39,8 @@ func GetController(componentType string) (Controller, error) {
 
 		// initialise the default controller
 		defController = dummy.NewController()
+		controllers["default"] = defController
+		util.LogInfo("main", "CTRL", "default - controller active")
 
 		// read the controller configuration
 		config, _ := util.GetConfiguration()
@@ -48,7 +49,9 @@ func GetController(componentType string) (Controller, error) {
 		for controllerType, controllerAddress := range config.CTRL {
 			controller, err := newGRPCController(controllerType, controllerAddress)
 			if err != nil {
-				fmt.Println("Controller error:\n" + err.Error())
+				util.LogFatal("main", "CTRL", "failed to include controller: " + err.Error())
+			} else {
+				util.LogInfo("main", "CTRL", controllerType + " - controller active")
 			}
 			controllers[controllerType] = controller
 		}
@@ -61,10 +64,10 @@ func GetController(componentType string) (Controller, error) {
 	}
 
 	// try to use the dummy controller
-	// controller, found = controllers["dummy"]
-	// if found {
-	// 	return controller, nil
-	// }
+	controller, found = controllers["dummy"]
+	if found {
+		return controller, nil
+	}
 
 	// offer the default controller
 	return defController, nil

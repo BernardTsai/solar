@@ -6,6 +6,7 @@ import (
   "context"
   "errors"
   "strings"
+  "time"
 
 	"github.com/segmentio/kafka-go"
 
@@ -18,6 +19,7 @@ import (
 // MSG represents the messaging interface to a kafka bus.
 type MSG struct {
   Context              context.Context  // runtime context
+  Identifier           string           // identifier of this node as message source
   Address              string           // address of the kafka bus
   NotificationTopic    string           // topic to which the notifications will be published
   NotificationWriter  *kafka.Writer     // notification connection
@@ -32,62 +34,177 @@ var msgInit  sync.Once    // do once sync for connection initialisation
 
 //------------------------------------------------------------------------------
 
-// newMSG creates a new messaging interface.
-func newMSG(ctx context.Context) (*MSG, error){
-  // determine configuration
-  configuration, _ := util.GetConfiguration()
+// Start initialises the messaging interface.
+func Start(ctx context.Context) (*MSG, error){
+  // initialise singleton once
+	msgInit.Do(func() {
+    // determine configuration
+    configuration, err := util.GetConfiguration()
+    if err != nil {
+      util.LogError("main", "MSG", "failed to read the configuration: " + err.Error())
+      return
+    }
 
-  identifier        := configuration.CORE.Identifier
-  msgbusAddress     := configuration.MSG.Address
-  notificationTopic := configuration.MSG.Notifications
-  monitoringTopic   := configuration.MSG.Monitoring
+    // construct the messaging interface
+    msg = &MSG{
+      Context:            ctx,
+      Identifier:         configuration.CORE.Identifier,
+      Address:            configuration.MSG.Address,
+      NotificationTopic:  configuration.MSG.Notifications,
+      NotificationWriter: nil,
+      MonitoringTopic:    configuration.MSG.Monitoring,
+      MonitoringReader:   nil,
+    }
 
-  // construct the messaging interface
-  msg := MSG{
-    Context:            ctx,
-    Address:            msgbusAddress,
-    NotificationTopic:  notificationTopic,
-    NotificationWriter: nil,
-    MonitoringTopic:    monitoringTopic,
-    MonitoringReader:   nil,
+    // start the messaging interfaces
+    err = msg.StartReader()
+    if err != nil {
+      util.LogError("main", "MSG", "failed to start the reader: " + err.Error())
+    }
+
+    err = msg.StartWriter()
+    if err != nil {
+      util.LogError("main", "MSG", "failed to start the writer: " + err.Error())
+    }
+	})
+
+  // check if initialisation has been successful
+  if msg == nil {
+    util.LogError("main", "MSG", "failed to initialise the messaging interface")
   }
 
-  // create the notication writer
-  msg.NotificationWriter = kafka.NewWriter(kafka.WriterConfig{
-    Brokers:  []string{msgbusAddress},
-    Topic:    notificationTopic,
-    Balancer: &kafka.LeastBytes{},
-  })
-
-  // creating the monitoring reader
-  msg.MonitoringReader = kafka.NewReader(kafka.ReaderConfig{
-    Brokers:   []string{msgbusAddress},
-    GroupID:   identifier,
-    Topic:     monitoringTopic,
-    MinBytes:  10e3, // 10KB
-    MaxBytes:  10e6, // 10MB
-  })
-
-  // check the result of the initialisation
-  if msg.NotificationWriter == nil {
-    return nil, errors.New("Unable to connect to the message bus: " + msgbusAddress + " / topic: " + notificationTopic + "\n")
-  }
-
-  // check the result of the initialisation
-  if msg.MonitoringReader == nil {
-    return nil, errors.New("Unable to connect to the message bus: " + msgbusAddress + " / topic: " + monitoringTopic + "\n")
-  }
-
-	// start the messaging interface
-	go msg.run()
-
-	return &msg, nil
+  // return
+  return msg, nil
 }
 
 //------------------------------------------------------------------------------
 
-// Run starts the listener of the messaging interface
-func (m *MSG) run() {
+// Status of the messaging interface.
+func (msg *MSG) Status() (messageStatus bool, writerStatus bool, readerStatus bool){
+  messageStatus = msg != nil
+  writerStatus  = msg.StatusWriter()
+  readerStatus  = msg.StatusReader()
+
+  return messageStatus, readerStatus, writerStatus
+}
+
+//------------------------------------------------------------------------------
+
+// Stop deactivates the messaging interface.
+func (msg *MSG) Stop() {
+  msg.StopReader()
+  msg.StopWriter()
+}
+
+//------------------------------------------------------------------------------
+
+// StartWriter reconnects the writer to the message bus
+func (msg *MSG) StartWriter() error {
+  // create the notification writer if necessary
+  if msg.NotificationWriter == nil {
+    msg.NotificationWriter = kafka.NewWriter(kafka.WriterConfig{
+      Brokers:  []string{msg.Address},
+      Topic:    msg.NotificationTopic,
+      Balancer: &kafka.LeastBytes{},
+    })
+  }
+
+  // check the result of the initialisation
+  if msg.NotificationWriter == nil {
+    util.LogError("main", "MSG", "failed to start the writer")
+    return errors.New("failed to start the writer")
+  }
+
+  // success
+  util.LogInfo("main", "MSG", "writer active")
+  return nil
+}
+
+//------------------------------------------------------------------------------
+
+// StopWriter shuts down the writer
+func (msg *MSG) StopWriter() {
+  if msg.NotificationWriter != nil {
+    msg.NotificationWriter.Close()
+    msg.NotificationWriter = nil
+    util.LogInfo("main", "MSG", "writer inactive")
+  }
+}
+
+//------------------------------------------------------------------------------
+
+// StatusReader provides the status of the writer
+func (msg *MSG) StatusWriter() bool{
+  messageStatus := msg != nil
+  writerStatus  := false
+
+  if messageStatus {
+    writerStatus = msg.NotificationWriter != nil
+  }
+
+  return writerStatus
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+// StartReader reconnects the reader to the message bus
+func (msg *MSG) StartReader() error {
+  // create the notification writer if necessary
+  if msg.MonitoringReader == nil {
+    msg.MonitoringReader = kafka.NewReader(kafka.ReaderConfig{
+      Brokers:   []string{msg.Address},
+      GroupID:   msg.Identifier,
+      Topic:     msg.MonitoringTopic,
+      MinBytes:  10e3, // 10KB
+      MaxBytes:  10e6, // 10MB
+    })
+
+    // start listening
+  	go msg.listen()
+  }
+
+  // check the result of the initialisation
+  if msg.MonitoringReader == nil {
+    util.LogError("main", "MSG", "failed to start the reader")
+    return errors.New("failed to start the reader")
+  }
+
+  // success
+  util.LogInfo("main", "MSG", "reader active")
+  return nil
+}
+
+
+//------------------------------------------------------------------------------
+
+// StopReader shuts down the reader
+func (msg *MSG) StopReader() {
+  if msg.MonitoringReader != nil {
+    msg.MonitoringReader.Close()
+    msg.MonitoringReader = nil
+    util.LogInfo("main", "MSG", "reader inactive")
+  }
+}
+
+//------------------------------------------------------------------------------
+
+// StatusReader provides the status of the reader
+func (msg *MSG) StatusReader() bool{
+  messageStatus := msg != nil
+  readerStatus  := false
+
+  if messageStatus {
+    readerStatus = msg.MonitoringReader != nil
+  }
+
+  return readerStatus
+}
+
+//------------------------------------------------------------------------------
+
+// listen starts listening for status updates
+func (msg *MSG) listen() {
   // handle issues with the message bus
   defer func() {
     if r := recover(); r != nil {
@@ -100,8 +217,8 @@ func (m *MSG) run() {
   }()
 
   // listen while reader is available
-  for m.MonitoringReader != nil {
-    message, err := m.MonitoringReader.ReadMessage(m.Context)
+  for msg.MonitoringReader != nil {
+    message, err := msg.MonitoringReader.ReadMessage(msg.Context)
     if err != nil {
         break
     }
@@ -144,50 +261,11 @@ func (m *MSG) run() {
 
 //------------------------------------------------------------------------------
 
-// Stop shuts down the messaging interface
-func (m *MSG) Stop() {
-  if m.NotificationWriter != nil {
-    m.NotificationWriter.Close()
-    m.NotificationWriter = nil
-  }
-
-  if m.MonitoringReader != nil {
-    m.MonitoringReader.Close()
-    m.MonitoringReader = nil
-  }
-}
-
-//------------------------------------------------------------------------------
-
-// StartMSG creates and return the core new messaging interface.
-func StartMSG(ctx context.Context) (*MSG, error){
-  // initialise singleton once
-	msgInit.Do(func() {
-    msgBus, err := newMSG(ctx)
-
-    if err != nil {
-      msg = nil
-    } else {
-      msg = msgBus
-    }
-	})
-
-  // the attempt to connect to the message bus has failed before
-  if msg == nil {
-    return nil, errors.New("Unable to connect to the message bus")
-  }
-
-  // return
-  return msg, nil
-}
-
-//------------------------------------------------------------------------------
-
 // Notify writes data to the message bus
 func Notify(key string, value string)  {
   // only publish if a message connection was established
   if msg != nil && msg.NotificationWriter != nil {
-    notify(key, value)
+    go notify(key, value)
   }
 }
 
@@ -196,15 +274,20 @@ func notify(key string, value string)  {
   // handle issues with the message bus
   defer func() {
     if r := recover(); r != nil {
+      util.LogError("main", "MSG", "unable to send notification: " + r.(string))
       if msg != nil {
         msg.NotificationWriter = nil
       }
     }
   }()
 
+  // derive a context with timeout
+  ctx, cancel := context.WithTimeout(msg.Context, 1 * time.Second)
+  defer cancel()
+
   // only publish if a message connection was established
-  go msg.NotificationWriter.WriteMessages(
-      msg.Context,
+  msg.NotificationWriter.WriteMessages(
+      ctx,
       kafka.Message{
         Key:   []byte(key),
         Value: []byte(value)},

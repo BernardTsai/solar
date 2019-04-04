@@ -1,9 +1,9 @@
 MSG:
   Notifications:  notifications
   Monitoring:     monitoring
-  Address:        127.0.0.1:9092
+  Address:        kafka:9092
 CORE:
   IDENTIFIER: solar
-  LOGLEVEL:   error
+  LOGLEVEL:   info
 CTRL:
-  dummy: 127.0.0.1:10000
+  dummy: controller:10000

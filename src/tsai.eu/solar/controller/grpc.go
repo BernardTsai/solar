@@ -39,8 +39,10 @@ func newGRPCController(Type string, Address string) (*GRPCController, error) {
 	// create the connection
 	connection, err := grpc.Dial(Address, opts...)
 	if err != nil {
+		util.LogError("main", "CTRL", "unable to connect to the controller: " + Type + "\n" + err.Error())
 		return nil, err
 	}
+	util.LogInfo("main", "CTRL", connection.GetState().String())
 	c.Connection = connection
 
 	// create the client
@@ -59,6 +61,7 @@ func (c *GRPCController)Status(setup *model.Setup) (*model.Status, error) {
 	// convert setup to a setup message
 	msg, err := util.ConvertToYAML(setup)
 	if err != nil {
+		util.LogError("status", "CTRL", "unable to convert setup\n" + err.Error())
 		return nil, err
 	}
 	setupMessage.Setup = msg
@@ -66,6 +69,7 @@ func (c *GRPCController)Status(setup *model.Setup) (*model.Status, error) {
 	// invoke the remote controller
 	statusMessage, err := c.Client.Create(context.Background(), &setupMessage )
 	if err != nil {
+		util.LogError("status", "CTRL", "unable to invoke controller\n" + err.Error())
 		return nil, err
 	}
 
@@ -74,6 +78,7 @@ func (c *GRPCController)Status(setup *model.Setup) (*model.Status, error) {
 
 	err = util.ConvertFromYAML(statusMessage.Status, &status)
 	if err != nil {
+		util.LogError("status", "CTRL", "unable to convert status\n" + err.Error())
 		return nil, err
 	}
 
@@ -90,6 +95,7 @@ func (c *GRPCController)Create(setup *model.Setup) (*model.Status, error) {
 	// convert setup to a setup message
 	msg, err := util.ConvertToYAML(setup)
 	if err != nil {
+		util.LogError("create", "CTRL", "unable to convert setup\n" + err.Error())
 		return nil, err
 	}
 	setupMessage.Setup = msg
@@ -97,6 +103,7 @@ func (c *GRPCController)Create(setup *model.Setup) (*model.Status, error) {
 	// invoke the remote controller
 	statusMessage, err := c.Client.Create(context.Background(), &setupMessage )
 	if err != nil {
+		util.LogError("create", "CTRL", "unable to invoke controller\n" + err.Error())
 		return nil, err
 	}
 
@@ -105,6 +112,7 @@ func (c *GRPCController)Create(setup *model.Setup) (*model.Status, error) {
 
 	err = util.ConvertFromYAML(statusMessage.Status, &status)
 	if err != nil {
+		util.LogError("create", "CTRL", "unable to convert status\n" + err.Error())
 		return nil, err
 	}
 
@@ -121,6 +129,7 @@ func (c *GRPCController)Destroy(setup *model.Setup) (*model.Status, error) {
 	// convert setup to a setup message
 	msg, err := util.ConvertToYAML(setup)
 	if err != nil {
+		util.LogError("destroy", "CTRL", "unable to convert setup\n" + err.Error())
 		return nil, err
 	}
 	setupMessage.Setup = msg
@@ -128,6 +137,7 @@ func (c *GRPCController)Destroy(setup *model.Setup) (*model.Status, error) {
 	// invoke the remote controller
 	statusMessage, err := c.Client.Create(context.Background(), &setupMessage )
 	if err != nil {
+		util.LogError("destroy", "CTRL", "unable to invoke controller\n" + err.Error())
 		return nil, err
 	}
 
@@ -136,6 +146,7 @@ func (c *GRPCController)Destroy(setup *model.Setup) (*model.Status, error) {
 
 	err = util.ConvertFromYAML(statusMessage.Status, &status)
 	if err != nil {
+		util.LogError("destroy", "CTRL", "unable to convert status\n" + err.Error())
 		return nil, err
 	}
 
@@ -152,6 +163,7 @@ func (c *GRPCController)Configure(setup *model.Setup) (*model.Status, error) {
 	// convert setup to a setup message
 	msg, err := util.ConvertToYAML(setup)
 	if err != nil {
+		util.LogError("configure", "CTRL", "unable to convert setup\n" + err.Error())
 		return nil, err
 	}
 	setupMessage.Setup = msg
@@ -159,6 +171,7 @@ func (c *GRPCController)Configure(setup *model.Setup) (*model.Status, error) {
 	// invoke the remote controller
 	statusMessage, err := c.Client.Create(context.Background(), &setupMessage )
 	if err != nil {
+		util.LogError("configure", "CTRL", "unable to invoke controller\n" + err.Error())
 		return nil, err
 	}
 
@@ -167,6 +180,7 @@ func (c *GRPCController)Configure(setup *model.Setup) (*model.Status, error) {
 
 	err = util.ConvertFromYAML(statusMessage.Status, &status)
 	if err != nil {
+		util.LogError("configure", "CTRL", "unable to convert status\n" + err.Error())
 		return nil, err
 	}
 
@@ -183,6 +197,7 @@ func (c *GRPCController)Reconfigure(setup *model.Setup) (*model.Status, error) {
 	// convert setup to a setup message
 	msg, err := util.ConvertToYAML(setup)
 	if err != nil {
+		util.LogError("reconfigure", "CTRL", "unable to convert setup\n" + err.Error())
 		return nil, err
 	}
 	setupMessage.Setup = msg
@@ -190,6 +205,7 @@ func (c *GRPCController)Reconfigure(setup *model.Setup) (*model.Status, error) {
 	// invoke the remote controller
 	statusMessage, err := c.Client.Create(context.Background(), &setupMessage )
 	if err != nil {
+		util.LogError("reconfigure", "CTRL", "unable to invoke controller\n" + err.Error())
 		return nil, err
 	}
 
@@ -198,6 +214,7 @@ func (c *GRPCController)Reconfigure(setup *model.Setup) (*model.Status, error) {
 
 	err = util.ConvertFromYAML(statusMessage.Status, &status)
 	if err != nil {
+		util.LogError("reconfigure", "CTRL", "unable to convert status\n" + err.Error())
 		return nil, err
 	}
 
@@ -214,6 +231,7 @@ func (c *GRPCController)Start(setup *model.Setup) (*model.Status, error) {
 	// convert setup to a setup message
 	msg, err := util.ConvertToYAML(setup)
 	if err != nil {
+		util.LogError("start", "CTRL", "unable to convert setup\n" + err.Error())
 		return nil, err
 	}
 	setupMessage.Setup = msg
@@ -221,6 +239,7 @@ func (c *GRPCController)Start(setup *model.Setup) (*model.Status, error) {
 	// invoke the remote controller
 	statusMessage, err := c.Client.Create(context.Background(), &setupMessage )
 	if err != nil {
+		util.LogError("start", "CTRL", "unable to invoke controller\n" + err.Error())
 		return nil, err
 	}
 
@@ -229,6 +248,7 @@ func (c *GRPCController)Start(setup *model.Setup) (*model.Status, error) {
 
 	err = util.ConvertFromYAML(statusMessage.Status, &status)
 	if err != nil {
+		util.LogError("start", "CTRL", "unable to convert status\n" + err.Error())
 		return nil, err
 	}
 
@@ -245,6 +265,7 @@ func (c *GRPCController)Stop(setup *model.Setup) (*model.Status, error) {
 	// convert setup to a setup message
 	msg, err := util.ConvertToYAML(setup)
 	if err != nil {
+		util.LogError("stop", "CTRL", "unable to convert setup\n" + err.Error())
 		return nil, err
 	}
 	setupMessage.Setup = msg
@@ -252,6 +273,7 @@ func (c *GRPCController)Stop(setup *model.Setup) (*model.Status, error) {
 	// invoke the remote controller
 	statusMessage, err := c.Client.Create(context.Background(), &setupMessage )
 	if err != nil {
+		util.LogError("stop", "CTRL", "unable to invoke controller\n" + err.Error())
 		return nil, err
 	}
 
@@ -260,6 +282,7 @@ func (c *GRPCController)Stop(setup *model.Setup) (*model.Status, error) {
 
 	err = util.ConvertFromYAML(statusMessage.Status, &status)
 	if err != nil {
+		util.LogError("stop", "CTRL", "unable to convert status\n" + err.Error())
 		return nil, err
 	}
 
@@ -276,6 +299,7 @@ func (c *GRPCController)Reset(setup *model.Setup) (*model.Status, error) {
 	// convert setup to a setup message
 	msg, err := util.ConvertToYAML(setup)
 	if err != nil {
+		util.LogError("reset", "CTRL", "unable to convert setup\n" + err.Error())
 		return nil, err
 	}
 	setupMessage.Setup = msg
@@ -283,6 +307,7 @@ func (c *GRPCController)Reset(setup *model.Setup) (*model.Status, error) {
 	// invoke the remote controller
 	statusMessage, err := c.Client.Create(context.Background(), &setupMessage )
 	if err != nil {
+		util.LogError("reset", "CTRL", "unable to invoke controller\n" + err.Error())
 		return nil, err
 	}
 
@@ -291,6 +316,7 @@ func (c *GRPCController)Reset(setup *model.Setup) (*model.Status, error) {
 
 	err = util.ConvertFromYAML(statusMessage.Status, &status)
 	if err != nil {
+		util.LogError("reset", "CTRL", "unable to convert status\n" + err.Error())
 		return nil, err
 	}
 

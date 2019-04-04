@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"log"
 	"net"
 
 	"google.golang.org/grpc"
@@ -22,6 +21,7 @@ type ControllerServer struct {
 
 // Create instantiates a component
 func (c *ControllerServer) Create(ctx context.Context, in *controller.SetupMessage) (*controller.StatusMessage, error) {
+	util.LogInfo("create", "gRPC", in.GetSetup())
 	return c.Status(ctx, in)
 }
 
@@ -29,6 +29,7 @@ func (c *ControllerServer) Create(ctx context.Context, in *controller.SetupMessa
 
 // Destroy removes an instance
 func (c *ControllerServer) Destroy(ctx context.Context, in *controller.SetupMessage) (*controller.StatusMessage, error) {
+	util.LogInfo("destroy", "gRPC", in.GetSetup())
 	return c.Status(ctx, in)
 }
 
@@ -36,6 +37,7 @@ func (c *ControllerServer) Destroy(ctx context.Context, in *controller.SetupMess
 
 // Start activates an instance
 func (c *ControllerServer) Start(ctx context.Context, in *controller.SetupMessage) (*controller.StatusMessage, error) {
+	util.LogInfo("start", "gRPC", in.GetSetup())
 	return c.Status(ctx, in)
 }
 
@@ -43,6 +45,7 @@ func (c *ControllerServer) Start(ctx context.Context, in *controller.SetupMessag
 
 // Stop activates an instance
 func (c *ControllerServer) Stop(ctx context.Context, in *controller.SetupMessage) (*controller.StatusMessage, error) {
+	util.LogInfo("stop", "gRPC", in.GetSetup())
 	return c.Status(ctx, in)
 }
 
@@ -50,6 +53,7 @@ func (c *ControllerServer) Stop(ctx context.Context, in *controller.SetupMessage
 
 // Reset cleans up an instance
 func (c *ControllerServer) Reset(ctx context.Context, in *controller.SetupMessage) (*controller.StatusMessage, error) {
+	util.LogInfo("reset", "gRPC", in.GetSetup())
 	return c.Status(ctx, in)
 }
 
@@ -57,6 +61,7 @@ func (c *ControllerServer) Reset(ctx context.Context, in *controller.SetupMessag
 
 // Configure reconfigures an instance
 func (c *ControllerServer) Configure(ctx context.Context, in *controller.SetupMessage) (*controller.StatusMessage, error) {
+	util.LogInfo("configure", "gRPC", in.GetSetup())
 	return c.Status(ctx, in)
 }
 
@@ -64,6 +69,7 @@ func (c *ControllerServer) Configure(ctx context.Context, in *controller.SetupMe
 
 // Reconfigure reconfigures an instance
 func (c *ControllerServer) Reconfigure(ctx context.Context, in *controller.SetupMessage) (*controller.StatusMessage, error) {
+	util.LogInfo("reconfigure", "gRPC", in.GetSetup())
 	return c.Status(ctx, in)
 }
 
@@ -77,6 +83,7 @@ func (c *ControllerServer) Status(ctx context.Context, in *controller.SetupMessa
 	yaml := in.Setup
   err := util.ConvertFromYAML(yaml, &setup)
 	if err != nil {
+		util.LogError("status", "gRPC", "unable to convert setup: " + err.Error())
 		return nil, err
 	}
 
@@ -104,6 +111,7 @@ func (c *ControllerServer) Status(ctx context.Context, in *controller.SetupMessa
 	out := controller.StatusMessage{}
 	out.Status, err = util.ConvertToYAML(status)
 	if err != nil {
+		util.LogError("status", "gRPC", "unable to convert status: " + err.Error())
 		return nil, err
 	}
 
@@ -114,10 +122,13 @@ func (c *ControllerServer) Status(ctx context.Context, in *controller.SetupMessa
 //------------------------------------------------------------------------------
 
 func main() {
+	// be verbose
+	util.LogLevel("info")
+
 	// open TCP port 10000
 	lis, err := net.Listen("tcp", ":10000")
 	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+		util.LogFatal("main", "gRPC", "failed to listen:" + err.Error())
 	}
 
 	// create a gRPC server
