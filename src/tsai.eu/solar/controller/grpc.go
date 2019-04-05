@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"errors"
 
 	"google.golang.org/grpc"
 
@@ -13,11 +14,11 @@ import (
 
 // GRPCController is an gRPC based implementation of the Controller interface
 type GRPCController struct {
-	Type         string           // type of components which the controller supports
-	Version      string           // version of the components which the controller supports
-	Address      string           // address to which the controller server listens
+	Type        string           // type of components which the controller supports
+	Version     string           // version of the components which the controller supports
+	Address     string           // address to which the controller server listens
 	Connection *grpc.ClientConn  // connection to the controller server
-	Client       ControllerClient // client for accessing the controller server
+	Client      ControllerClient // client for accessing the controller server
 }
 
 //------------------------------------------------------------------------------
@@ -42,13 +43,19 @@ func newGRPCController(Type string, Address string) (*GRPCController, error) {
 		util.LogError("main", "CTRL", "unable to connect to the controller: " + Type + "\n" + err.Error())
 		return nil, err
 	}
-	util.LogInfo("main", "CTRL", connection.GetState().String())
 	c.Connection = connection
 
 	// create the client
 	c.Client = NewControllerClient(c.Connection)
 
+	// check availability of client
+	if !c.Check() {
+		util.LogError("main", "CTRL", "controller: " + Type + " unavailable")
+		return nil, errors.New("controller: " + Type + " unavailable")
+	}
+
 	// success
+	util.LogInfo("main", "CTRL", "controller: " + Type + " available")
 	return &c, nil
 }
 
@@ -71,6 +78,25 @@ func (c *GRPCController)Status(setup *model.Setup) (*model.Status, error) {
 
 	// success
 	return status, nil
+}
+
+//------------------------------------------------------------------------------
+
+// Check checks availability of controller
+func (c *GRPCController) Check() bool {
+	req := VoidMessage{
+		Version: "V1.0.0",
+	}
+
+	// invoke the remote controller
+	_, err := c.Client.Check(context.Background(), &req)
+	if err != nil {
+		util.LogError("check", "CTRL", "unable to connect to controller " + c.Type + "\n" + err.Error())
+		return false
+	}
+
+	// success
+	return true
 }
 
 //------------------------------------------------------------------------------
@@ -165,7 +191,7 @@ func (c *GRPCController)Start(setup *model.Setup) (*model.Status, error) {
 	setupMessage := convertSetup(setup)
 
 	// invoke the remote controller
-	statusMessage, err := c.Client.Create(context.Background(), setupMessage )
+	statusMessage, err := c.Client.Start(context.Background(), setupMessage )
 	if err != nil {
 		util.LogError("start", "CTRL", "unable to invoke controller\n" + err.Error())
 		return nil, err
@@ -186,7 +212,7 @@ func (c *GRPCController)Stop(setup *model.Setup) (*model.Status, error) {
 	setupMessage := convertSetup(setup)
 
 	// invoke the remote controller
-	statusMessage, err := c.Client.Create(context.Background(), setupMessage )
+	statusMessage, err := c.Client.Stop(context.Background(), setupMessage )
 	if err != nil {
 		util.LogError("stop", "CTRL", "unable to invoke controller\n" + err.Error())
 		return nil, err
@@ -207,7 +233,7 @@ func (c *GRPCController)Reset(setup *model.Setup) (*model.Status, error) {
 	setupMessage := convertSetup(setup)
 
 	// invoke the remote controller
-	statusMessage, err := c.Client.Create(context.Background(), setupMessage )
+	statusMessage, err := c.Client.Reset(context.Background(), setupMessage )
 	if err != nil {
 		util.LogError("reset", "CTRL", "unable to invoke controller\n" + err.Error())
 		return nil, err
@@ -312,8 +338,6 @@ func convertElementSetup(setup *model.ElementSetup) *ElementSetupMessage {
 
 // convertSetup converts a setup to a message
 func convertSetup(setup *model.Setup) *SetupMessage {
-	util.DumpYAML(setup)
-
 	setupMessage := SetupMessage{
 		Domain                  : setup.Domain,
 		Solution                : setup.Solution,

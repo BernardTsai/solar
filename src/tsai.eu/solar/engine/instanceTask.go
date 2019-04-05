@@ -40,12 +40,14 @@ func NewInstanceTask(domain string, parent string, solution string, version stri
 	// get domain
 	d, err := model.GetModel().GetDomain(domain)
 	if err != nil {
+		util.LogError(parent, "ENG", "unknown domain")
 		return task, errors.New("unknown domain")
 	}
 
 	// add task to domain
 	err = d.AddTask(&task)
 	if err != nil {
+		util.LogError(parent, "ENG", "unable to add task")
 		return task, err
 	}
 
@@ -97,7 +99,9 @@ func ExecuteInstanceTask(task *model.Task) {
 
 	// determine required transition
 	transition, err := model.GetTransition(instance.State, task.State)
+
 	if err != nil {
+		util.LogError(task.UUID, "ENG", "invalid transition")
 		channel <- model.NewEvent(task.Domain, task.UUID, model.EventTypeTaskFailure, task.UUID, "invalid transition")
 	}
 
@@ -112,8 +116,8 @@ func ExecuteInstanceTask(task *model.Task) {
 	// determine the required controller
 	controller, err := ctrl.GetController(component.Component)
 	if err != nil {
-		channel <- model.NewEvent(task.Domain, task.UUID, model.EventTypeTaskFailure, task.UUID, "unknon controller: " + component.Component)
-		util.Print(err.Error())
+		util.LogError(task.UUID, "ENG", "unknown controller: " + component.Component)
+		channel <- model.NewEvent(task.Domain, task.UUID, model.EventTypeTaskFailure, task.UUID, "unknown controller: " + component.Component)
 		return
 	}
 
@@ -133,6 +137,10 @@ func ExecuteInstanceTask(task *model.Task) {
 		status, err = controller.Reset(setup)
 	case "configure":
 		status, err = controller.Configure(setup)
+	default:
+		util.LogError(task.UUID, "ENG", "invalid transition")
+		channel <- model.NewEvent(task.Domain, task.UUID, model.EventTypeTaskFailure, task.UUID, "invalid transition")
+		return
 	}
 
 	// update status
@@ -151,8 +159,8 @@ func ExecuteInstanceTask(task *model.Task) {
 
 	// check for errors and reexecute the task until the desired state has been reached
 	if err != nil {
+		util.LogError(task.UUID, "ENG", "controller has reported an error:\n" + err.Error())
 		channel <- model.NewEvent(task.Domain, task.UUID, model.EventTypeTaskFailure, task.UUID, err.Error())
-		util.Print("%s\n", err.Error())
 	} else {
 		channel <- model.NewEvent(task.Domain, task.UUID, model.EventTypeTaskExecution, task.UUID, "")
 	}

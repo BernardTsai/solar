@@ -28,6 +28,14 @@ func (c *DefaultController) Check(ctx context.Context, in *VoidMessage) (*VoidMe
 // Create instantiates a component
 func (c *DefaultController) Create(ctx context.Context, in *SetupMessage) (*StatusMessage, error) {
 	Log("info", "create", "gRPC", in.String())
+
+	// set target state
+	elementSetup  := in.Elements[in.Element]
+	clusterSetup  := elementSetup.Clusters[in.Cluster]
+	instanceSetup := clusterSetup.Instances[in.Instance]
+
+	instanceSetup.Target = "inactive"
+
 	return c.Status(ctx, in)
 }
 
@@ -36,6 +44,14 @@ func (c *DefaultController) Create(ctx context.Context, in *SetupMessage) (*Stat
 // Destroy removes an instance
 func (c *DefaultController) Destroy(ctx context.Context, in *SetupMessage) (*StatusMessage, error) {
 	Log("info", "destroy", "gRPC", in.String())
+
+	// set target state
+	elementSetup  := in.Elements[in.Element]
+	clusterSetup  := elementSetup.Clusters[in.Cluster]
+	instanceSetup := clusterSetup.Instances[in.Instance]
+
+	instanceSetup.Target = "initial"
+
 	return c.Status(ctx, in)
 }
 
@@ -44,6 +60,14 @@ func (c *DefaultController) Destroy(ctx context.Context, in *SetupMessage) (*Sta
 // Start activates an instance
 func (c *DefaultController) Start(ctx context.Context, in *SetupMessage) (*StatusMessage, error) {
 	Log("info", "start", "gRPC", in.String())
+
+	// set target state
+	elementSetup  := in.Elements[in.Element]
+	clusterSetup  := elementSetup.Clusters[in.Cluster]
+	instanceSetup := clusterSetup.Instances[in.Instance]
+
+	instanceSetup.Target = "active"
+
 	return c.Status(ctx, in)
 }
 
@@ -52,6 +76,14 @@ func (c *DefaultController) Start(ctx context.Context, in *SetupMessage) (*Statu
 // Stop activates an instance
 func (c *DefaultController) Stop(ctx context.Context, in *SetupMessage) (*StatusMessage, error) {
 	Log("info", "stop", "gRPC", in.String())
+
+	// set target state
+	elementSetup  := in.Elements[in.Element]
+	clusterSetup  := elementSetup.Clusters[in.Cluster]
+	instanceSetup := clusterSetup.Instances[in.Instance]
+
+	instanceSetup.Target = "inactive"
+
 	return c.Status(ctx, in)
 }
 
@@ -60,6 +92,14 @@ func (c *DefaultController) Stop(ctx context.Context, in *SetupMessage) (*Status
 // Reset cleans up an instance
 func (c *DefaultController) Reset(ctx context.Context, in *SetupMessage) (*StatusMessage, error) {
 	Log("info", "reset", "gRPC", in.String())
+
+	// set target state
+	elementSetup  := in.Elements[in.Element]
+	clusterSetup  := elementSetup.Clusters[in.Cluster]
+	instanceSetup := clusterSetup.Instances[in.Instance]
+
+	instanceSetup.Target = "initial"
+
 	return c.Status(ctx, in)
 }
 
@@ -68,6 +108,14 @@ func (c *DefaultController) Reset(ctx context.Context, in *SetupMessage) (*Statu
 // Configure reconfigures an instance
 func (c *DefaultController) Configure(ctx context.Context, in *SetupMessage) (*StatusMessage, error) {
 	Log("info", "configure", "gRPC", in.String())
+
+	// set target state
+	elementSetup  := in.Elements[in.Element]
+	clusterSetup  := elementSetup.Clusters[in.Cluster]
+	instanceSetup := clusterSetup.Instances[in.Instance]
+
+	instanceSetup.Target = "active"
+
 	return c.Status(ctx, in)
 }
 
@@ -76,6 +124,14 @@ func (c *DefaultController) Configure(ctx context.Context, in *SetupMessage) (*S
 // Reconfigure reconfigures an instance
 func (c *DefaultController) Reconfigure(ctx context.Context, in *SetupMessage) (*StatusMessage, error) {
 	Log("info", "reconfigure", "gRPC", in.String())
+
+	// set target state
+	elementSetup  := in.Elements[in.Element]
+	clusterSetup  := elementSetup.Clusters[in.Cluster]
+	instanceSetup := clusterSetup.Instances[in.Instance]
+
+	instanceSetup.Target = "active"
+
 	return c.Status(ctx, in)
 }
 
@@ -84,9 +140,9 @@ func (c *DefaultController) Reconfigure(ctx context.Context, in *SetupMessage) (
 // Status provides the status of an instance
 func (c *DefaultController) Status(ctx context.Context, in *SetupMessage) (*StatusMessage, error) {
 	// get setups
-	elementSetup     := in.Elements[in.Element]
-	clusterSetup     := elementSetup.Clusters[in.Cluster]
-	instanceSetup    := clusterSetup.Instances[in.Instance]
+	elementSetup  := in.Elements[in.Element]
+	clusterSetup  := elementSetup.Clusters[in.Cluster]
+	instanceSetup := clusterSetup.Instances[in.Instance]
 
 	// construct status
 	status := StatusMessage{

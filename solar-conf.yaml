@@ -4,6 +4,6 @@ MSG:
   Address:        127.0.0.1:9092
 CORE:
   IDENTIFIER: solar
-  LOGLEVEL:   error
+  LOGLEVEL:   debug
 CTRL:
   dummy: 127.0.0.1:10000

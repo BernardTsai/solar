@@ -48,12 +48,10 @@ func GetController(componentType string) (Controller, error) {
 		// initialise all gRPC controllers
 		for controllerType, controllerAddress := range config.CTRL {
 			controller, err := newGRPCController(controllerType, controllerAddress)
-			if err != nil {
-				util.LogFatal("main", "CTRL", "failed to include controller: " + err.Error())
-			} else {
+			if err == nil {
+				controllers[controllerType] = controller
 				util.LogInfo("main", "CTRL", controllerType + " - controller active")
 			}
-			controllers[controllerType] = controller
 		}
 	})
 
