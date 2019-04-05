@@ -5,6 +5,7 @@ package tsai.eu;
 option go_package = "tsai.eu/solar/controller";
 
 service Controller {
+  rpc Check       (VoidMessage)  returns (VoidMessage)   {}
   rpc Create      (SetupMessage) returns (StatusMessage) {}
   rpc Destroy     (SetupMessage) returns (StatusMessage) {}
   rpc Start       (SetupMessage) returns (StatusMessage) {}
@@ -15,10 +16,90 @@ service Controller {
   rpc Status      (SetupMessage) returns (StatusMessage) {}
 }
 
-message SetupMessage {
-  string Setup = 1;
+//------------------------------------------------------------------------------
+
+message VoidMessage {
+  string Version                                                 =  1;
 }
 
-message StatusMessage {
-  string Status = 1;
+//------------------------------------------------------------------------------
+
+message InstanceSetupMessage {
+  string Instance                                                =  1;
+  string Target                                                  =  2;
+  string State                                                   =  3;
+  string BaseConfiguration                                       =  4;
+  string DesignTimeConfiguration                                 =  5;
+  string RuntimeConfiguration                                    =  6;
+  string Endpoint                                                =  7;
 }
+
+message RelationshipSetupMessage {
+  string Relationship                                            =  1;
+  string Element                                                 =  2;
+  string Version                                                 =  3;
+  string Target                                                  =  4;
+  string State                                                   =  5;
+  string BaseConfiguration                                       =  6;
+  string DesignTimeConfiguration                                 =  7;
+  string RuntimeConfiguration                                    =  8;
+  string Endpoint                                                =  9;
+}
+
+message ClusterSetupMessage {
+  string                               Cluster                   =  1;
+  string                               Target                    =  2;
+  string                               State                     =  3;
+  int64                                Min                       =  4;
+  int64                                Max                       =  5;
+  int64                                Size                      =  6;
+  string                               BaseConfiguration         =  7;
+  string                               DesignTimeConfiguration   =  8;
+  string                               RuntimeConfiguration      =  9;
+  string                               Endpoint                  = 10;
+  map<string,RelationshipSetupMessage> Relationships             = 11;
+  map<string,InstanceSetupMessage>     Instances                 = 12;
+}
+
+message ElementSetupMessage {
+  string Element                                                 =  1;
+  string Component                                               =  2;
+  string Target                                                  =  3;
+  string State                                                   =  4;
+  string DesignTimeConfiguration                                 =  5;
+  string RuntimeConfiguration                                    =  6;
+  string Endpoint                                                =  7;
+  map<string,ClusterSetupMessage> Clusters                       =  8;
+}
+
+message SetupMessage {
+  string                          Domain                         =  1;
+  string                          Solution                       =  2;
+  string                          Version                        =  3;
+  string                          Element                        =  4;
+  string                          Cluster                        =  5;
+  string                          Instance                       =  6;
+  string                          Target                         =  7;
+  string                          State                          =  8;
+  string                          DesignTimeConfiguration        =  9;
+  string                          RuntimeConfiguration           = 10;
+  map<string,ElementSetupMessage> Elements                       = 11;
+}
+
+//------------------------------------------------------------------------------
+
+message StatusMessage {
+  string                          Domain                         =  1;
+  string                          Solution                       =  2;
+  string                          Version                        =  3;
+  string                          Element                        =  4;
+  string                          ElementEndpoint                =  5;
+  string                          Cluster                        =  6;
+  string                          ClusterEndpoint                =  7;
+  string                          ClusterState                   =  8;
+  string                          Instance                       =  9;
+  string                          InstanceEndpoint               = 10;
+  string                          InstanceState                  = 11;
+}
+
+//------------------------------------------------------------------------------

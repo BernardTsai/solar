@@ -5,130 +5,118 @@ import (
 	"net"
 
 	"google.golang.org/grpc"
-
-	"tsai.eu/solar/util"
-	"tsai.eu/solar/model"
-	"tsai.eu/solar/controller"
+	"github.com/rs/zerolog"
+  "github.com/rs/zerolog/log"
 )
 
 //------------------------------------------------------------------------------
 
-// ControllerServer is an implementation of the controller interface
-type ControllerServer struct {
+// DefaultController is an implementation of the controller interface
+type DefaultController struct {
+}
+
+//------------------------------------------------------------------------------
+
+// Check is a keep-alive and version ping
+func (c *DefaultController) Check(ctx context.Context, in *VoidMessage) (*VoidMessage, error) {
+	Log("info", "check", "gRPC", in.String())
+	return in, nil
 }
 
 //------------------------------------------------------------------------------
 
 // Create instantiates a component
-func (c *ControllerServer) Create(ctx context.Context, in *controller.SetupMessage) (*controller.StatusMessage, error) {
-	util.LogInfo("create", "gRPC", in.GetSetup())
+func (c *DefaultController) Create(ctx context.Context, in *SetupMessage) (*StatusMessage, error) {
+	Log("info", "create", "gRPC", in.String())
 	return c.Status(ctx, in)
 }
 
 //------------------------------------------------------------------------------
 
 // Destroy removes an instance
-func (c *ControllerServer) Destroy(ctx context.Context, in *controller.SetupMessage) (*controller.StatusMessage, error) {
-	util.LogInfo("destroy", "gRPC", in.GetSetup())
+func (c *DefaultController) Destroy(ctx context.Context, in *SetupMessage) (*StatusMessage, error) {
+	Log("info", "destroy", "gRPC", in.String())
 	return c.Status(ctx, in)
 }
 
 //------------------------------------------------------------------------------
 
 // Start activates an instance
-func (c *ControllerServer) Start(ctx context.Context, in *controller.SetupMessage) (*controller.StatusMessage, error) {
-	util.LogInfo("start", "gRPC", in.GetSetup())
+func (c *DefaultController) Start(ctx context.Context, in *SetupMessage) (*StatusMessage, error) {
+	Log("info", "start", "gRPC", in.String())
 	return c.Status(ctx, in)
 }
 
 //------------------------------------------------------------------------------
 
 // Stop activates an instance
-func (c *ControllerServer) Stop(ctx context.Context, in *controller.SetupMessage) (*controller.StatusMessage, error) {
-	util.LogInfo("stop", "gRPC", in.GetSetup())
+func (c *DefaultController) Stop(ctx context.Context, in *SetupMessage) (*StatusMessage, error) {
+	Log("info", "stop", "gRPC", in.String())
 	return c.Status(ctx, in)
 }
 
 //------------------------------------------------------------------------------
 
 // Reset cleans up an instance
-func (c *ControllerServer) Reset(ctx context.Context, in *controller.SetupMessage) (*controller.StatusMessage, error) {
-	util.LogInfo("reset", "gRPC", in.GetSetup())
+func (c *DefaultController) Reset(ctx context.Context, in *SetupMessage) (*StatusMessage, error) {
+	Log("info", "reset", "gRPC", in.String())
 	return c.Status(ctx, in)
 }
 
 //------------------------------------------------------------------------------
 
 // Configure reconfigures an instance
-func (c *ControllerServer) Configure(ctx context.Context, in *controller.SetupMessage) (*controller.StatusMessage, error) {
-	util.LogInfo("configure", "gRPC", in.GetSetup())
+func (c *DefaultController) Configure(ctx context.Context, in *SetupMessage) (*StatusMessage, error) {
+	Log("info", "configure", "gRPC", in.String())
 	return c.Status(ctx, in)
 }
 
 //------------------------------------------------------------------------------
 
 // Reconfigure reconfigures an instance
-func (c *ControllerServer) Reconfigure(ctx context.Context, in *controller.SetupMessage) (*controller.StatusMessage, error) {
-	util.LogInfo("reconfigure", "gRPC", in.GetSetup())
+func (c *DefaultController) Reconfigure(ctx context.Context, in *SetupMessage) (*StatusMessage, error) {
+	Log("info", "reconfigure", "gRPC", in.String())
 	return c.Status(ctx, in)
 }
 
 //------------------------------------------------------------------------------
 
 // Status provides the status of an instance
-func (c *ControllerServer) Status(ctx context.Context, in *controller.SetupMessage) (*controller.StatusMessage, error) {
-	setup := model.Setup{}
-
-	// convert message into setup object
-	yaml := in.Setup
-  err := util.ConvertFromYAML(yaml, &setup)
-	if err != nil {
-		util.LogError("status", "gRPC", "unable to convert setup: " + err.Error())
-		return nil, err
-	}
-
+func (c *DefaultController) Status(ctx context.Context, in *SetupMessage) (*StatusMessage, error) {
 	// get setups
-	elementSetup     := setup.Elements[setup.Element]
-	clusterSetup     := elementSetup.Clusters[setup.Cluster]
-	instanceSetup    := clusterSetup.Instances[setup.Instance]
+	elementSetup     := in.Elements[in.Element]
+	clusterSetup     := elementSetup.Clusters[in.Cluster]
+	instanceSetup    := clusterSetup.Instances[in.Instance]
 
 	// construct status
-	status := &model.Status{
-		Domain:           setup.Domain,
-		Solution:         setup.Solution,
-		Version:          setup.Version,
-		Element:          setup.Element,
+	status := StatusMessage{
+		Domain:           in.Domain,
+		Solution:         in.Solution,
+		Version:          in.Version,
+		Element:          in.Element,
 		ElementEndpoint:  "",
-		Cluster:          setup.Cluster,
+		Cluster:          in.Cluster,
 		ClusterEndpoint:  "",
 		ClusterState:     clusterSetup.Target,
-	  Instance:         setup.Instance,
+	  Instance:         in.Instance,
 		InstanceEndpoint: "",
 		InstanceState:    instanceSetup.Target,
 	}
 
-	// convert to yaml
-	out := controller.StatusMessage{}
-	out.Status, err = util.ConvertToYAML(status)
-	if err != nil {
-		util.LogError("status", "gRPC", "unable to convert status: " + err.Error())
-		return nil, err
-	}
-
 	// return results
-	return &out, nil
+	return &status, nil
 }
 
 //------------------------------------------------------------------------------
 
 func main() {
 	// be verbose
-	util.LogLevel("info")
+	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 
 	// open TCP port 10000
 	lis, err := net.Listen("tcp", ":10000")
 	if err != nil {
-		util.LogFatal("main", "gRPC", "failed to listen:" + err.Error())
+		Log("fatal", "main", "gRPC", "failed to listen:" + err.Error())
 	}
 
 	// create a gRPC server
@@ -136,8 +124,28 @@ func main() {
 	grpcServer := grpc.NewServer(opts...)
 
 	// register controller and start listening
-	controller.RegisterControllerServer(grpcServer, &ControllerServer{})
+	RegisterControllerServer(grpcServer, &DefaultController{})
 	grpcServer.Serve(lis)
+}
+
+//------------------------------------------------------------------------------
+
+// Log captures log information
+func Log(level string, context string, module string, info string) {
+	switch level {
+	case "panic":
+		log.Panic().Str("Context", context).Str("Module", module).Msg(info)
+	case "fatal":
+		log.Fatal().Str("Context", context).Str("Module", module).Msg(info)
+	case "error":
+		log.Error().Str("Context", context).Str("Module", module).Msg(info)
+	case "warn":
+		log.Warn().Str("Context", context).Str("Module", module).Msg(info)
+	case "info":
+		log.Info().Str("Context", context).Str("Module", module).Msg(info)
+	case "debug":
+		log.Debug().Str("Context", context).Str("Module", module).Msg(info)
+	}
 }
 
 //------------------------------------------------------------------------------

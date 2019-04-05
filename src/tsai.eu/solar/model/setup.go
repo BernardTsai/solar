@@ -1,5 +1,9 @@
 package model
 
+import (
+  "tsai.eu/solar/util"
+)
+
 //------------------------------------------------------------------------------
 
 // InstanceSetup object describes the setup for an instance of a cluster of a solution element.
@@ -76,7 +80,7 @@ func GetSetup(domainName string, solutionName string,  solutionVersion string, e
 	setup := Setup{}
 
   // determine domain context
-  domain, err := GetModel().GetDomain(domainName)
+  domain, err := GetDomain(domainName)
   if err != nil {
     return nil, err
   }
@@ -125,7 +129,7 @@ func GetElementSetup(setup *Setup, elementName string) (*ElementSetup, error){
   elementSetup := ElementSetup{}
 
   // determine domain context
-  domain, err := GetModel().GetDomain(setup.Domain)
+  domain, err := GetDomain(setup.Domain)
   if err != nil {
     return nil, err
   }
@@ -185,7 +189,7 @@ func GetClusterSetup(setup *Setup, elementName string, clusterName string) (*Clu
   clusterSetup := ClusterSetup{}
 
   // determine domain context
-  domain, err := GetModel().GetDomain(setup.Domain)
+  domain, err := GetDomain(setup.Domain)
   if err != nil {
     return nil, err
   }
@@ -276,38 +280,44 @@ func GetRelationshipSetup(setup *Setup, elementName string, clusterName string, 
   relationshipSetup := RelationshipSetup{}
 
   // determine domain context
-  domain, err := GetModel().GetDomain(setup.Domain)
+  domain, err := GetDomain(setup.Domain)
   if err != nil {
+    util.LogError("setup", "CORE", "unable to determine domain: " + setup.Domain)
     return nil, err
   }
 
   // determine solution context
   solution, err := domain.GetSolution(setup.Solution)
   if err != nil {
+    util.LogError("setup", "CORE", "unable to determine solution: " + setup.Solution)
     return nil, err
   }
 
   // determine element context
   element, err := solution.GetElement(elementName)
   if err != nil {
+    util.LogError("setup", "CORE", "unable to determine element: " + elementName)
     return nil, err
   }
 
   // determine cluster context
   cluster, err := element.GetCluster(clusterName)
   if err != nil {
+    util.LogError("setup", "CORE", "unable to determine cluster: " + clusterName)
     return nil, err
   }
 
   // determine relationship context
   relationship, err := cluster.GetRelationship(relationshipName)
   if err != nil {
+    util.LogError("setup", "CORE", "unable to determine relationship: " + relationshipName)
     return nil, err
   }
 
   // determine architecture context
   architecture, err := domain.GetArchitecture(setup.Solution + " - " + setup.Version)
   if err != nil {
+    util.LogError("setup", "CORE", "unable to determine architecture: " + setup.Solution + " - " + setup.Version)
     return nil, err
   }
 
@@ -336,14 +346,16 @@ func GetRelationshipSetup(setup *Setup, elementName string, clusterName string, 
   }
 
   // determine component context
-  component, err := domain.GetComponent(elementName + " - " + clusterName)
+  component, err := domain.GetComponent(element.Component + " - " + clusterName)
   if err != nil {
+    util.LogError("setup", "CORE", "unable to determine component: " + element.Component + " - " + clusterName)
     return nil, err
   }
 
   // determine dependency context
-  dependency, err := component.GetDependency(relationshipName)
+  dependency, err := component.GetDependency(relationship.Dependency)
   if err != nil {
+    util.LogError("setup", "CORE", "unable to determine dependency: " + relationship.Dependency)
     return nil, err
   }
 
@@ -369,7 +381,7 @@ func GetInstanceSetup(setup *Setup, elementName string, clusterName string, inst
   instanceSetup := InstanceSetup{}
 
   // determine domain context
-  domain, err := GetModel().GetDomain(setup.Domain)
+  domain, err := GetDomain(setup.Domain)
   if err != nil {
     return nil, err
   }
@@ -459,7 +471,7 @@ func SetSetup(setup *Setup) (error) {
 // SetElementSetup updates the element setup with the provided information.
 func SetElementSetup(setup *Setup, elementSetup *ElementSetup) (error) {
   // determine domain context
-  domain, err := GetModel().GetDomain(setup.Domain)
+  domain, err := GetDomain(setup.Domain)
   if err != nil {
     return nil
   }
@@ -495,7 +507,7 @@ func SetElementSetup(setup *Setup, elementSetup *ElementSetup) (error) {
 // SetClusterSetup updates the cluster setup with the provided information.
 func SetClusterSetup(setup *Setup, elementSetup *ElementSetup, clusterSetup *ClusterSetup) (error) {
   // determine domain context
-  domain, err := GetModel().GetDomain(setup.Domain)
+  domain, err := GetDomain(setup.Domain)
   if err != nil {
     return nil
   }
@@ -549,7 +561,7 @@ func SetClusterSetup(setup *Setup, elementSetup *ElementSetup, clusterSetup *Clu
 // SetRelationshipSetup updates the relationship setup with the provided information.
 func SetRelationshipSetup(setup *Setup, elementSetup *ElementSetup, clusterSetup *ClusterSetup, relationshipSetup *RelationshipSetup) (error) {
   // determine domain context
-  domain, err := GetModel().GetDomain(setup.Domain)
+  domain, err := GetDomain(setup.Domain)
   if err != nil {
     return nil
   }
@@ -592,7 +604,7 @@ func SetRelationshipSetup(setup *Setup, elementSetup *ElementSetup, clusterSetup
 // SetInstanceSetup updates the instance setup with the provided information.
 func SetInstanceSetup(setup *Setup, elementSetup *ElementSetup, clusterSetup *ClusterSetup, instanceSetup *InstanceSetup) (error) {
   // determine domain context
-  domain, err := GetModel().GetDomain(setup.Domain)
+  domain, err := GetDomain(setup.Domain)
   if err != nil {
     return nil
   }
