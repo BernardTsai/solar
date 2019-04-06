@@ -89,17 +89,18 @@ message SetupMessage {
 //------------------------------------------------------------------------------
 
 message StatusMessage {
-  string                          Domain                         =  1;
-  string                          Solution                       =  2;
-  string                          Version                        =  3;
-  string                          Element                        =  4;
-  string                          ElementEndpoint                =  5;
-  string                          Cluster                        =  6;
-  string                          ClusterEndpoint                =  7;
-  string                          ClusterState                   =  8;
-  string                          Instance                       =  9;
-  string                          InstanceEndpoint               = 10;
-  string                          InstanceState                  = 11;
+  string                          Error                          =  1;
+  string                          Domain                         =  2;
+  string                          Solution                       =  3;
+  string                          Version                        =  4;
+  string                          Element                        =  5;
+  string                          ElementEndpoint                =  6;
+  string                          Cluster                        =  7;
+  string                          ClusterEndpoint                =  8;
+  string                          ClusterState                   =  9;
+  string                          Instance                       = 10;
+  string                          InstanceEndpoint               = 11;
+  string                          InstanceState                  = 12;
 }
 
 //------------------------------------------------------------------------------

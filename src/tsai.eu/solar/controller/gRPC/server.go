@@ -30,11 +30,7 @@ func (c *DefaultController) Create(ctx context.Context, in *SetupMessage) (*Stat
 	Log("info", "create", "gRPC", in.String())
 
 	// set target state
-	elementSetup  := in.Elements[in.Element]
-	clusterSetup  := elementSetup.Clusters[in.Cluster]
-	instanceSetup := clusterSetup.Instances[in.Instance]
-
-	instanceSetup.Target = "inactive"
+	setState(in, "inactive")
 
 	return c.Status(ctx, in)
 }
@@ -46,11 +42,7 @@ func (c *DefaultController) Destroy(ctx context.Context, in *SetupMessage) (*Sta
 	Log("info", "destroy", "gRPC", in.String())
 
 	// set target state
-	elementSetup  := in.Elements[in.Element]
-	clusterSetup  := elementSetup.Clusters[in.Cluster]
-	instanceSetup := clusterSetup.Instances[in.Instance]
-
-	instanceSetup.Target = "initial"
+	setState(in, "destroy")
 
 	return c.Status(ctx, in)
 }
@@ -62,11 +54,7 @@ func (c *DefaultController) Start(ctx context.Context, in *SetupMessage) (*Statu
 	Log("info", "start", "gRPC", in.String())
 
 	// set target state
-	elementSetup  := in.Elements[in.Element]
-	clusterSetup  := elementSetup.Clusters[in.Cluster]
-	instanceSetup := clusterSetup.Instances[in.Instance]
-
-	instanceSetup.Target = "active"
+	setState(in, "active")
 
 	return c.Status(ctx, in)
 }
@@ -78,11 +66,7 @@ func (c *DefaultController) Stop(ctx context.Context, in *SetupMessage) (*Status
 	Log("info", "stop", "gRPC", in.String())
 
 	// set target state
-	elementSetup  := in.Elements[in.Element]
-	clusterSetup  := elementSetup.Clusters[in.Cluster]
-	instanceSetup := clusterSetup.Instances[in.Instance]
-
-	instanceSetup.Target = "inactive"
+	setState(in, "inactive")
 
 	return c.Status(ctx, in)
 }
@@ -94,11 +78,7 @@ func (c *DefaultController) Reset(ctx context.Context, in *SetupMessage) (*Statu
 	Log("info", "reset", "gRPC", in.String())
 
 	// set target state
-	elementSetup  := in.Elements[in.Element]
-	clusterSetup  := elementSetup.Clusters[in.Cluster]
-	instanceSetup := clusterSetup.Instances[in.Instance]
-
-	instanceSetup.Target = "initial"
+	setState(in, "initial")
 
 	return c.Status(ctx, in)
 }
@@ -110,11 +90,7 @@ func (c *DefaultController) Configure(ctx context.Context, in *SetupMessage) (*S
 	Log("info", "configure", "gRPC", in.String())
 
 	// set target state
-	elementSetup  := in.Elements[in.Element]
-	clusterSetup  := elementSetup.Clusters[in.Cluster]
-	instanceSetup := clusterSetup.Instances[in.Instance]
-
-	instanceSetup.Target = "active"
+	setState(in, "active")
 
 	return c.Status(ctx, in)
 }
@@ -126,11 +102,7 @@ func (c *DefaultController) Reconfigure(ctx context.Context, in *SetupMessage) (
 	Log("info", "reconfigure", "gRPC", in.String())
 
 	// set target state
-	elementSetup  := in.Elements[in.Element]
-	clusterSetup  := elementSetup.Clusters[in.Cluster]
-	instanceSetup := clusterSetup.Instances[in.Instance]
-
-	instanceSetup.Target = "active"
+	setState(in, "active")
 
 	return c.Status(ctx, in)
 }
@@ -146,6 +118,7 @@ func (c *DefaultController) Status(ctx context.Context, in *SetupMessage) (*Stat
 
 	// construct status
 	status := StatusMessage{
+		Error:            "",
 		Domain:           in.Domain,
 		Solution:         in.Solution,
 		Version:          in.Version,
@@ -182,6 +155,18 @@ func main() {
 	// register controller and start listening
 	RegisterControllerServer(grpcServer, &DefaultController{})
 	grpcServer.Serve(lis)
+}
+
+//------------------------------------------------------------------------------
+
+// setState tweaks the target state of the setup message
+func setState(setup *SetupMessage, state string) {
+	// set target state
+	elementSetup  := setup.Elements[setup.Element]
+	clusterSetup  := elementSetup.Clusters[setup.Cluster]
+	instanceSetup := clusterSetup.Instances[setup.Instance]
+
+	instanceSetup.Target = state
 }
 
 //------------------------------------------------------------------------------

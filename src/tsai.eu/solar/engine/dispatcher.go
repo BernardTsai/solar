@@ -84,7 +84,10 @@ func (d *Dispatcher) Run(ctx context.Context) {
 			switch event.Type {
 			// execute the task
 			case model.EventTypeTaskExecution:
-				go monitorTask(ctx, task, d.Channel)
+				// monitor execution of new tasks
+				if task.GetStatus() == model.TaskStatusInitial {
+					go monitorTask(ctx, task, d.Channel)
+				}
 				go task.Execute(ctx)
 
 			// handle task completion
