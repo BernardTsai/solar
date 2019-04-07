@@ -7,6 +7,7 @@ Vue.component(
       clearModel: function() {
         resetModel()
         .then(() => loadDomains())
+        .then(() => this.view.domain = "")
         .then(() => alert("Model has been reset"))
       },
       // importModel imports a new model from an uploaded file

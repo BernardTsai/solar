@@ -7,54 +7,126 @@ Domains:
       application - V1.0.0:
         Component: application
         Version: V1.0.0
-        Configuration: ""
+        Configuration: |-
+          # Ansible playbook for the application: '{{element}}' for the solution '{{solution}}' in the domain '{{domain}}'
+          ---
+          - hosts: {{server}}
+          roles:
+            - {role: {{element}}-{{cluster}}}
         Dependencies:
-          Server:
+          server:
             Dependency: server
             Type: context
             Component: server
             Version: V1.0.0
-            Configuration: ""
-          Service:
+            Configuration: |-
+              Domain:       {{domain}}
+              Solution:     {{solution}}
+              Element:      {{element}}
+              Version:      {{version}}
+              Cluster:      {{cluster}}
+              Relationship: {{relationship}}
+          service:
             Dependency: service
             Type: service
             Component: application
             Version: V1.0.0
-            Configuration: ""
+            Configuration: |-
+              Domain:       {{domain}}
+              Solution:     {{solution}}
+              Element:      {{element}}
+              Version:      {{version}}
+              Cluster:      {{cluster}}
+              Relationship: {{relationship}}
       network - V1.0.0:
         Component: network
         Version: V1.0.0
-        Configuration: ""
+        Configuration: |
+          heat_template_version: 2013-05-23
+
+          description: >
+            HOT template to create a new neutron network '{{element}}' with a defined subnet
+            for the solution '{{solution}}' in the domain '{{domain}}'.
+
+          resources:
+            private_net:
+              type: OS::Neutron::Net
+              properties:
+                name: '{{element}}'
+
+            private_subnet:
+              type: OS::Neutron::Subnet
+              properties:
+                network_id: { get_resource: private_net }
+                cidr: '{{cidr}}'
+                gateway_ip: '{{gateway}}'
         Dependencies:
-          Tenant:
+          tenant:
             Dependency: tenant
             Type: context
             Component: tenant
             Version: V1.0.0
-            Configuration: ""
+            Configuration: |-
+              Domain:       {{domain}}
+              Solution:     {{solution}}
+              Element:      {{element}}
+              Version:      {{version}}
+              Cluster:      {{cluster}}
+              Relationship: {{relationship}}
       server - V1.0.0:
         Component: server
         Version: V1.0.0
-        Configuration: ""
+        Configuration: |
+          heat_template_version: 2013-05-23
+
+          description: >
+            HOT template to create a new server pool '{{element}}'
+            for the solution '{{solution}}' in the domain '{{domain}}'.
+
+          resources:
+            server1:
+              type: OS::Nova::Server
+              properties:
+                name: Server1
+                image: '{{image}}'
+                flavor: '{{flavor}}'
+                key_name: '{{key}}'
         Dependencies:
-          Network:
+          network:
             Dependency: network
             Type: context
             Component: network
             Version: V1.0.0
-            Configuration: ""
-          Tenant:
+            Configuration: |-
+              Domain:       {{domain}}
+              Solution:     {{solution}}
+              Element:      {{element}}
+              Version:      {{version}}
+              Cluster:      {{cluster}}
+              Relationship: {{relationship}}
+          tenant:
             Dependency: tenant
             Type: context
             Component: tenant
             Version: V1.0.0
-            Configuration: ""
+            Configuration: |-
+              Domain:       {{domain}}
+              Solution:     {{solution}}
+              Element:      {{element}}
+              Version:      {{version}}
+              Cluster:      {{cluster}}
+              Relationship: {{relationship}}
       tenant - V1.0.0:
         Component: tenant
         Version: V1.0.0
-        Configuration: ""
+        Configuration: |
+          # clouds.yaml file for os-client-config for the solution '{{solution}}' in the domain '{{domain}}':
+          clouds:
+            {{domain}}-{{solution}}:
+              region_name: {{domain}}
+              auth:
+                username: '{{username}}'
+                password: '{{password}}'
+                project_name: '{{solution}}'
+                auth_url: 'https://someopenstackserver.com:5001/v2.0'
         Dependencies: {}
-    Architectures: {}
-    Solutions: {}
-    Tasks: {}
-    Events: {}

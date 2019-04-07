@@ -21,22 +21,13 @@ var view = {
     ConfTitle:      ""
   },
 
-  ae: {                          // fields for the architecture element editor
-    New:            false,
-    Element:        "unknown",
-    Component:      "",
-    Configuration1: "",
-    Cluster:        "",
-    State:          "initial",
-    Min:            "1",
-    Max:            "1",
-    Size:           "1",
-    Configuration2: "",
-    Relationship:   "",
-    Dependency:     "",
-    DepType:        "",
-    RelElement:     "",
-    Configuration3: ""
+  ae: {                    // fields for the architecture element editor
+    ConfType:       "",    // type of configuration: element, cluster, relationship
+    ConfTitle:      "",    // title of configuration editor
+    Display:        "",    // display paramters, template or configuration in configuration editor
+    Configuration:  null,  // holds the configuration parameters information
+    Cluster:        "",    // the name of the cluster information in focus
+    Relationship:   "",    // the name of the relationship information in focus
   },
 
   se: {                          // fields for the solution element editor

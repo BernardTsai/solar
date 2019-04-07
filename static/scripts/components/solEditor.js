@@ -269,8 +269,6 @@ Vue.component(
           </table>
         </div>
 
-
-
         <div class="configurationEditor" v-if="view.se.Configuration != null">
           <div class="modal">
             <h3>{{view.se.ConfTitle}}</h3>

@@ -220,7 +220,8 @@ func (msg *MSG) listen() {
   for msg.MonitoringReader != nil {
     message, err := msg.MonitoringReader.ReadMessage(msg.Context)
     if err != nil {
-        break
+      util.LogInfo("main", "MSG", err.Error())
+      break
     }
 
     // depending on the message key identify the correct entity to update

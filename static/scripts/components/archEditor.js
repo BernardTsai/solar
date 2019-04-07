@@ -101,6 +101,99 @@ Vue.component(
 
         return result
       },
+      // alignParameters initialises the configuration parameters
+      alignParameters: function(configuration_type, template, configuration) {
+        dict = jsyaml.safeLoad(configuration)
+        if (!dict) {
+          dict = {}
+        }
+        dict["domain"]       = this.view.domain
+        dict["solution"]     = this.view.solution
+        dict["version"]      = this.view.version
+        dict["element"]      = this.element.Element
+        dict["cluster"]      = this.view.ae.Cluster
+        dict["relationship"] = this.view.ae.Relationship
+
+        defDict = {"domain": 0, "solution":0, "version":0, "element":0, "cluster": 0, "relationship": 0}
+        config = "# Configuration parameters\n"
+        names = []
+        length = 12
+        matches = template.match(/{{[^}]*}}/g)
+        if (matches) {
+          for (var name of matches) {
+            name = name.replace("{{","")
+            name = name.replace("}}","")
+            name = name.trim()
+            if (!(name in defDict)) {
+              defDict[name] = null
+              names.push(name)
+              length = Math.max(length, name.length)
+              if (!(name in dict)) {
+                dict[name] = null
+              }
+            }
+          }
+        }
+        if (configuration_type == 'relationship') {
+          names.unshift("relationship")
+        }
+        if (configuration_type != 'element') {
+          names.unshift("cluster")
+        }
+        names.sort()
+        names.unshift("element")
+        names.unshift("version")
+        names.unshift("solution")
+        names.unshift("domain")
+
+        // construct parameters
+        config = "# " + this.view.ae.ConfTitle + "\n"
+        for (var name of names) {
+          key = "'" + name + "': " + " ".repeat(length)
+          key = key.substr(0, length + 4)
+          if (dict[name]) {
+            config += key + "'" + dict[name] + "'\n"
+          } else {
+            config += key + "'<enter parameter here>'\n"
+          }
+        }
+
+        return config
+      },
+      // showTemplate displays the template
+      showTemplate: function() {
+        this.view.ae.Display = "template"
+      },
+      // showParameters displays the parameters
+      showParameters: function() {
+        this.view.ae.Display = "parameters"
+      },
+      // showConfiguration renders the component template with the parameters
+      showConfiguration: function() {
+        configuration = this.view.ae.Template
+        parameters    = jsyaml.safeLoad(this.view.ae.Parameters)
+
+        repeat = true
+        while (repeat) {
+          repeat = false
+          matches = configuration.match(/{{[^}]*}}/g)
+          if (matches) {
+            for (var name of matches) {
+              key = name
+              key = key.replace("{{","")
+              key = key.replace("}}","")
+              key = key.trim()
+              if (key in parameters) {
+                configuration = configuration.replace(new RegExp(name, 'g'), parameters[key])
+                repeat = true
+              }
+            }
+          }
+        }
+
+        this.view.ae.Configuration = configuration
+        this.view.ae.Display       = "configuration"
+      },
       // editConfiguration opens editor for editing a configuration
       editConfiguration: function(configuration_type, relationship) {
         // save the configuration type
@@ -108,19 +201,63 @@ Vue.component(
 
         switch( configuration_type) {
           case "element":
-            this.view.ae.ConfTitle     = "Configuration of element '" + this.element.Element + "':"
-            this.view.ae.Configuration = this.element.Configuration
+            this.view.ae.ConfTitle     = "Configuration for element '" + this.element.Element + "':"
+            this.view.ae.Display       = "parameters"
             this.view.ae.Relationship  = ""
+            // find templates of all matching component versions
+            templates = ""
+            for (var c of this.model.Catalog) {
+              // add all dependencies
+              if (c.Component == this.element.Component) {
+                templates += "-".repeat(80) + "\n"
+                templates += "Configuration template of component version: " + c.Version + "\n"
+                templates += "-".repeat(80) + "\n\n"
+                templates += c.Configuration + "\n\n"
+              }
+            }
+            this.view.ae.Template      = templates
+            this.view.ae.Parameters    = this.alignParameters(configuration_type, templates, this.element.Configuration)
+            this.view.ae.Configuration = ""
             break
           case "cluster":
-            this.view.ae.ConfTitle     = "Configuration of cluster '" + this.view.ae.Cluster + "':"
-            this.view.ae.Configuration = this.element.Clusters[this.view.ae.Cluster].Configuration
+            this.view.ae.ConfTitle     = "Configuration for cluster '" + this.view.ae.Cluster + "':"
+            this.view.ae.Display       = "parameters"
             this.view.ae.Relationship  = ""
+            // find templates of the matching component version
+            template = ""
+            for (var c of this.model.Catalog) {
+              // add all dependencies
+              if (c.Component == this.element.Component && c.Version == this.view.ae.Cluster) {
+                template += "-".repeat(80) + "\n"
+                template += "Configuration template of component version: " + c.Version + "\n"
+                template += "-".repeat(80) + "\n\n"
+                template += c.Configuration + "\n\n"
+                break
+              }
+            }
+            this.view.ae.Template      = template
+            this.view.ae.Parameters    = this.alignParameters(configuration_type, template, this.element.Clusters[this.view.ae.Cluster].Configuration)
+            this.view.ae.Configuration = ""
             break
           case "relationship":
-            this.view.ae.ConfTitle     = "Configuration of relationship: '" + relationship.Relationship + "':"
-            this.view.ae.Configuration = relationship.Configuration
+            this.view.ae.ConfTitle     = "Configuration for relationship: '" + relationship.Relationship + "':"
+            this.view.ae.Display       = "parameters"
             this.view.ae.Relationship  = relationship.Relationship
+            // find templates of the matching dependency
+            template = ""
+            for (var c of this.model.Catalog) {
+              if (c.Component == this.element.Component && c.Version == this.view.ae.Cluster) {
+                dep = c.Dependencies[relationship.Dependency]
+                template += "-".repeat(80) + "\n"
+                template += "Configuration template of dependency : " + dep.Dependency + "\n"
+                template += "-".repeat(80) + "\n\n"
+                template += dep.Configuration + "\n\n"
+                break
+              }
+            }
+            this.view.ae.Template      = template
+            this.view.ae.Parameters    = this.alignParameters(configuration_type, template, this.element.Clusters[this.view.ae.Cluster].Relationships[this.view.ae.Relationship].Configuration)
+            this.view.ae.Configuration = ""
             break
         }
 
@@ -130,13 +267,13 @@ Vue.component(
       updateConfiguration: function() {
         switch( this.view.ae.ConfType ) {
           case "element":
-            this.model.ArchElement.Configuration = this.view.ae.Configuration
+            this.element.Configuration = this.view.ae.Parameters
             break
           case "cluster":
-            this.model.ArchElement.Clusters[this.view.ae.Cluster].Configuration = this.view.ae.Configuration
+            this.element.Clusters[this.view.ae.Cluster].Configuration = this.view.ae.Parameters
             break
           case "relationship":
-            this.model.ArchElement.Clusters[this.view.ae.Cluster].Relationships[this.view.ae.Relationship] = this.view.ae.Configuration
+            this.element.Clusters[this.view.ae.Cluster].Relationships[this.view.ae.Relationship].Configuration = this.view.ae.Parameters
             break
         }
 
@@ -145,10 +282,13 @@ Vue.component(
       },
       // discardConfiguration closes the configuration editor
       discardConfiguration: function() {
+        this.view.ae.Display       = ""
+        this.view.ae.Template      = ""
+        this.view.ae.Parameters    = ""
+        this.view.ae.Configuration = ""
         this.view.ae.ConfType      = ""
         this.view.ae.ConfTitle     = ""
         this.view.ae.Relationship  = ""
-        this.view.ae.Configuration = null
 
         this.$forceUpdate()
       },
@@ -158,7 +298,7 @@ Vue.component(
         name = prompt("Name of the new relationship:")
         if (name != null && name != "" && name != "null") {
           // add relationship
-          this.model.ArchElement.Clusters[view.ae.Cluster].Relationships[name] = {
+          this.element.Clusters[view.ae.Cluster].Relationships[name] = {
             Relationship:  name,
             Dependency:    "",
             Element:       "",
@@ -171,29 +311,29 @@ Vue.component(
       // delRelationship removes an existing relationship from an element
       delRelationship: function(rel) {
         // remove dependency
-        delete this.model.ArchElement.Clusters[view.ae.Cluster].Relationships[rel.Relationship]
+        delete this.element.Clusters[view.ae.Cluster].Relationships[rel.Relationship]
         this.$forceUpdate()
       },
       // deleteElement removes an existing element from the architecture
       deleteElement: function() {
-        Vue.delete(this.model.Architecture.Elements, this.model.ArchElement.Element)
+        Vue.delete(this.model.Architecture.Elements, this.element.Element)
 
         new ArchitectureGraph(this.model, this.view, this.view.domain, this.view.solution, this.view.version)
 
-        this.model.ArchElement = null
+        this.element = null
       },
       // duplicateElement creates a copy of the element
       duplicateElement: function() {
         // ask for name of new element and create a copy
         name = prompt("Name of the new element:")
         if (name != null && name != "" && name != "null") {
-          element = duplicateElement(this.model.ArchElement, name)
+          element = duplicateElement(this.element, name)
 
           // add element to architecture
           Vue.set(this.model.Architecture.Elements, name, element )
 
           // focus on new element
-          this.model.ArchElement = this.model.Architecture.Elements[name]
+          this.element = this.model.Architecture.Elements[name]
 
           // force update
           this.$forceUpdate()
@@ -230,7 +370,7 @@ Vue.component(
             </td>
           </tr>
           <tr>
-            <td>&nbsp;Configuration:</td>
+            <td>&nbsp;Conf.&nbsp;Parameters:</td>
             <td>
               <textarea id="configuration" rows=5
                 @click="editConfiguration('element', '')"
@@ -280,7 +420,7 @@ Vue.component(
             </td>
           </tr>
           <tr v-if="view.ae.Cluster != ''">
-            <td>&nbsp;Configuration:</td>
+            <td>&nbsp;Conf.&nbsp;Parameters:</td>
             <td>
               <textarea id="configuration2" rows=5 readonly
                 @click="editConfiguration('cluster', '')"
@@ -299,7 +439,7 @@ Vue.component(
                     <th>Relationship</th>
                     <th>Dependency</th>
                     <th>Element</th>
-                    <th>Configuration</th>
+                    <th>Conf.&nbsp;Parameters</th>
                     <th class="center" @click="addRelationship"><i class="fas fa-plus-circle"></i></th>
                 </thead>
                 <tbody>
@@ -337,15 +477,26 @@ Vue.component(
           </tr>
         </table>
 
-        <div class="configurationEditor" v-if="view.ae.Configuration != null">
+        <div class="configurationEditor" v-if="view.ae.Display != ''">
           <div class="modal">
             <h3>{{view.ae.ConfTitle}}</h3>
-            <textarea v-focus @keyup.esc="discardConfiguration()" v-model="view.ae.Configuration"></textarea>
+            <textarea v-focus readonly @keyup.esc="discardConfiguration()" v-if="view.ae.Display=='configuration'" v-model="view.ae.Configuration"></textarea>
+            <textarea v-focus          @keyup.esc="discardConfiguration()" v-if="view.ae.Display=='parameters'"    v-model="view.ae.Parameters"></textarea>
+            <textarea v-focus readonly @keyup.esc="discardConfiguration()" v-if="view.ae.Display=='template'"      v-model="view.ae.Template"></textarea>
             <button class="modal-default-button" @click="updateConfiguration()">
               OK <i class="fas fa-check-circle">
             </button>
             <button class="modal-default-button" @click="discardConfiguration()">
               Cancel <i class="fas fa-times-circle">
+            </button>
+            <button class="modal-default-button" @click="showConfiguration()">
+              Configuration <i class="fas fa-file-alt">
+            </button>
+            <button class="modal-default-button" @click="showParameters()">
+              Parameters <i class="fas fa-align-justify">
+            </button>
+            <button class="modal-default-button" @click="showTemplate()">
+              Template <i class="fas fa-file-code">
             </button>
 
           </div>

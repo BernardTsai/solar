@@ -153,6 +153,7 @@ func ExecuteInstanceTask(task *model.Task) {
 
 		// notify if instance state has changed
 		if instance.State != currentState {
+			util.LogInfo(task.UUID, "ENF", "Instance: " + status.Domain + "/" + status.Element + "/" + status.Cluster + "/" + status.Instance + " has new state:" + instance.State)
 			msg.Notify( "Instance", status.Domain + "/" + status.Element + "/" + status.Cluster + "/" + status.Instance + "/" + instance.State)
 		}
 	}
