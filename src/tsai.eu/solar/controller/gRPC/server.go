@@ -42,7 +42,7 @@ func (c *DefaultController) Destroy(ctx context.Context, in *SetupMessage) (*Sta
 	Log("info", "destroy", "gRPC", in.String())
 
 	// set target state
-	setState(in, "destroy")
+	setState(in, "initial")
 
 	return c.Status(ctx, in)
 }

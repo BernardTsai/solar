@@ -7,12 +7,12 @@ Domains:
       application - V1.0.0:
         Component: application
         Version: V1.0.0
-        Configuration: |-
+        Configuration: |
           # Ansible playbook for the application: '{{element}}' for the solution '{{solution}}' in the domain '{{domain}}'
           ---
           - hosts: {{server}}
           roles:
-            - {role: {{element}}-{{cluster}}}
+            - role: {{element}}-{{cluster}}
         Dependencies:
           server:
             Dependency: server

@@ -2,7 +2,6 @@ package model
 
 import (
 	"sync"
-	"fmt"
 	"errors"
 
 	"tsai.eu/solar/util"
@@ -267,21 +266,16 @@ func (solution *Solution) Update(domainName string, architecture *Architecture) 
 		element, _              := solution.GetElement(elementName)
 		elementConfiguration, _ := architecture.GetElement(elementName)
 
-		// element already exists
-		if element != nil {
-			if err := element.Update(domainName, solution.Solution, elementConfiguration); err != nil {
-				return fmt.Errorf("Unable to update element: '%s' of the solution: '%s'\n%s", elementName, solution.Solution, err)
-			}
-		} else {
-			// element does not exist
-			// create new element
+		// element is not known yet
+		if element == nil {
 			element, _ = NewElement(elementName, elementConfiguration.Component, "")
 			solution.AddElement(element)
+		}
 
-			// update the element with the configuration information
-			if err := element.Update(domainName, solution.Solution, elementConfiguration); err != nil {
-				return fmt.Errorf("Unable to create element: '%s' of the solution: '%s'\n%s", elementName, solution.Solution, err)
-			}
+		// update the element with the configuration information
+		if err := element.Update(domainName, solution.Solution, elementConfiguration); err != nil {
+			util.LogError("solution", "MODEL", "Unable to create element: '" + elementName + "' of the solution: '" + solution.Solution + "'\n" +  err.Error())
+			return err
 		}
 	}
 

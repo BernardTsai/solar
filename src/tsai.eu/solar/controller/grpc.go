@@ -128,7 +128,7 @@ func (c *GRPCController)Destroy(setup *model.Setup) (*model.Status, error) {
 	setupMessage := convertSetup(setup)
 
 	// invoke the remote controller
-	statusMessage, err := c.Client.Create(context.Background(), setupMessage )
+	statusMessage, err := c.Client.Destroy(context.Background(), setupMessage )
 	if err != nil {
 		util.LogError("destroy", "CTRL", "unable to invoke controller\n" + err.Error())
 		return nil, err
@@ -149,7 +149,7 @@ func (c *GRPCController)Configure(setup *model.Setup) (*model.Status, error) {
 	setupMessage := convertSetup(setup)
 
 	// invoke the remote controller
-	statusMessage, err := c.Client.Create(context.Background(), setupMessage )
+	statusMessage, err := c.Client.Configure(context.Background(), setupMessage )
 	if err != nil {
 		util.LogError("configure", "CTRL", "unable to invoke controller\n" + err.Error())
 		return nil, err
@@ -170,7 +170,7 @@ func (c *GRPCController)Reconfigure(setup *model.Setup) (*model.Status, error) {
 	setupMessage := convertSetup(setup)
 
 	// invoke the remote controller
-	statusMessage, err := c.Client.Create(context.Background(), setupMessage )
+	statusMessage, err := c.Client.Reconfigure(context.Background(), setupMessage )
 	if err != nil {
 		util.LogError("reconfigure", "CTRL", "unable to invoke controller\n" + err.Error())
 		return nil, err
