@@ -1,6 +1,11 @@
 package model
 
 import (
+	"errors"
+	"strings"
+	"strconv"
+	"regexp"
+
 	"tsai.eu/solar/util"
 )
 
@@ -63,6 +68,82 @@ func NewRelationship(name string, dependency string, dependencyType string, doma
 
 	// success
 	return &relationship, nil
+}
+
+//------------------------------------------------------------------------------
+
+// renderConfiguration calculates the configuration from the component template and the parameters defined in the relationshipConfiguration.
+func (relationship *Relationship) renderConfiguration(domainName string, solutionName string, version string, element *Element, cluster *Cluster, relationshipConfiguration *RelationshipConfiguration) {
+	// determine component
+	component, err := GetComponent(domainName, element.Component + " - " + cluster.Version)
+	if err != nil {
+		util.LogError("relationship", "MODEL", "unknown component '" + element.Component + " - " + cluster.Version + "' within domain: '" + domainName + "'")
+		return
+	}
+
+	// determine dependency
+	dependency, err := component.GetDependency(relationshipConfiguration.Relationship)
+	if err != nil {
+		util.LogError("relationship", "MODEL", "unknown dependency '" + element.Component + " - " + cluster.Version + " / " + relationshipConfiguration.Relationship + "' within domain: '" + domainName + "'")
+		return
+	}
+
+	// get parameters
+	parameters := map[string]string{}
+	err = util.ConvertFromYAML(relationshipConfiguration.Configuration, &parameters)
+	if err != nil {
+		util.LogError("relationship", "MODEL", "unable to parse the parameters defined in the architecture cluster relationship: '" + element.Element + " - " + cluster.Version + " / " + relationshipConfiguration.Relationship + "' within domain: '" + domainName + "'")
+	}
+	if len(parameters) == 0 {
+		parameters = map[string]string{}
+	}
+
+	// add default parameters
+	parameters["domain"]       = domainName
+	parameters["solution"]     = solutionName
+	parameters["version"]      = version
+	parameters["element"]      = element.Element
+	parameters["component"]    = element.Component
+	parameters["cluster"]      = cluster.Version
+	parameters["min"]          = strconv.Itoa(cluster.Min)
+	parameters["max"]          = strconv.Itoa(cluster.Max)
+	parameters["size"]         = strconv.Itoa(cluster.Size)
+	parameters["relationship"] = relationshipConfiguration.Relationship
+
+	// determine all required parameters
+	configuration := dependency.Configuration
+	r := regexp.MustCompile(`{{([^}]*)}}`)
+	matches := r.FindAllStringSubmatch(configuration, -1)
+	if matches != nil {
+		for _, match := range matches {
+			name := match[1]
+			key  := strings.TrimSpace(name)
+
+			value, ok := parameters[key]
+			if ok {
+				configuration = strings.Replace(configuration, "{{" + name + "}}", value, -1)
+			}
+		}
+	}
+
+	// set conifguration of relationship
+	relationship.Configuration = configuration
+}
+
+//------------------------------------------------------------------------------
+
+// Update instantiates/update a relationship based on a relationship configuration.
+func (relationship *Relationship) Update(domainName string, solutionName string, version string, element *Element, cluster *Cluster, relationshipConfiguration *RelationshipConfiguration) error {
+	// check if the names are compatible
+	if relationship.Relationship != relationshipConfiguration.Relationship {
+		return errors.New("Name of relationship does not match the name defined in the relationship configuration")
+	}
+
+	// update configuration
+	relationship.renderConfiguration(domainName, solutionName, version, element, cluster, relationshipConfiguration)
+
+	// success
+	return nil
 }
 
 //------------------------------------------------------------------------------

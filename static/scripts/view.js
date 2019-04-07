@@ -30,23 +30,12 @@ var view = {
     Relationship:   "",    // the name of the relationship information in focus
   },
 
-  se: {                          // fields for the solution element editor
-    New:            false,
-    Element:        "unknown",
-    Component:      "",
-    Configuration1: "",
-    Cluster:        "",
-    Target:         "initial",
-    State:          "initial",
-    Min:            "1",
-    Max:            "1",
-    Size:           "1",
-    Configuration2: "",
-    Relationship:   "",
-    Dependency:     "",
-    DepType:        "",
-    RelElement:     "",
-    Configuration3: ""
+  se: {                    // fields for the solution element editor
+    ConfType:       "",    // type of configuration: element, cluster, relationship
+    ConfTitle:      "",    // title of configuration editor
+    Configuration:  null,  // holds the configuration parameters information
+    Cluster:        "",    // the name of the cluster information in focus
+    Relationship:   "",    // the name of the relationship information in focus
   },
 
   graph: {

@@ -33,22 +33,33 @@ Vue.component(
         view.nav = "Automation"
       },
       // editConfiguration opens editor for editing a configuration
-      editConfiguration: function(rel) {
-        if (rel != "") {
-          this.view.se.ConfTitle     = "Configuration of relationship: " + rel.Relationship
-          this.view.se.Configuration = rel.Configuration
-          this.view.se.Dependency    = rel.Dependency
-        } else {
-          this.view.se.ConfTitle     = "Configuration of element: "
-          this.view.se.Configuration = this.element.Configuration
-          this.view.se.Dependency    = ""
+      editConfiguration: function(configuration_type, relationship) {
+        // save the configuration type
+        this.view.ae.ConfType = configuration_type
+
+        switch( configuration_type) {
+          case "element":
+            this.view.se.ConfTitle     = "Configuration for element '" + this.element.Element + "':"
+            this.view.se.Relationship  = ""
+            this.view.se.Configuration = this.element.Configuration
+            break
+          case "cluster":
+            this.view.se.ConfTitle     = "Configuration for cluster '" + this.view.ae.Cluster + "':"
+            this.view.se.Relationship  = ""
+            this.view.se.Configuration = this.element.Clusters[this.view.se.Cluster].Configuration
+            break
+          case "relationship":
+            this.view.se.ConfTitle     = "Configuration for relationship: '" + relationship.Relationship + "':"
+            this.view.se.Relationship  = relationship.Relationship
+            this.view.se.Configuration = relationship.Configuration
+            break
         }
+
         this.$forceUpdate()
       },
       // discardConfiguration closes the configuration editor
       discardConfiguration: function() {
         this.view.se.Configuration = null
-        this.view.se.Dependency    = ""
 
         this.$forceUpdate()
       },
@@ -107,7 +118,7 @@ Vue.component(
               <td>&nbsp;Configuration:</td>
               <td>
                 <textarea id="configuration" rows=5 readonly
-                  @click="editConfiguration('')"
+                  @click="editConfiguration('element', '')"
                   v-model="element.Configuration">
                 </textarea>
               </td>
@@ -157,7 +168,7 @@ Vue.component(
               <td>&nbsp;Configuration:</td>
               <td>
                 <textarea id="configuration2" rows=5 readonly
-                  @click="editConfiguration('')"
+                  @click="editConfiguration('cluster', '')"
                   v-model="element.Clusters[view.se.Cluster].Configuration">
                 </textarea>
               </td>
@@ -186,7 +197,7 @@ Vue.component(
                       <td>
                         <input type="text" readonly v-model="rel.Element"/>
                       </td>
-                      <td @click="editConfiguration(rel)">
+                      <td @click="editConfiguration('relationship', rel)">
                         <i class="fas fa-edit"></i>
                       </td>
                     </tr>

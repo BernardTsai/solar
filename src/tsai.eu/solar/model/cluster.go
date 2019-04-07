@@ -1,9 +1,11 @@
 package model
 
 import (
-	"fmt"
 	"sync"
 	"errors"
+	"regexp"
+	"strings"
+	"strconv"
 
 	"tsai.eu/solar/util"
 )
@@ -214,8 +216,60 @@ func (cluster *Cluster) DeleteInstance(uuid string) {
 
 //------------------------------------------------------------------------------
 
+// renderConfiguration calculates the configuration from the component template and the parameters defined in the clusterConfiguration.
+func (cluster *Cluster) renderConfiguration(domainName string, solutionName string, version string, element *Element, clusterConfiguration *ClusterConfiguration) {
+	// determine component
+	component, err := GetComponent(domainName, element.Component + " - " + clusterConfiguration.Version)
+	if err != nil {
+		util.LogError("element", "MODEL", "unknown component '" + element.Component + " - " + clusterConfiguration.Version + "' within domain: '" + domainName + "'")
+		return
+	}
+
+	// get parameters
+	parameters := map[string]string{}
+	err = util.ConvertFromYAML(clusterConfiguration.Configuration, &parameters)
+	if err != nil {
+		util.LogError("element", "MODEL", "unable to parse the parameters defined in the architecture cluster: '" + element.Element + " - " + clusterConfiguration.Version + "' within domain: '" + domainName + "'")
+	}
+	if len(parameters) == 0 {
+		parameters = map[string]string{}
+	}
+
+	// add default parameters
+	parameters["domain"]    = domainName
+	parameters["solution"]  = solutionName
+	parameters["version"]   = version
+	parameters["element"]   = element.Element
+	parameters["component"] = element.Component
+	parameters["cluster"]   = cluster.Version
+	parameters["min"]       = strconv.Itoa(cluster.Min)
+	parameters["max"]       = strconv.Itoa(cluster.Max)
+	parameters["size"]      = strconv.Itoa(cluster.Size)
+
+	// determine all required parameters
+	configuration := component.Configuration
+	r := regexp.MustCompile(`{{([^}]*)}}`)
+	matches := r.FindAllStringSubmatch(configuration, -1)
+	if matches != nil {
+		for _, match := range matches {
+			name := match[1]
+			key  := strings.TrimSpace(name)
+
+			value, ok := parameters[key]
+			if ok {
+				configuration = strings.Replace(configuration, "{{" + name + "}}", value, -1)
+			}
+		}
+	}
+
+	// set conifguration of cluster
+	cluster.Configuration = configuration
+}
+
+//------------------------------------------------------------------------------
+
 // Update instantiates/update a cluster based on a cluster configuration.
-func (cluster *Cluster) Update(domainName string, solutionName string, elementName string, clusterConfiguration *ClusterConfiguration) error {
+func (cluster *Cluster) Update(domainName string, solutionName string, version string, element *Element, clusterConfiguration *ClusterConfiguration) error {
 	// check if the names are compatible
 	if cluster.Version != clusterConfiguration.Version {
 		return errors.New("Version of cluster does not match the version defined in the cluster configuration")
@@ -223,6 +277,9 @@ func (cluster *Cluster) Update(domainName string, solutionName string, elementNa
 
 	// update target state and sizes
 	cluster.Target = clusterConfiguration.State
+
+	// update configuration
+	cluster.renderConfiguration(domainName, solutionName, version, element, clusterConfiguration)
 
 	// check compatability of all relationships
 	relationshipNames, _ := clusterConfiguration.ListRelationships()
@@ -236,7 +293,8 @@ func (cluster *Cluster) Update(domainName string, solutionName string, elementNa
 			// check compatability of references
 			if relationship.Element != relationshipConfiguration.Element ||
 			   relationship.Version != relationshipConfiguration.Version {
-					 return fmt.Errorf("Incompatible relationship: '%s' of the cluster '%s'", relationshipName, cluster.Version)
+					 util.LogError("cluster", "MODEL", "Incompatible relationship: '" + relationshipName + "' of the cluster '" + cluster.Version + "'")
+					 return errors.New("Incompatible relationship: '" + relationshipName + "' of the cluster '" + cluster.Version + "'")
 				 }
 		} else {
 			// relationship does not exist
@@ -251,6 +309,13 @@ func (cluster *Cluster) Update(domainName string, solutionName string, elementNa
 																				"")
 			cluster.AddRelationship(relationship)
 		}
+
+		// update the relationship with the configuration information
+		if err := relationship.Update(domainName, solutionName, version, element, cluster, relationshipConfiguration); err != nil {
+			util.LogError("cluster", "MODEL", "Unable to update relationship: '" + relationshipName + "' of the cluster: '" + element.Element + " - " + cluster.Version + "'\n" + err.Error())
+			return err
+		}
+
 	}
 
 	// add missing instances

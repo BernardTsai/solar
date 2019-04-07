@@ -1,7 +1,6 @@
 package model
 
 import (
-	"fmt"
 	"sync"
 	"errors"
 
@@ -143,19 +142,24 @@ func (element *Element) DeleteCluster(version string) {
 //------------------------------------------------------------------------------
 
 // Update instantiates/update an element based on an element configuration.
-func (element *Element) Update(domainName string, solutionName string, elementConfiguration *ElementConfiguration) error {
+func (element *Element) Update(domainName string, solutionName string, version string, elementConfiguration *ElementConfiguration) error {
 	// check if the names are compatible
 	if element.Element != elementConfiguration.Element {
+		util.LogError("element", "MODEL", "Name of element does match the name of the element configuration")
 		return errors.New("Name of element does match the name of the element configuration")
 	}
 
 	// check if the components are compatible
 	if element.Component != elementConfiguration.Component {
+		util.LogError("element", "MODEL", "Type of element does match the type defined in the element configuration")
 		return errors.New("Type of element does match the type defined in the element configuration")
 	}
 
 	// update target state
 	element.Target = ActiveState
+
+	// update configuration
+	element.Configuration = elementConfiguration.Configuration
 
 	// update all clusters defined in the element configuration
 	clusterNames, _ := elementConfiguration.ListClusters()
@@ -164,21 +168,16 @@ func (element *Element) Update(domainName string, solutionName string, elementCo
 		cluster, _              := element.GetCluster(clusterName)
 		clusterConfiguration, _ := elementConfiguration.GetCluster(clusterName)
 
-		// cluster already exists
-		if cluster != nil {
-			if err := cluster.Update(domainName, solutionName, element.Element, clusterConfiguration); err != nil {
-				return fmt.Errorf("Unable to update cluster: '%s' of the element '%s'\n%s", clusterName, element.Element, err)
-			}
-		} else {
-			// cluster does not exist
-			// create new cluster
+		// create new cluster if cluster does not already exist
+		if cluster == nil {
 			cluster, _ = NewCluster(clusterName, clusterConfiguration.State, clusterConfiguration.Min, clusterConfiguration.Max, clusterConfiguration.Size, "")
 			element.AddCluster(cluster)
+		}
 
-			// update the element with the configuration information
-			if err := cluster.Update(domainName, solutionName, element.Element, clusterConfiguration); err != nil {
-				return fmt.Errorf("Unable to create cluster: '%s' of the element: '%s'\n%s", clusterName, element.Element, err)
-			}
+		// update the element with the configuration information
+		if err := cluster.Update(domainName, solutionName, version, element, clusterConfiguration); err != nil {
+			util.LogError("element", "MODEL", "Unable to update cluster: '" + clusterName + "' of the element: '" + element.Element + "'\n" + err.Error())
+			return err
 		}
 	}
 

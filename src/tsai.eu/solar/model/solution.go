@@ -273,7 +273,7 @@ func (solution *Solution) Update(domainName string, architecture *Architecture) 
 		}
 
 		// update the element with the configuration information
-		if err := element.Update(domainName, solution.Solution, elementConfiguration); err != nil {
+		if err := element.Update(domainName, solution.Solution, solution.Version, elementConfiguration); err != nil {
 			util.LogError("solution", "MODEL", "Unable to create element: '" + elementName + "' of the solution: '" + solution.Solution + "'\n" +  err.Error())
 			return err
 		}
