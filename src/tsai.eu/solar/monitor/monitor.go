@@ -87,6 +87,8 @@ func checkSolutions() {
             // create task to update the element
             task, _ := engine.NewSolutionTask(domainName, "", solution)
 
+            util.LogInfo(task.UUID, "MON", "starting task to reconcile element: '" + element.Element + "' in solution: '" + solution.Solution + "'")
+
             // trigger the task
             channel <- model.NewEvent(domainName, task.UUID, model.EventTypeTaskExecution, "", "Solution: " + solutionName + "/Element: " + elementName)
 

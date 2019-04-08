@@ -72,6 +72,13 @@ func ExecuteClusterTask(task *model.Task) {
 	// determine context
 	cluster, _  := model.GetCluster(task.Domain, task.Solution, task.Element, task.Cluster)
 
+	// validate sizing
+	if cluster.Min > cluster.Max || cluster.Size < cluster.Min || cluster.Max < cluster.Size {
+		channel <- model.NewEvent(task.Domain, task.UUID, model.EventTypeTaskFailure, task.UUID, "inconsistent sizing of cluster: '" + task.Element + " - " + task.Cluster + " of solution: '" + task.Solution + "' within domain:'" + task.Domain)
+		return
+	}
+
+
 	// evaluate relationships
 	switch cluster.Target {
 	case model.InactiveState:
@@ -86,7 +93,13 @@ func ExecuteClusterTask(task *model.Task) {
 
 			// check if the related cluster is in the desired state
 			refCluster, _ := model.GetCluster(relationship.Domain, relationship.Solution, relationship.Element, relationship.Version)
-			if refCluster.State != model.ActiveState	{
+			if refCluster.State != model.ActiveState {
+				// check if the desired target state is active (otherwise we have a configuration mismatch)
+				if refCluster.Target != model.ActiveState {
+					channel <- model.NewEvent(task.Domain, task.UUID, model.EventTypeTaskFailure, task.UUID, "unable to establish context dependency: " + relationship.Element + " - " + relationship.Version)
+					return
+				}
+
 				// update the related cluster
 				triggerClusterTask(task, relationship)
 
@@ -106,6 +119,12 @@ func ExecuteClusterTask(task *model.Task) {
 
 			refCluster, _ := model.GetCluster(relationship.Domain, relationship.Solution, relationship.Element, relationship.Version)
 			if refCluster.State != model.ActiveState	{
+				// check if the desired target state is active (otherwise we have a configuration mismatch)
+				if refCluster.Target != model.ActiveState {
+					channel <- model.NewEvent(task.Domain, task.UUID, model.EventTypeTaskFailure, task.UUID, "unable to establish service dependency: " + relationship.Element + " - " + relationship.Version)
+					return
+				}
+
 				// update the related cluster
 				triggerClusterTask(task, relationship)
 

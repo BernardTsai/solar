@@ -130,8 +130,10 @@ func monitorTask(ctx context.Context, task *model.Task, channel chan model.Event
 		// task may still be active
 		switch monitorCtx.Err().Error() {
 		case "context canceled":               // termination of processes
+			util.LogInfo(task.UUID, "ENG", "termination")
 			channel <- model.NewEvent(task.Domain, task.UUID, model.EventTypeTaskTermination, task.UUID, "termination")
 		default:                               // timeout
+			util.LogInfo(task.UUID, "ENG", "timeout")
 			channel <- model.NewEvent(task.Domain, task.UUID, model.EventTypeTaskTimeout, task.UUID, "timeout")
 		}
 	}

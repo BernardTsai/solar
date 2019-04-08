@@ -82,7 +82,7 @@ func (relationship *Relationship) renderConfiguration(domainName string, solutio
 	}
 
 	// determine dependency
-	dependency, err := component.GetDependency(relationshipConfiguration.Relationship)
+	dependency, err := component.GetDependency(relationshipConfiguration.Dependency)
 	if err != nil {
 		util.LogError("relationship", "MODEL", "unknown dependency '" + element.Component + " - " + cluster.Version + " / " + relationshipConfiguration.Relationship + "' within domain: '" + domainName + "'")
 		return

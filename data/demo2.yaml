@@ -19,7 +19,7 @@ Domains:
             Type: context
             Component: server
             Version: V1.0.0
-            Configuration: |-
+            Configuration: |
               Domain:       {{domain}}
               Solution:     {{solution}}
               Element:      {{element}}
@@ -66,7 +66,7 @@ Domains:
             Type: context
             Component: tenant
             Version: V1.0.0
-            Configuration: |-
+            Configuration: |
               Domain:       {{domain}}
               Solution:     {{solution}}
               Element:      {{element}}
@@ -97,7 +97,7 @@ Domains:
             Type: context
             Component: network
             Version: V1.0.0
-            Configuration: |-
+            Configuration: |
               Domain:       {{domain}}
               Solution:     {{solution}}
               Element:      {{element}}
@@ -406,7 +406,7 @@ Domains:
                 Min: 1
                 Max: 1
                 Size: 1
-                Configuration: |+
+                Configuration: |
                   # Configuration for cluster 'V1.0.0':
                   'domain':       'demo'
                   'solution':     'app'
@@ -628,7 +628,7 @@ Domains:
                 Min: 1
                 Max: 1
                 Size: 1
-                Configuration: |+
+                Configuration: |
                   # Configuration for cluster 'V1.0.0':
                   'domain':       'demo'
                   'solution':     'app'
@@ -670,7 +670,15 @@ Domains:
                 Min: 1
                 Max: 1
                 Size: 1
-                Configuration: ""
+                Configuration: |
+                  # Configuration for cluster 'V1.0.0':
+                  'domain':       'demo'
+                  'solution':     'app'
+                  'version':      'V0.0.0'
+                  'element':      'oam'
+                  'cidr':         '10.0.4.0/24'
+                  'gateway':      '10.0.4.1'
+
                 Relationships:
                   tenant:
                     Relationship: tenant

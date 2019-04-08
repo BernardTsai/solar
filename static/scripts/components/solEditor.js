@@ -35,7 +35,7 @@ Vue.component(
       // editConfiguration opens editor for editing a configuration
       editConfiguration: function(configuration_type, relationship) {
         // save the configuration type
-        this.view.ae.ConfType = configuration_type
+        this.view.se.ConfType = configuration_type
 
         switch( configuration_type) {
           case "element":
@@ -44,7 +44,7 @@ Vue.component(
             this.view.se.Configuration = this.element.Configuration
             break
           case "cluster":
-            this.view.se.ConfTitle     = "Configuration for cluster '" + this.view.ae.Cluster + "':"
+            this.view.se.ConfTitle     = "Configuration for cluster '" + this.view.se.Cluster + "':"
             this.view.se.Relationship  = ""
             this.view.se.Configuration = this.element.Clusters[this.view.se.Cluster].Configuration
             break

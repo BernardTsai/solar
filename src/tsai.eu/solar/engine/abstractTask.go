@@ -12,7 +12,7 @@ func TerminateTask(task *model.Task) {
 	channel := GetEventChannel()
 
 	// check if task is regarded to be executing
-	if task.Status == model.TaskStatusExecuting {
+	if task.Status == model.TaskStatusInitial || task.Status == model.TaskStatusExecuting {
 		// update status
 		task.Status = model.TaskStatusTerminated
 
@@ -31,12 +31,12 @@ func FailedTask(task *model.Task) {
 	channel := GetEventChannel()
 
 	// check if task is regarded to be executing
-	if task.Status == model.TaskStatusExecuting {
+	if task.Status == model.TaskStatusInitial || task.Status == model.TaskStatusExecuting {
 		// update status
 		task.Status = model.TaskStatusFailed
 
 		// retrigger execution of parent
-		if task.Parent != "" {
+		if task.Parent != "" && task.Parent != task.UUID {
 			channel <- model.NewEvent(task.Domain, task.Parent, model.EventTypeTaskFailure, task.UUID, "")
 		}
 	}
@@ -56,12 +56,12 @@ func TimeoutTask(task *model.Task) {
 	channel := GetEventChannel()
 
 	// check if task is regarded to be executing
-	if task.Status == model.TaskStatusExecuting {
+	if task.Status == model.TaskStatusInitial || task.Status == model.TaskStatusExecuting {
 		// update status
 		task.Status = model.TaskStatusTimeout
 
 		// signal timeout to parent
-		if task.Parent != "" {
+		if task.Parent != "" && task.Parent != task.UUID {
 			channel <- model.NewEvent(task.Domain, task.Parent, model.EventTypeTaskTimeout, task.UUID, "")
 		}
 	}
@@ -75,12 +75,12 @@ func CompletedTask(task *model.Task) {
 	channel := GetEventChannel()
 
 	// check if task is regarded to be executing
-	if task.Status == model.TaskStatusExecuting {
-		// update status
+	if task.Status == model.TaskStatusInitial || task.Status == model.TaskStatusExecuting {
+			// update status
 		task.Status = model.TaskStatusCompleted
 
 		// retrigger execution of parent
-		if task.Parent != "" {
+		if task.Parent != "" && task.Parent != task.UUID {
 			channel <- model.NewEvent(task.Domain, task.Parent, model.EventTypeTaskExecution, task.UUID, "")
 		}
 	}
