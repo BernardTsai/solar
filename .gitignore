@@ -6,4 +6,5 @@ src/github.com
 src/golang.org
 src/google.golang.org
 src/gopkg.in
+src/bou.ke
 *.pdf

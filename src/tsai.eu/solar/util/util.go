@@ -13,38 +13,20 @@ import (
 
 //------------------------------------------------------------------------------
 
-// ConvertToJSON converts an interface to a JSON string
-func ConvertToJSON(entity interface{}) (string, error) {
-	// marshal model
-	bytes, err := json.MarshalIndent(entity, "", "  ")
-
-	if err != nil {
-		return "", errors.New("invalid entity:" + err.Error())
-	}
-
-	// success
-	return string(bytes), nil
-
-}
-
-//------------------------------------------------------------------------------
-
 // ConvertYAMLToJSON converts YAML to JSON
 func ConvertYAMLToJSON(input []byte) ([]byte, error) {
 	var yamlData interface{}
+	var jsonData interface{}
+	var output   []byte
+	
 	err := yaml.Unmarshal(input, &yamlData)
-	if err != nil {
-		return nil, err
+	if err == nil {
+		jsonData, err = convertYAMLToJSON(yamlData)
 	}
-	jsonData, err := convertYAMLToJSON(yamlData)
-	if err != nil {
-		return nil, err
+	if err == nil {
+		output, err = json.Marshal(jsonData)
 	}
-	output, err := json.Marshal(jsonData)
-	if err != nil {
-		return nil, err
-	}
-	return output, nil
+	return output, err
 }
 
 func convertYAMLToJSON(inputObj interface{}) (interface{}, error) {
@@ -110,12 +92,12 @@ func SaveFile(filename string, data string) (err error) {
 // LoadYAML reads yaml from a file and transforms into the structure of the entity
 func LoadYAML(filename string, entity interface{}) (err error) {
 	// handle panic errors
-	defer func() {
-		if r := recover(); r!= nil {
-			fmt.Println(r)
-			err = errors.New("invalid structure")
-		}
-	}()
+	// defer func() {
+	// 	if r := recover(); r!= nil {
+	// 		fmt.Println(r)
+	// 		err = errors.New("invalid structure")
+	// 	}
+	// }()
 
 	// read file
 	yamlbytes, err := ioutil.ReadFile(filename)
@@ -144,10 +126,6 @@ func SaveYAML(filename string, entity interface{}) error {
 	// marshal entity
 	bytes, err := yaml.Marshal(entity)
 
-	if err != nil {
-		return errors.New("invalid entity:" + err.Error())
-	}
-
 	// write the entity
 	err = ioutil.WriteFile(filename, bytes, 0644)
 
@@ -164,11 +142,7 @@ func SaveYAML(filename string, entity interface{}) error {
 // DumpYAML writes the entity as yaml data to the console
 func DumpYAML(entity interface{}) {
 	// marshal entity
-	bytes, err := yaml.Marshal(entity)
-
-	if err != nil {
-		fmt.Println("invalid entity")
-	}
+	bytes, _ := yaml.Marshal(entity)
 
 	fmt.Println(string(bytes))
 }
@@ -179,10 +153,6 @@ func DumpYAML(entity interface{}) {
 func ConvertFromYAML(yaml string, entity interface{}) error {
 	// convert to JSON
 	jsonbytes, err := ConvertYAMLToJSON([]byte(yaml))
-
-	if err != nil {
-		return errors.New("invalid data format:" + err.Error())
-	}
 
 	// unmarshal data
 	err = json.Unmarshal(jsonbytes, entity)
@@ -202,37 +172,8 @@ func ConvertToYAML(entity interface{}) (string, error) {
 	// marshal entity
 	bytes, err := yaml.Marshal(entity)
 
-	if err != nil {
-		return "", errors.New("invalid entity: " + err.Error())
-	}
-
 	// success
-	return string(bytes), nil
-}
-
-//------------------------------------------------------------------------------
-
-// AreEqual compares two interfaces and check if the lead to the same yaml presentation
-func AreEqual(a interface{}, b interface{}) bool {
-	// marshal entity a
-	aBytes, err := yaml.Marshal(a)
-	if err != nil {
-		return false
-	}
-
-	// marshal entity b
-	bBytes, err := yaml.Marshal(b)
-	if err != nil {
-		return false
-	}
-
-	// compare
-	if string(aBytes[:]) == string(bBytes[:]) {
-		return true
-	}
-
-	// they are not equal
-	return false
+	return string(bytes), err
 }
 
 //------------------------------------------------------------------------------

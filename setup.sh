@@ -30,6 +30,7 @@ go get github.com/segmentio/kafka-go
 go get google.golang.org/grpc
 go get github.com/golang/protobuf/protoc-gen-go
 go get github.com/rs/zerolog/log
+go get bou.ke/monkey
 
 # install binaries
 # cd $SRCDIR

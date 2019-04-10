@@ -45,7 +45,7 @@ func GetConfiguration() (*Configuration, error) {
 
 	// initialise singleton once
 	configurationInit.Do(func() {
-    theConfiguration, err = readConfiguration()
+    theConfiguration, err = readConfiguration(".")
   })
 
 	// success
@@ -54,13 +54,20 @@ func GetConfiguration() (*Configuration, error) {
 
 //------------------------------------------------------------------------------
 
-// ReadConfiguration reads a file into a Configuration object
-func readConfiguration() (*Configuration, error) {
+// ReadConfiguration reads a file from a specific path into a Configuration object
+func ReadConfiguration(path string) (*Configuration, error) {
+  return readConfiguration(path)
+}
+
+//------------------------------------------------------------------------------
+
+// readConfiguration reads a file into a Configuration object
+func readConfiguration(path string) (*Configuration, error) {
   var configuration Configuration
 
   // define the location from which to read the configuration file
   viper.SetConfigName("solar-conf")
-  viper.AddConfigPath(".")
+  viper.AddConfigPath(path)
 
   // set default values
   viper.SetDefault("MSG",  map[string]string{"Notifications": "notifications", "Monitoring": "monitoring", "Address": "127.0.0.1:9092"})
@@ -68,13 +75,12 @@ func readConfiguration() (*Configuration, error) {
   viper.SetDefault("CTRL", map[string]string{})
 
   // read configuration (ignore any errors)
-	viper.ReadInConfig()
+  if err := viper.ReadInConfig(); err != nil {
+    return nil, err
+  }
 
   // decode the configuration
-  err := viper.Unmarshal(&configuration)
-	if err != nil {
-    return &configuration, err
-  }
+  viper.Unmarshal(&configuration)
 
   // success
   return &configuration, nil
