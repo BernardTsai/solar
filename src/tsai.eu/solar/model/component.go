@@ -128,7 +128,7 @@ func (component *Component) AddDependency(dependency *Dependency) error {
 	component.DependenciesX.RUnlock()
 
 	if ok {
-		return errors.New("variant already exists")
+		return errors.New("dependency already exists")
 	}
 
 	component.DependenciesX.Lock()

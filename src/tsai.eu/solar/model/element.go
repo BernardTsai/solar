@@ -124,19 +124,44 @@ func (element *Element) GetCluster(name string) (*Cluster, error) {
 //------------------------------------------------------------------------------
 
 // AddCluster adds a cluster to an element
-func (element *Element) AddCluster(cluster *Cluster) {
+func (element *Element) AddCluster(cluster *Cluster) error {
+	// check if instance has already been defined
+	element.ClustersX.Lock()
+	_, ok := element.Clusters[cluster.Version]
+	element.ClustersX.Unlock()
+
+	if ok {
+		return errors.New("cluster already exists")
+	}
+
 	element.ClustersX.Lock()
 	element.Clusters[cluster.Version] = cluster
 	element.ClustersX.Unlock()
+
+	// success
+	return nil
 }
 
 //------------------------------------------------------------------------------
 
 // DeleteCluster deletes a cluster from an element
-func (element *Element) DeleteCluster(version string) {
+func (element *Element) DeleteCluster(version string) error {
+	// determine element
+	element.ClustersX.Lock()
+	_, ok := element.Clusters[version]
+	element.ClustersX.Unlock()
+
+	if !ok {
+		return errors.New("cluster not found")
+	}
+
+	// remove element
 	element.ClustersX.Lock()
 	delete(element.Clusters, version)
 	element.ClustersX.Unlock()
+
+	// success
+	return nil
 }
 
 //------------------------------------------------------------------------------

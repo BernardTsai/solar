@@ -180,7 +180,7 @@ func (domain *Domain) GetComponent(name string) (*Component, error) {
 func (domain *Domain) AddComponent(component *Component) error {
 	// check if component has already been defined
 	domain.ComponentsX.RLock()
-	_, ok := domain.Components[component.Component]
+	_, ok := domain.Components[component.Component + " - " + component.Version]
 	domain.ComponentsX.RUnlock()
 
 	if ok {
@@ -257,7 +257,7 @@ func (domain *Domain) GetArchitecture(name string) (*Architecture, error) {
 func (domain *Domain) AddArchitecture(architecture *Architecture) error {
 	// determine domain
 	domain.ArchitecturesX.RLock()
-	_, ok := domain.Architectures[architecture.Architecture]
+	_, ok := domain.Architectures[architecture.Architecture + " - " + architecture.Version]
 	domain.ArchitecturesX.RUnlock()
 
 	if ok {

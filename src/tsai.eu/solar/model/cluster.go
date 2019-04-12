@@ -147,19 +147,44 @@ func (cluster *Cluster) GetRelationship(name string) (*Relationship, error) {
 //------------------------------------------------------------------------------
 
 // AddRelationship adds a relationship to a cluster
-func (cluster *Cluster) AddRelationship(relationship *Relationship) {
+func (cluster *Cluster) AddRelationship(relationship *Relationship) error{
+	// check if relationship has already been defined
+	cluster.RelationshipsX.Lock()
+	_, ok := cluster.Relationships[relationship.Relationship]
+	cluster.RelationshipsX.Unlock()
+
+	if ok {
+		return errors.New("instance already exists")
+	}
+
 	cluster.RelationshipsX.Lock()
 	cluster.Relationships[relationship.Relationship] = relationship
 	cluster.RelationshipsX.Unlock()
+
+	// success
+	return nil
 }
 
 //------------------------------------------------------------------------------
 
 // DeleteRelationship deletes a relationship from a cluster
-func (cluster *Cluster) DeleteRelationship(name string) {
+func (cluster *Cluster) DeleteRelationship(name string) error {
+	// determine relationship
+	cluster.RelationshipsX.Lock()
+	_, ok := cluster.Relationships[name]
+	cluster.RelationshipsX.Unlock()
+
+	if !ok {
+		return errors.New("instance not found")
+	}
+
+	// remove relationship
 	cluster.RelationshipsX.Lock()
 	delete(cluster.Relationships, name)
 	cluster.RelationshipsX.Unlock()
+
+	// success
+	return nil
 }
 
 //------------------------------------------------------------------------------
@@ -199,19 +224,44 @@ func (cluster *Cluster) GetInstance(uuid string) (*Instance, error) {
 //------------------------------------------------------------------------------
 
 // AddInstance adds an instance to a cluster
-func (cluster *Cluster) AddInstance(instance *Instance) {
+func (cluster *Cluster) AddInstance(instance *Instance) error {
+	// check if instance has already been defined
+	cluster.InstancesX.Lock()
+	_, ok := cluster.Instances[instance.UUID]
+	cluster.InstancesX.Unlock()
+
+	if ok {
+		return errors.New("instance already exists")
+	}
+
 	cluster.InstancesX.Lock()
 	cluster.Instances[instance.UUID] = instance
 	cluster.InstancesX.Unlock()
+
+	// success
+	return nil
 }
 
 //------------------------------------------------------------------------------
 
 // DeleteInstance deletes an instance from a cluster
-func (cluster *Cluster) DeleteInstance(uuid string) {
+func (cluster *Cluster) DeleteInstance(uuid string) error {
+	// determine instance
+	cluster.InstancesX.Lock()
+	_, ok := cluster.Instances[uuid]
+	cluster.InstancesX.Unlock()
+
+	if !ok {
+		return errors.New("instance not found")
+	}
+
+	// remove instance
 	cluster.InstancesX.Lock()
 	delete(cluster.Instances, uuid)
 	cluster.InstancesX.Unlock()
+
+	// success
+	return nil
 }
 
 //------------------------------------------------------------------------------

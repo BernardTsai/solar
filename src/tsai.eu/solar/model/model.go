@@ -65,7 +65,7 @@ func GetModel() *Model {
 //------------------------------------------------------------------------------
 
 // NewModel creates a new model
-func NewModel() (*Model, error) { 
+func NewModel() (*Model, error) {
 	var model Model
 
 	model.Reset()

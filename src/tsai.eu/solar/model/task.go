@@ -251,6 +251,20 @@ func (task *Task) Save(filename string) error {
 
 //------------------------------------------------------------------------------
 
+// Load reads the task from a file
+func (task *Task) Load(filename string) error {
+	return util.LoadYAML(filename, task)
+}
+
+//------------------------------------------------------------------------------
+
+// Load2 imports a yaml model
+func (task *Task) Load2(yaml string) error {
+	return util.ConvertFromYAML(yaml, task)
+}
+
+//------------------------------------------------------------------------------
+
 // Show displays the task information as yaml
 func (task *Task) Show() (string, error) {
 	return util.ConvertToYAML(task)

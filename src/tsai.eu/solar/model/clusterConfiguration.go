@@ -121,19 +121,43 @@ func (clusterConfiguration *ClusterConfiguration) GetRelationship(name string) (
 //------------------------------------------------------------------------------
 
 // AddRelationship adds a relationship configuration to a cluster
-func (clusterConfiguration *ClusterConfiguration) AddRelationship(relationshipConfiguration *RelationshipConfiguration) {
+func (clusterConfiguration *ClusterConfiguration) AddRelationship(relationshipConfiguration *RelationshipConfiguration) error {
+	// check if cluster has already been defined
+	clusterConfiguration.RelationshipsX.Lock()
+	_, ok := clusterConfiguration.Relationships[relationshipConfiguration.Relationship]
+	clusterConfiguration.RelationshipsX.Unlock()
+
+	if ok {
+		return errors.New("relationship configuration already exists")
+	}
+
 	clusterConfiguration.RelationshipsX.Lock()
 	clusterConfiguration.Relationships[relationshipConfiguration.Relationship] = relationshipConfiguration
 	clusterConfiguration.RelationshipsX.Unlock()
+
+	// success
+	return nil
 }
 
 //------------------------------------------------------------------------------
 
 // DeleteRelationship deletes a relationship configuration from a cluster
-func (clusterConfiguration *ClusterConfiguration) DeleteRelationship(name string) {
+func (clusterConfiguration *ClusterConfiguration) DeleteRelationship(name string) error {
+	clusterConfiguration.RelationshipsX.Lock()
+	_, ok := clusterConfiguration.Relationships[name]
+	clusterConfiguration.RelationshipsX.Unlock()
+
+	if !ok {
+		return errors.New("relationship configuration not found")
+	}
+
+	// remove element
 	clusterConfiguration.RelationshipsX.Lock()
 	delete(clusterConfiguration.Relationships, name)
 	clusterConfiguration.RelationshipsX.Unlock()
+
+	// success
+	return nil
 }
 
 //------------------------------------------------------------------------------

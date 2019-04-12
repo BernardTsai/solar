@@ -3,7 +3,7 @@ package model
 import (
 	"sync"
 	"errors"
-	
+
 	"tsai.eu/solar/util"
 )
 
@@ -113,19 +113,43 @@ func (elementConfiguration *ElementConfiguration) GetCluster(name string) (*Clus
 //------------------------------------------------------------------------------
 
 // AddCluster adds a cluster configuration to an element
-func (elementConfiguration *ElementConfiguration) AddCluster(clusterConfiguration *ClusterConfiguration) {
+func (elementConfiguration *ElementConfiguration) AddCluster(clusterConfiguration *ClusterConfiguration) error {
+	// check if cluster has already been defined
+	elementConfiguration.ClustersX.Lock()
+	_, ok := elementConfiguration.Clusters[clusterConfiguration.Version]
+	elementConfiguration.ClustersX.Unlock()
+
+	if ok {
+		return errors.New("cluster configuration already exists")
+	}
+
 	elementConfiguration.ClustersX.Lock()
 	elementConfiguration.Clusters[clusterConfiguration.Version] = clusterConfiguration
 	elementConfiguration.ClustersX.Unlock()
+
+	// success
+	return nil
 }
 
 //------------------------------------------------------------------------------
 
 // DeleteCluster deletes a cluster configuration from an element
-func (elementConfiguration *ElementConfiguration) DeleteCluster(version string) {
+func (elementConfiguration *ElementConfiguration) DeleteCluster(version string) error {
+	elementConfiguration.ClustersX.Lock()
+	_, ok := elementConfiguration.Clusters[version]
+	elementConfiguration.ClustersX.Unlock()
+
+	if !ok {
+		return errors.New("cluster configuration not found")
+	}
+
+	// remove element
 	elementConfiguration.ClustersX.Lock()
 	delete(elementConfiguration.Clusters, version)
 	elementConfiguration.ClustersX.Unlock()
+
+	// success
+	return nil
 }
 
 //------------------------------------------------------------------------------

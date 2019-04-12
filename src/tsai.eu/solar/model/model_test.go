@@ -16,7 +16,7 @@ func TestModel01(t *testing.T) {
 
 	model := GetModel()
 
-	model.Reset()
+	model.Reset() 
 
 	model.Save(filename)
 
