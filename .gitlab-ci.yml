@@ -1,0 +1,44 @@
+image: golang:1.12
+
+before_script:
+  - export GOPATH=$(pwd)
+  - go get github.com/google/uuid
+  - go get gopkg.in/yaml.v2
+  - go get gopkg.in/abiosoft/ishell.v2
+  - go get github.com/spf13/viper
+  - go get github.com/gorilla/mux
+  - go get github.com/segmentio/kafka-go
+  - go get google.golang.org/grpc
+  - go get github.com/golang/protobuf/protoc-gen-go
+  - go get github.com/rs/zerolog/log
+  - go get bou.ke/monkey
+
+cache:
+  key: key-1.0.0
+  paths:
+  - src/gopkg.in
+  - src/github.com
+  - src/google.golang.org
+  - src/bou.ke
+  - pkg
+
+stages:
+  - test
+  - build
+
+test:
+  stage: test
+  script:
+    - export GOROOT=/usr/local/go
+    - export GOPATH=$(pwd):/go
+    - cd src
+    - go test tsai.eu/solar/util
+    - go test tsai.eu/solar/model
+
+build:
+  stage: build
+  script:
+    - export GOROOT=/usr/local/go
+    - export GOPATH=$(pwd):/go
+    - cd src
+    - go build tsai.eu/solar/cmd/solar
