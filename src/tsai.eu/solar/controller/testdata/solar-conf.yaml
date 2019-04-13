@@ -1,0 +1,9 @@
+MSG:
+  Notifications:  notifications
+  Monitoring:     monitoring
+  Address:        127.0.0.1:9092
+CORE:
+  IDENTIFIER: solar
+  LOGLEVEL:   debug
+CTRL:
+  dummy: 127.0.0.1:10000

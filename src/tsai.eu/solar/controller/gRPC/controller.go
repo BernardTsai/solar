@@ -1,11 +1,10 @@
-package main
+package gRPC
 
 import (
 	"context"
-	"net"
 
 	"google.golang.org/grpc"
-	"github.com/rs/zerolog"
+
   "github.com/rs/zerolog/log"
 )
 
@@ -13,6 +12,20 @@ import (
 
 // DefaultController is an implementation of the controller interface
 type DefaultController struct {
+}
+
+//------------------------------------------------------------------------------
+
+// NewController creates a new controller instance
+func NewController() (*grpc.Server, error) {
+	// create a gRPC server
+	var opts []grpc.ServerOption
+	grpcServer := grpc.NewServer(opts...)
+
+	// register controller
+	RegisterControllerServer(grpcServer, &DefaultController{})
+
+	return grpcServer, nil
 }
 
 //------------------------------------------------------------------------------
@@ -134,27 +147,6 @@ func (c *DefaultController) Status(ctx context.Context, in *SetupMessage) (*Stat
 
 	// return results
 	return &status, nil
-}
-
-//------------------------------------------------------------------------------
-
-func main() {
-	// be verbose
-	zerolog.SetGlobalLevel(zerolog.InfoLevel)
-
-	// open TCP port 10000
-	lis, err := net.Listen("tcp", ":10000")
-	if err != nil {
-		Log("fatal", "main", "gRPC", "failed to listen:" + err.Error())
-	}
-
-	// create a gRPC server
-	var opts []grpc.ServerOption
-	grpcServer := grpc.NewServer(opts...)
-
-	// register controller and start listening
-	RegisterControllerServer(grpcServer, &DefaultController{})
-	grpcServer.Serve(lis)
 }
 
 //------------------------------------------------------------------------------
