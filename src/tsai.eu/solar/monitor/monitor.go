@@ -25,7 +25,7 @@ func Start(ctx context.Context) (*Monitor) {
 	// create the monitor
 	monitor := Monitor{
     Channel: engine.GetEventChannel(),
-    Ticker:  time.NewTicker(10 * time.Second),
+    Ticker:  time.NewTicker(100 * time.Millisecond),
     Active:  false,
 	}
 
