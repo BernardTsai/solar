@@ -111,6 +111,11 @@ func TestController(t *testing.T) {
 			if err != nil {
 				t.Errorf("Unable to configure: %s\n%s", entry, err)
 			}
+		case "reconfigure":
+			_, err = dc.Reconfigure(setup)
+			if err != nil {
+				t.Errorf("Unable to configure: %s\n%s", entry, err)
+			}
 		case "destroy":
 			_, err = dc.Destroy(setup)
 			if err != nil {

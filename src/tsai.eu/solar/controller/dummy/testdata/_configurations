@@ -5,6 +5,8 @@ tasks:
   setup:  001_dummy_A
 - action: start
   setup:  001_dummy_A
+- action: reconfigure
+  setup:  001_dummy_A
 - action: stop
   setup:  001_dummy_A
 - action: configure

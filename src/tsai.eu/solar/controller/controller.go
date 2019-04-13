@@ -12,13 +12,14 @@ import (
 
 // Controller defines the standard operations of a controller
 type Controller interface {
-	Status(    setup *model.Setup) (status *model.Status, err error)
-	Create(    setup *model.Setup) (status *model.Status, err error)
-	Destroy(   setup *model.Setup) (status *model.Status, err error)
-	Configure( setup *model.Setup) (status *model.Status, err error)
-	Start(     setup *model.Setup) (status *model.Status, err error)
-	Stop(      setup *model.Setup) (status *model.Status, err error)
-	Reset(     setup *model.Setup) (status *model.Status, err error)
+	Status(      setup *model.Setup) (status *model.Status, err error)
+	Create(      setup *model.Setup) (status *model.Status, err error)
+	Destroy(     setup *model.Setup) (status *model.Status, err error)
+	Configure(   setup *model.Setup) (status *model.Status, err error)
+	Reconfigure( setup *model.Setup) (status *model.Status, err error)
+	Start(       setup *model.Setup) (status *model.Status, err error)
+	Stop(        setup *model.Setup) (status *model.Status, err error)
+	Reset(       setup *model.Setup) (status *model.Status, err error)
 }
 
 //------------------------------------------------------------------------------
