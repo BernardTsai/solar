@@ -1,0 +1,15 @@
+tasks:
+- action: create
+  setup:  001_dummy_A
+- action: status
+  setup:  001_dummy_A
+- action: start
+  setup:  001_dummy_A
+- action: stop
+  setup:  001_dummy_A
+- action: configure
+  setup:  001_dummy_A
+- action: reset
+  setup:  001_dummy_A
+- action: destroy
+  setup:  001_dummy_A

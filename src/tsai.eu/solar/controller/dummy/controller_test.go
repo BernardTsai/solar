@@ -1,15 +1,14 @@
-package main
+package dummy
 
 import (
 	"fmt"
 	"path/filepath"
 	"testing"
 
-	"tsai.eu/solar/controller/dummy"
 	"tsai.eu/solar/model"
 	"tsai.eu/solar/util"
 )
- 
+
 //------------------------------------------------------------------------------
 
 const TESTDATA       string = "testdata"
@@ -32,8 +31,8 @@ type Tasks struct {
 
 //------------------------------------------------------------------------------
 
-// LoadConfigurations load a list of configuration filenames
-func LoadConfigurations() (list []Task, err error) {
+// loadConfigurations load a list of configuration filenames
+func loadConfigurations() (list []Task, err error) {
 	path := filepath.Join(TESTDATA, CONFIGURATIONS)
 	tasks := Tasks{}
 
@@ -51,8 +50,8 @@ func LoadConfigurations() (list []Task, err error) {
 
 //------------------------------------------------------------------------------
 
-// LoadConfiguration load a configuration file
-func LoadConfiguration(filename string) *model.Setup {
+// loadConfiguration load a configuration file
+func loadConfiguration(filename string) *model.Setup {
 	setup := model.Setup{}
 	path  := filepath.Join(TESTDATA, filename)
 	util.LoadYAML(path, &setup)
@@ -69,10 +68,10 @@ func TestController(t *testing.T) {
 	var err error
 
 	// create controller
-	dc := dummy.NewController()
+	dc := NewController()
 
 	// Load names of configuration files
-	list, err := LoadConfigurations()
+	list, err := loadConfigurations()
 	if err != nil {
 		fmt.Println(err)
 		t.Errorf("%s", err)
@@ -84,7 +83,7 @@ func TestController(t *testing.T) {
 	for index, entry := range list {
 		fmt.Printf("%03d %10s %s\n", index, entry.Action, entry.Setup)
 
-		setup = LoadConfiguration(entry.Setup)
+		setup = loadConfiguration(entry.Setup)
 
 		switch entry.Action {
 		case "create":
@@ -97,6 +96,33 @@ func TestController(t *testing.T) {
 			if err != nil {
 				t.Errorf("Unable to start: %s\n%s", entry, err)
 			}
+		case "status":
+			_, err = dc.Status(setup)
+			if err != nil {
+				t.Errorf("Unable to get status: %s\n%s", entry, err)
+			}
+		case "stop":
+			_, err = dc.Stop(setup)
+			if err != nil {
+				t.Errorf("Unable to stop: %s\n%s", entry, err)
+			}
+		case "configure":
+			_, err = dc.Configure(setup)
+			if err != nil {
+				t.Errorf("Unable to configure: %s\n%s", entry, err)
+			}
+		case "destroy":
+			_, err = dc.Destroy(setup)
+			if err != nil {
+				t.Errorf("Unable to destroy: %s\n%s", entry, err)
+			}
+		case "reset":
+			_, err = dc.Reset(setup)
+			if err != nil {
+				t.Errorf("Unable to reset: %s\n%s", entry, err)
+			}
+		default:
+			t.Errorf("Unknown action: %s", entry.Action)
 		}
 	}
 }
