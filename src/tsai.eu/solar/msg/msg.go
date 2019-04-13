@@ -1,7 +1,6 @@
 package msg
 
 import (
-  "fmt"
   "sync"
   "context"
   "errors"
@@ -36,12 +35,15 @@ var msgInit  sync.Once    // do once sync for connection initialisation
 
 // Start initialises the messaging interface.
 func Start(ctx context.Context) (*MSG, error){
+  var err error
+
   // initialise singleton once
 	msgInit.Do(func() {
     // determine configuration
-    configuration, err := util.GetConfiguration()
-    if err != nil {
-      util.LogError("main", "MSG", "failed to read the configuration: " + err.Error())
+    configuration, confErr := util.GetConfiguration()
+    if confErr != nil {
+      util.LogError("main", "MSG", "failed to read the configuration: " + confErr.Error())
+      err = confErr
       return
     }
 
@@ -68,13 +70,8 @@ func Start(ctx context.Context) (*MSG, error){
     }
 	})
 
-  // check if initialisation has been successful
-  if msg == nil {
-    util.LogError("main", "MSG", "failed to initialise the messaging interface")
-  }
-
   // return
-  return msg, nil
+  return msg, err
 }
 
 //------------------------------------------------------------------------------
@@ -133,7 +130,7 @@ func (msg *MSG) StopWriter() {
 
 //------------------------------------------------------------------------------
 
-// StatusReader provides the status of the writer
+// StatusWriter provides the status of the writer
 func (msg *MSG) StatusWriter() bool{
   messageStatus := msg != nil
   writerStatus  := false
@@ -208,7 +205,7 @@ func (msg *MSG) listen() {
   // handle issues with the message bus
   defer func() {
     if r := recover(); r != nil {
-      fmt.Printf("Aborting listener due to error\n")
+      util.LogError("main", "MSG", "Aborting listener")
       if msg != nil {
 
         msg.MonitoringReader = nil
@@ -242,7 +239,7 @@ func (msg *MSG) listen() {
         names := strings.Split(value, "/")
 
         if len(names) == 5 {
-          cluster, _ := model.GetCluster(names[0], names[1], names[2], names[3])
+          cluster, err := model.GetCluster(names[0], names[1], names[2], names[3])
           if err == nil {
             cluster.SetState( names[4] )
           }
@@ -251,7 +248,7 @@ func (msg *MSG) listen() {
         names := strings.Split(value, "/")
 
         if len(names) == 6 {
-          instance, _ := model.GetInstance(names[0], names[1], names[2], names[3], names[4])
+          instance, err := model.GetInstance(names[0], names[1], names[2], names[3], names[4])
           if err == nil {
             instance.SetState( names[5] )
           }
