@@ -19,7 +19,7 @@ type Dispatcher struct {
 
 //------------------------------------------------------------------------------
 
-// Start creates a dispatcher and returns a channel for new tasks.
+// Start creates a dispatcher 
 func Start(c context.Context) (*Dispatcher) {
 	// create the dispatcher
 	dispatcher := Dispatcher{
