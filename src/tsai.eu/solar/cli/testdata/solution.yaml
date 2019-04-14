@@ -1,0 +1,928 @@
+Solution: app
+Version: V0.0.0
+Target: active
+State: initial
+Configuration: ""
+Elements:
+  app:
+    Element: app
+    Component: application
+    Target: active
+    State: ""
+    Configuration: |
+      # Configuration for element 'app':
+      'domain':       'demo'
+      'solution':     'app'
+      'version':      'V0.0.0'
+      'element':      'app'
+      'server':       'app-server'
+    Endpoint: ""
+    Clusters:
+      V1.0.0:
+        Version: V1.0.0
+        Target: active
+        State: active
+        Min: 3
+        Max: 3
+        Size: 3
+        Configuration: |
+          # Ansible playbook for the application: 'app' for the solution 'app' in the domain 'demo'
+          ---
+          - hosts: <enter parameter here>
+          roles:
+            - role: app-V1.0.0
+        Endpoint: ""
+        Relationships:
+          db:
+            Relationship: db
+            Dependency: service
+            Type: service
+            Domain: demo
+            Solution: app
+            Element: db
+            Version: V1.0.0
+            Target: initial
+            State: initial
+            Configuration: |-
+              Domain:       demo
+              Solution:     app
+              Element:      app
+              Version:      V0.0.0
+              Cluster:      V1.0.0
+              Relationship: db
+            Endpoint: ""
+          server:
+            Relationship: server
+            Dependency: server
+            Type: context
+            Domain: demo
+            Solution: app
+            Element: app-server
+            Version: V1.0.0
+            Target: initial
+            State: initial
+            Configuration: |
+              Domain:       demo
+              Solution:     app
+              Element:      app
+              Version:      V0.0.0
+              Cluster:      V1.0.0
+              Relationship: server
+            Endpoint: ""
+        Instances:
+          20957de0-194e-4f25-ba32-142e9e050280:
+            UUID: 20957de0-194e-4f25-ba32-142e9e050280
+            Target: active
+            State: active
+            Configuration: ""
+            Endpoint: ""
+          586179e4-b439-4a13-8b45-144edcb58c57:
+            UUID: 586179e4-b439-4a13-8b45-144edcb58c57
+            Target: active
+            State: active
+            Configuration: ""
+            Endpoint: ""
+          e72a2a0a-85db-4332-b36f-df160627e5cb:
+            UUID: e72a2a0a-85db-4332-b36f-df160627e5cb
+            Target: active
+            State: active
+            Configuration: ""
+            Endpoint: ""
+  app-server:
+    Element: app-server
+    Component: server
+    Target: active
+    State: ""
+    Configuration: |
+      # Configuration for element 'app-server':
+      'domain':       'demo'
+      'solution':     'app'
+      'version':      'V0.0.0'
+      'element':      'app-server'
+      'flavor':       'm1.medium'
+      'image':        'centos-6'
+      'key':          'mysecretkey'
+    Endpoint: ""
+    Clusters:
+      V1.0.0:
+        Version: V1.0.0
+        Target: active
+        State: active
+        Min: 3
+        Max: 3
+        Size: 3
+        Configuration: |
+          heat_template_version: 2013-05-23
+
+          description: >
+            HOT template to create a new server pool 'app-server'
+            for the solution 'app' in the domain 'demo'.
+
+          resources:
+            server1:
+              type: OS::Nova::Server
+              properties:
+                name: Server1
+                image: 'centos-6'
+                flavor: 'm1.medium'
+                key_name: 'mysecretkey'
+        Endpoint: ""
+        Relationships:
+          ext:
+            Relationship: ext
+            Dependency: network
+            Type: context
+            Domain: demo
+            Solution: app
+            Element: ext
+            Version: V1.0.0
+            Target: initial
+            State: initial
+            Configuration: |
+              Domain:       demo
+              Solution:     app
+              Element:      app-server
+              Version:      V0.0.0
+              Cluster:      V1.0.0
+              Relationship: ext
+            Endpoint: ""
+          m2m:
+            Relationship: m2m
+            Dependency: network
+            Type: context
+            Domain: demo
+            Solution: app
+            Element: m2m
+            Version: V1.0.0
+            Target: initial
+            State: initial
+            Configuration: |
+              Domain:       demo
+              Solution:     app
+              Element:      app-server
+              Version:      V0.0.0
+              Cluster:      V1.0.0
+              Relationship: m2m
+            Endpoint: ""
+          oam:
+            Relationship: oam
+            Dependency: network
+            Type: context
+            Domain: demo
+            Solution: app
+            Element: oam
+            Version: V1.0.0
+            Target: initial
+            State: initial
+            Configuration: |
+              Domain:       demo
+              Solution:     app
+              Element:      app-server
+              Version:      V0.0.0
+              Cluster:      V1.0.0
+              Relationship: oam
+            Endpoint: ""
+          tenant:
+            Relationship: tenant
+            Dependency: tenant
+            Type: context
+            Domain: demo
+            Solution: app
+            Element: tenant
+            Version: V1.0.0
+            Target: initial
+            State: initial
+            Configuration: |-
+              Domain:       demo
+              Solution:     app
+              Element:      app-server
+              Version:      V0.0.0
+              Cluster:      V1.0.0
+              Relationship: tenant
+            Endpoint: ""
+        Instances:
+          3f0f184f-65a1-47bf-b411-77a9b6e27db7:
+            UUID: 3f0f184f-65a1-47bf-b411-77a9b6e27db7
+            Target: active
+            State: active
+            Configuration: ""
+            Endpoint: ""
+          84095d8c-41ee-4fe2-a220-ba5ca2589477:
+            UUID: 84095d8c-41ee-4fe2-a220-ba5ca2589477
+            Target: active
+            State: active
+            Configuration: ""
+            Endpoint: ""
+          dcdd6524-7763-4397-9640-06c89b60f10d:
+            UUID: dcdd6524-7763-4397-9640-06c89b60f10d
+            Target: active
+            State: active
+            Configuration: ""
+            Endpoint: ""
+  db:
+    Element: db
+    Component: application
+    Target: active
+    State: ""
+    Configuration: |
+      # Configuration for element 'db':
+      'domain':       'demo'
+      'solution':     'app'
+      'version':      'V0.0.0'
+      'element':      'db'
+      'server':       'db-server'
+    Endpoint: ""
+    Clusters:
+      V1.0.0:
+        Version: V1.0.0
+        Target: active
+        State: active
+        Min: 3
+        Max: 3
+        Size: 3
+        Configuration: |
+          # Ansible playbook for the application: 'db' for the solution 'app' in the domain 'demo'
+          ---
+          - hosts: <enter parameter here>
+          roles:
+            - role: db-V1.0.0
+        Endpoint: ""
+        Relationships:
+          server:
+            Relationship: server
+            Dependency: server
+            Type: context
+            Domain: demo
+            Solution: app
+            Element: db-server
+            Version: V1.0.0
+            Target: initial
+            State: initial
+            Configuration: |
+              Domain:       demo
+              Solution:     app
+              Element:      db
+              Version:      V0.0.0
+              Cluster:      V1.0.0
+              Relationship: server
+            Endpoint: ""
+        Instances:
+          5cf2625e-6fb0-473a-9b8c-5838b0140ea3:
+            UUID: 5cf2625e-6fb0-473a-9b8c-5838b0140ea3
+            Target: active
+            State: active
+            Configuration: ""
+            Endpoint: ""
+          8f3354f2-062b-4e05-8b86-6f26af966395:
+            UUID: 8f3354f2-062b-4e05-8b86-6f26af966395
+            Target: active
+            State: active
+            Configuration: ""
+            Endpoint: ""
+          47f796c1-2e65-4325-967c-e8f422211131:
+            UUID: 47f796c1-2e65-4325-967c-e8f422211131
+            Target: active
+            State: active
+            Configuration: ""
+            Endpoint: ""
+  db-server:
+    Element: db-server
+    Component: server
+    Target: active
+    State: ""
+    Configuration: |
+      # Configuration for element 'db-server':
+      'domain':       'demo'
+      'solution':     'app'
+      'version':      'V0.0.0'
+      'element':      'db-server'
+      'flavor':       'm1.large'
+      'image':        'centos-6'
+      'key':          'mysecretkey'
+    Endpoint: ""
+    Clusters:
+      V1.0.0:
+        Version: V1.0.0
+        Target: active
+        State: active
+        Min: 3
+        Max: 3
+        Size: 3
+        Configuration: |
+          heat_template_version: 2013-05-23
+
+          description: >
+            HOT template to create a new server pool 'db-server'
+            for the solution 'app' in the domain 'demo'.
+
+          resources:
+            server1:
+              type: OS::Nova::Server
+              properties:
+                name: Server1
+                image: 'centos-6'
+                flavor: 'm1.large'
+                key_name: 'mysecretkey'
+        Endpoint: ""
+        Relationships:
+          m2m:
+            Relationship: m2m
+            Dependency: network
+            Type: context
+            Domain: demo
+            Solution: app
+            Element: m2m
+            Version: V1.0.0
+            Target: initial
+            State: initial
+            Configuration: |
+              Domain:       demo
+              Solution:     app
+              Element:      db-server
+              Version:      V0.0.0
+              Cluster:      V1.0.0
+              Relationship: m2m
+            Endpoint: ""
+          oam:
+            Relationship: oam
+            Dependency: network
+            Type: context
+            Domain: demo
+            Solution: app
+            Element: oam
+            Version: V1.0.0
+            Target: initial
+            State: initial
+            Configuration: |
+              Domain:       demo
+              Solution:     app
+              Element:      db-server
+              Version:      V0.0.0
+              Cluster:      V1.0.0
+              Relationship: oam
+            Endpoint: ""
+          tenant:
+            Relationship: tenant
+            Dependency: tenant
+            Type: context
+            Domain: demo
+            Solution: app
+            Element: tenant
+            Version: V1.0.0
+            Target: initial
+            State: initial
+            Configuration: |-
+              Domain:       demo
+              Solution:     app
+              Element:      db-server
+              Version:      V0.0.0
+              Cluster:      V1.0.0
+              Relationship: tenant
+            Endpoint: ""
+        Instances:
+          5ad333b5-2c5c-4037-b542-2fc1713fc767:
+            UUID: 5ad333b5-2c5c-4037-b542-2fc1713fc767
+            Target: active
+            State: active
+            Configuration: ""
+            Endpoint: ""
+          83b84490-f783-45ae-bf94-fe663dd4ec5d:
+            UUID: 83b84490-f783-45ae-bf94-fe663dd4ec5d
+            Target: active
+            State: active
+            Configuration: ""
+            Endpoint: ""
+          5528b929-89f2-4199-9aab-44d0cd1051e4:
+            UUID: 5528b929-89f2-4199-9aab-44d0cd1051e4
+            Target: active
+            State: active
+            Configuration: ""
+            Endpoint: ""
+  ext:
+    Element: ext
+    Component: network
+    Target: active
+    State: ""
+    Configuration: |
+      # Configuration for element 'ext':
+      'domain':       'demo'
+      'solution':     'app'
+      'version':      'V0.0.0'
+      'element':      'ext'
+      'cidr':         '10.0.1.0/24'
+      'gateway':      '10.0.1.1'
+    Endpoint: ""
+    Clusters:
+      V1.0.0:
+        Version: V1.0.0
+        Target: active
+        State: active
+        Min: 1
+        Max: 1
+        Size: 1
+        Configuration: |
+          heat_template_version: 2013-05-23
+
+          description: >
+            HOT template to create a new neutron network 'ext' with a defined subnet
+            for the solution 'app' in the domain 'demo'.
+
+          resources:
+            private_net:
+              type: OS::Neutron::Net
+              properties:
+                name: 'ext'
+
+            private_subnet:
+              type: OS::Neutron::Subnet
+              properties:
+                network_id: { get_resource: private_net }
+                cidr: '10.0.1.0/24'
+                gateway_ip: '10.0.1.1'
+        Endpoint: ""
+        Relationships:
+          tenant:
+            Relationship: tenant
+            Dependency: tenant
+            Type: context
+            Domain: demo
+            Solution: app
+            Element: tenant
+            Version: V1.0.0
+            Target: initial
+            State: initial
+            Configuration: |
+              Domain:       demo
+              Solution:     app
+              Element:      ext
+              Version:      V0.0.0
+              Cluster:      V1.0.0
+              Relationship: tenant
+            Endpoint: ""
+        Instances:
+          841f9a81-b9b2-4f8c-83be-2f54a75b6be9:
+            UUID: 841f9a81-b9b2-4f8c-83be-2f54a75b6be9
+            Target: active
+            State: active
+            Configuration: ""
+            Endpoint: ""
+  fw:
+    Element: fw
+    Component: application
+    Target: active
+    State: ""
+    Configuration: |
+      # Configuration for element 'fw':
+      'domain':       'demo'
+      'solution':     'app'
+      'version':      'V0.0.0'
+      'element':      'fw'
+      'server':       'fw-server'
+    Endpoint: ""
+    Clusters:
+      V1.0.0:
+        Version: V1.0.0
+        Target: active
+        State: active
+        Min: 3
+        Max: 3
+        Size: 3
+        Configuration: |
+          # Ansible playbook for the application: 'fw' for the solution 'app' in the domain 'demo'
+          ---
+          - hosts: <enter parameter here>
+          roles:
+            - role: fw-V1.0.0
+        Endpoint: ""
+        Relationships:
+          app:
+            Relationship: app
+            Dependency: service
+            Type: service
+            Domain: demo
+            Solution: app
+            Element: app
+            Version: V1.0.0
+            Target: initial
+            State: initial
+            Configuration: |-
+              Domain:       demo
+              Solution:     app
+              Element:      fw
+              Version:      V0.0.0
+              Cluster:      V1.0.0
+              Relationship: app
+            Endpoint: ""
+          db:
+            Relationship: db
+            Dependency: service
+            Type: service
+            Domain: demo
+            Solution: app
+            Element: db
+            Version: V1.0.0
+            Target: initial
+            State: initial
+            Configuration: |-
+              Domain:       demo
+              Solution:     app
+              Element:      fw
+              Version:      V0.0.0
+              Cluster:      V1.0.0
+              Relationship: db
+            Endpoint: ""
+          server:
+            Relationship: server
+            Dependency: server
+            Type: context
+            Domain: demo
+            Solution: app
+            Element: fw-server
+            Version: V1.0.0
+            Target: initial
+            State: initial
+            Configuration: |
+              Domain:       demo
+              Solution:     app
+              Element:      fw
+              Version:      V0.0.0
+              Cluster:      V1.0.0
+              Relationship: server
+            Endpoint: ""
+        Instances:
+          0a0445ea-8f47-4640-bd35-95301e135351:
+            UUID: 0a0445ea-8f47-4640-bd35-95301e135351
+            Target: active
+            State: active
+            Configuration: ""
+            Endpoint: ""
+          25519fbd-e382-4e9c-a7da-040c7c92759a:
+            UUID: 25519fbd-e382-4e9c-a7da-040c7c92759a
+            Target: active
+            State: active
+            Configuration: ""
+            Endpoint: ""
+          be1defaa-b6d6-43f3-a773-29bd1518db54:
+            UUID: be1defaa-b6d6-43f3-a773-29bd1518db54
+            Target: active
+            State: active
+            Configuration: ""
+            Endpoint: ""
+  fw-server:
+    Element: fw-server
+    Component: server
+    Target: active
+    State: ""
+    Configuration: |
+      # Configuration for element 'fw-server':
+      'domain':       'demo'
+      'solution':     'app'
+      'version':      'V0.0.0'
+      'element':      'fw-server'
+      'flavor':       'm1.small'
+      'image':        'centos-6'
+      'key':          'mysecretkey'
+    Endpoint: ""
+    Clusters:
+      V1.0.0:
+        Version: V1.0.0
+        Target: active
+        State: active
+        Min: 3
+        Max: 3
+        Size: 3
+        Configuration: |
+          heat_template_version: 2013-05-23
+
+          description: >
+            HOT template to create a new server pool 'fw-server'
+            for the solution 'app' in the domain 'demo'.
+
+          resources:
+            server1:
+              type: OS::Nova::Server
+              properties:
+                name: Server1
+                image: 'centos-6'
+                flavor: 'm1.small'
+                key_name: 'mysecretkey'
+        Endpoint: ""
+        Relationships:
+          oam:
+            Relationship: oam
+            Dependency: network
+            Type: context
+            Domain: demo
+            Solution: app
+            Element: oam
+            Version: V1.0.0
+            Target: initial
+            State: initial
+            Configuration: |
+              Domain:       demo
+              Solution:     app
+              Element:      fw-server
+              Version:      V0.0.0
+              Cluster:      V1.0.0
+              Relationship: oam
+            Endpoint: ""
+          pub:
+            Relationship: pub
+            Dependency: network
+            Type: context
+            Domain: demo
+            Solution: app
+            Element: pub
+            Version: V1.0.0
+            Target: initial
+            State: initial
+            Configuration: |
+              Domain:       demo
+              Solution:     app
+              Element:      fw-server
+              Version:      V0.0.0
+              Cluster:      V1.0.0
+              Relationship: pub
+            Endpoint: ""
+          tenant:
+            Relationship: tenant
+            Dependency: tenant
+            Type: context
+            Domain: demo
+            Solution: app
+            Element: tenant
+            Version: V1.0.0
+            Target: initial
+            State: initial
+            Configuration: |-
+              Domain:       demo
+              Solution:     app
+              Element:      fw-server
+              Version:      V0.0.0
+              Cluster:      V1.0.0
+              Relationship: tenant
+            Endpoint: ""
+        Instances:
+          0c0a11ed-ff1f-4231-8bda-3c5a56b3db27:
+            UUID: 0c0a11ed-ff1f-4231-8bda-3c5a56b3db27
+            Target: active
+            State: active
+            Configuration: ""
+            Endpoint: ""
+          1c920496-5131-40d6-9fc8-4f996fdadc72:
+            UUID: 1c920496-5131-40d6-9fc8-4f996fdadc72
+            Target: active
+            State: active
+            Configuration: ""
+            Endpoint: ""
+          8e4bd1bc-0d9b-4ff3-8de4-54102905f227:
+            UUID: 8e4bd1bc-0d9b-4ff3-8de4-54102905f227
+            Target: active
+            State: active
+            Configuration: ""
+            Endpoint: ""
+  m2m:
+    Element: m2m
+    Component: network
+    Target: active
+    State: ""
+    Configuration: |
+      # Configuration for element 'm2m':
+      'domain':       'demo'
+      'solution':     'app'
+      'version':      'V0.0.0'
+      'element':      'm2m'
+      'cidr':         '10.0.2.0/24'
+      'gateway':      '10.0.2.1'
+    Endpoint: ""
+    Clusters:
+      V1.0.0:
+        Version: V1.0.0
+        Target: active
+        State: active
+        Min: 1
+        Max: 1
+        Size: 1
+        Configuration: |
+          heat_template_version: 2013-05-23
+
+          description: >
+            HOT template to create a new neutron network 'm2m' with a defined subnet
+            for the solution 'app' in the domain 'demo'.
+
+          resources:
+            private_net:
+              type: OS::Neutron::Net
+              properties:
+                name: 'm2m'
+
+            private_subnet:
+              type: OS::Neutron::Subnet
+              properties:
+                network_id: { get_resource: private_net }
+                cidr: '10.0.2.0/24'
+                gateway_ip: '10.0.2.1'
+        Endpoint: ""
+        Relationships:
+          tenant:
+            Relationship: tenant
+            Dependency: tenant
+            Type: context
+            Domain: demo
+            Solution: app
+            Element: tenant
+            Version: V1.0.0
+            Target: initial
+            State: initial
+            Configuration: |
+              Domain:       demo
+              Solution:     app
+              Element:      m2m
+              Version:      V0.0.0
+              Cluster:      V1.0.0
+              Relationship: tenant
+            Endpoint: ""
+        Instances:
+          96921feb-9106-42f8-b7e6-861de5fbab39:
+            UUID: 96921feb-9106-42f8-b7e6-861de5fbab39
+            Target: active
+            State: active
+            Configuration: ""
+            Endpoint: ""
+  oam:
+    Element: oam
+    Component: network
+    Target: active
+    State: ""
+    Configuration: |
+      # Configuration for element 'oam':
+      'domain':       'demo'
+      'solution':     'app'
+      'version':      'V0.0.0'
+      'element':      'oam'
+      'cidr':         '10.0.3.0/24'
+      'gateway':      '10.0.3.1'
+    Endpoint: ""
+    Clusters:
+      V1.0.0:
+        Version: V1.0.0
+        Target: active
+        State: active
+        Min: 1
+        Max: 1
+        Size: 1
+        Configuration: |
+          heat_template_version: 2013-05-23
+
+          description: >
+            HOT template to create a new neutron network 'oam' with a defined subnet
+            for the solution 'app' in the domain 'demo'.
+
+          resources:
+            private_net:
+              type: OS::Neutron::Net
+              properties:
+                name: 'oam'
+
+            private_subnet:
+              type: OS::Neutron::Subnet
+              properties:
+                network_id: { get_resource: private_net }
+                cidr: '10.0.3.0/24'
+                gateway_ip: '10.0.3.1'
+        Endpoint: ""
+        Relationships:
+          tenant:
+            Relationship: tenant
+            Dependency: tenant
+            Type: context
+            Domain: demo
+            Solution: app
+            Element: tenant
+            Version: V1.0.0
+            Target: initial
+            State: initial
+            Configuration: |
+              Domain:       demo
+              Solution:     app
+              Element:      oam
+              Version:      V0.0.0
+              Cluster:      V1.0.0
+              Relationship: tenant
+            Endpoint: ""
+        Instances:
+          a6c0bea1-ce1a-4fae-b943-1dbcc50cb311:
+            UUID: a6c0bea1-ce1a-4fae-b943-1dbcc50cb311
+            Target: active
+            State: active
+            Configuration: ""
+            Endpoint: ""
+  pub:
+    Element: pub
+    Component: network
+    Target: active
+    State: ""
+    Configuration: |
+      # Configuration for element 'pub':
+      'domain':       'demo'
+      'solution':     'app'
+      'version':      'V0.0.0'
+      'element':      'pub'
+      'cidr':         '10.0.4.0/24'
+      'gateway':      '10.0.4.1'
+    Endpoint: ""
+    Clusters:
+      V1.0.0:
+        Version: V1.0.0
+        Target: active
+        State: active
+        Min: 1
+        Max: 1
+        Size: 1
+        Configuration: |
+          heat_template_version: 2013-05-23
+
+          description: >
+            HOT template to create a new neutron network 'pub' with a defined subnet
+            for the solution 'app' in the domain 'demo'.
+
+          resources:
+            private_net:
+              type: OS::Neutron::Net
+              properties:
+                name: 'pub'
+
+            private_subnet:
+              type: OS::Neutron::Subnet
+              properties:
+                network_id: { get_resource: private_net }
+                cidr: '10.0.4.0/24'
+                gateway_ip: '10.0.4.1'
+        Endpoint: ""
+        Relationships:
+          tenant:
+            Relationship: tenant
+            Dependency: tenant
+            Type: context
+            Domain: demo
+            Solution: app
+            Element: tenant
+            Version: V1.0.0
+            Target: initial
+            State: initial
+            Configuration: |
+              Domain:       demo
+              Solution:     app
+              Element:      pub
+              Version:      V0.0.0
+              Cluster:      V1.0.0
+              Relationship: tenant
+            Endpoint: ""
+        Instances:
+          0f3b691f-1ace-4d18-82ca-281a03c5fde7:
+            UUID: 0f3b691f-1ace-4d18-82ca-281a03c5fde7
+            Target: active
+            State: active
+            Configuration: ""
+            Endpoint: ""
+  tenant:
+    Element: tenant
+    Component: tenant
+    Target: active
+    State: ""
+    Configuration: |
+      # Configuration for element 'tenant':
+      'domain':       'demo'
+      'solution':     'app'
+      'version':      'V0.0.0'
+      'element':      'tenant'
+      'password':     'secret'
+      'username':     'johndoe'
+    Endpoint: ""
+    Clusters:
+      V1.0.0:
+        Version: V1.0.0
+        Target: active
+        State: active
+        Min: 1
+        Max: 1
+        Size: 1
+        Configuration: |
+          # clouds.yaml file for os-client-config for the solution 'app' in the domain 'demo':
+          clouds:
+            demo-app:
+              region_name: demo
+              auth:
+                username: '{{username}}'
+                password: '{{password}}'
+                project_name: 'app'
+                auth_url: 'https://someopenstackserver.com:5001/v2.0'
+        Endpoint: ""
+        Relationships: {}
+        Instances:
+          cda9d59e-4bfc-4eae-bfee-3834b6c11955:
+            UUID: cda9d59e-4bfc-4eae-bfee-3834b6c11955
+            Target: active
+            State: active
+            Configuration: ""
+            Endpoint: ""

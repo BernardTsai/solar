@@ -145,10 +145,10 @@ func SolutionUsage(header bool, context *ishell.Context) {
 	if header {
 		info = _usage
 	}
-	info += "  solution list <domain> <solution>\n"
+	info += "  solution list <domain>\n"
 	info += "           set <domain> <filename>\n"
-	info += "           get <domain> <solution> <version>\n"
-	info += "           delete <domain> <solution> <version>\n"
+	info += "           get <domain> <solution>\n"
+	info += "           delete <domain> <solution>\n"
 
   writeInfo(context, info)
 }

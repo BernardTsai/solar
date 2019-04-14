@@ -66,7 +66,7 @@ OK architecture
 OK architecture ?
 OK architecture unknown_command
 OK architecture list
-OK architecture list
+KO architecture list unknown
 OK architecture list demo
 OK architecture list demo app
 OK architecture list demo app V1.0.0
@@ -89,3 +89,47 @@ OK architecture deploy
 KO architecture deploy unknown app V0.0.0
 KO architecture deploy demo unknown V1.0.0
 OK architecture deploy demo app V0.0.0
+
+OK solution
+OK solution ?
+OK solution unknown_command
+OK solution list
+KO solution list unknown
+OK solution list demo
+OK solution list demo app
+OK solution get
+OK solution get demo app
+KO solution get demo unknown
+OK solution delete
+KO solution delete unknown app
+KO solution delete demo unknown
+OK solution delete demo app
+OK solution set
+KO solution set unknown unknown_file
+KO solution set demo unknown_file
+OK solution set demo testdata/solution.yaml
+
+OK model reset
+OK model set testdata/model_001.yaml
+OK task
+OK task ?
+OK task unknown_command
+OK task list
+KO task list unknown
+OK task list demo
+OK task list demo app
+OK task list demo app tenant
+OK task list demo app tenant V1.0.0
+OK task list demo app tenant V1.0.0 cda9d59e-4bfc-4eae-bfee-3834b6c11955
+OK task get
+KO task get demo unknown
+OK task get demo 212927e4-cc49-4784-aa35-66430a6bd43b
+KO task get demo 212927e4-cc49-4784-aa35-66430a6bd43b invalid
+OK task get demo 212927e4-cc49-4784-aa35-66430a6bd43b -1
+OK task get demo 212927e4-cc49-4784-aa35-66430a6bd43b 0
+OK task terminate
+KO task terminate unknown 212927e4-cc49-4784-aa35-66430a6bd43b
+OK task terminate demo 212927e4-cc49-4784-aa35-66430a6bd43b
+OK task trace
+KO task trace unknown 212927e4-cc49-4784-aa35-66430a6bd43b
+OK task trace demo 212927e4-cc49-4784-aa35-66430a6bd43b
