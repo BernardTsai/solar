@@ -90,12 +90,13 @@ func ArchitectureSetHandler(w http.ResponseWriter, r *http.Request) {
 
 // ArchitectureGetHandler retrieves an architecture.
 func ArchitectureGetHandler(w http.ResponseWriter, r *http.Request) {
-  vars             := mux.Vars(r)
-  domainName       := vars["domain"]
-  architectureName := vars["architecture"]
+  vars                := mux.Vars(r)
+  domainName          := vars["domain"]
+  architectureName    := vars["architecture"]
+  architectureVersion := vars["version"]
 
   // determine architecture
-  architecture, err := model.GetArchitecture(domainName, architectureName)
+  architecture, err := model.GetArchitecture(domainName, architectureName, architectureVersion)
   if err != nil {
     w.WriteHeader(http.StatusBadRequest)
     return
@@ -117,9 +118,10 @@ func ArchitectureGetHandler(w http.ResponseWriter, r *http.Request) {
 
 // ArchitectureDeleteHandler deletes an architecture.
 func ArchitectureDeleteHandler(w http.ResponseWriter, r *http.Request) {
-  vars             := mux.Vars(r)
-  domainName       := vars["domain"]
-  architectureName := vars["architecture"]
+  vars                := mux.Vars(r)
+  domainName          := vars["domain"]
+  architectureName    := vars["architecture"]
+  architectureVersion := vars["version"]
 
   // determine domain
   domain, err := model.GetDomain(domainName)
@@ -129,7 +131,7 @@ func ArchitectureDeleteHandler(w http.ResponseWriter, r *http.Request) {
   }
 
   // delete architecture
-  err = domain.DeleteArchitecture(architectureName)
+  err = domain.DeleteArchitecture(architectureName, architectureVersion)
   if err != nil {
     w.WriteHeader(http.StatusBadRequest)
     return
@@ -140,9 +142,10 @@ func ArchitectureDeleteHandler(w http.ResponseWriter, r *http.Request) {
 
 // ArchitectureDeployHandler deploys an architecture.
 func ArchitectureDeployHandler(w http.ResponseWriter, r *http.Request) {
-  vars             := mux.Vars(r)
-  domainName       := vars["domain"]
-  architectureName := vars["architecture"]
+  vars                := mux.Vars(r)
+  domainName          := vars["domain"]
+  architectureName    := vars["architecture"]
+  architectureVersion := vars["version"]
 
 	// determine domain
 	domain, err := model.GetDomain(domainName)
@@ -154,7 +157,7 @@ func ArchitectureDeployHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// determine architecture
-	architecture, err := domain.GetArchitecture(architectureName)
+	architecture, err := domain.GetArchitecture(architectureName, architectureVersion)
 
 	if err != nil {
     w.WriteHeader(http.StatusBadRequest)

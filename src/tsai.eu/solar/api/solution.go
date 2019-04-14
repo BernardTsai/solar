@@ -149,7 +149,7 @@ func SolutionDeployHandler(w http.ResponseWriter, r *http.Request) {
   }
 
   // determine architecture
-  architecture, err := model.GetArchitecture(domainName, solutionName + " - " + versionNumber)
+  architecture, err := model.GetArchitecture(domainName, solutionName, versionNumber)
   if err != nil {
     w.WriteHeader(http.StatusBadRequest)
     return

@@ -33,7 +33,7 @@ func TestComponent02(t *testing.T) {
 
 	model.Load("testdata/testdata1.yaml")
 
-	component, _ := GetComponent("demo", "network - V1.0.0")
+	component, _ := GetComponent("demo", "network", "V1.0.0")
 
 	_, err := component.ListDependencies()
 	if err != nil {

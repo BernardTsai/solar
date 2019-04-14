@@ -269,7 +269,7 @@ func (cluster *Cluster) DeleteInstance(uuid string) error {
 // renderConfiguration calculates the configuration from the component template and the parameters defined in the clusterConfiguration.
 func (cluster *Cluster) renderConfiguration(domainName string, solutionName string, version string, element *Element, clusterConfiguration *ClusterConfiguration) {
 	// determine component
-	component, err := GetComponent(domainName, element.Component + " - " + clusterConfiguration.Version)
+	component, err := GetComponent(domainName, element.Component, clusterConfiguration.Version)
 	if err != nil {
 		util.LogError("element", "MODEL", "unknown component '" + element.Component + " - " + clusterConfiguration.Version + "' within domain: '" + domainName + "'")
 		return

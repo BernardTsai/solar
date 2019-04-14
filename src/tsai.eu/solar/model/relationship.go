@@ -75,7 +75,7 @@ func NewRelationship(name string, dependency string, dependencyType string, doma
 // renderConfiguration calculates the configuration from the component template and the parameters defined in the relationshipConfiguration.
 func (relationship *Relationship) renderConfiguration(domainName string, solutionName string, version string, element *Element, cluster *Cluster, relationshipConfiguration *RelationshipConfiguration) {
 	// determine component
-	component, err := GetComponent(domainName, element.Component + " - " + cluster.Version)
+	component, err := GetComponent(domainName, element.Component, cluster.Version)
 	if err != nil {
 		util.LogError("relationship", "MODEL", "unknown component '" + element.Component + " - " + cluster.Version + "' within domain: '" + domainName + "'")
 		return

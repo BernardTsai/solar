@@ -208,13 +208,13 @@ func GetDomains() ([]string, error) {
 //------------------------------------------------------------------------------
 
 // GetComponent get an component by name
-func GetComponent(domainName string, componentName string) (*Component, error) {
+func GetComponent(domainName string, componentName string, version string) (*Component, error) {
 	domain, err := GetModel().GetDomain(domainName)
 	if err != nil {
 		return nil, errors.New("domain not found")
 	}
 
-	component, err := domain.GetComponent(componentName)
+	component, err := domain.GetComponent(componentName, version)
 	if err != nil {
 		return nil, errors.New("component not found")
 	}
@@ -226,13 +226,13 @@ func GetComponent(domainName string, componentName string) (*Component, error) {
 //------------------------------------------------------------------------------
 
 // GetArchitecture get an architecture by name
-func GetArchitecture(domainName string, architectureName string) (*Architecture, error) {
+func GetArchitecture(domainName string, architectureName string, version string) (*Architecture, error) {
 	domain, err := GetModel().GetDomain(domainName)
 	if err != nil {
 		return nil, errors.New("domain not found")
 	}
 
-	architecture, err := domain.GetArchitecture(architectureName)
+	architecture, err := domain.GetArchitecture(architectureName, version)
 	if err != nil {
 		return nil, errors.New("architecture not found")
 	}
@@ -334,7 +334,7 @@ func GetComponent2(domainName string, solutionName string, elementName string, c
 		return nil, errors.New("cluster not found")
 	}
 
-	component, err := domain.GetComponent(element.Component + " - " + cluster.Version)
+	component, err := domain.GetComponent(element.Component, cluster.Version)
 	if err != nil {
 		return nil, errors.New("component not found")
 	}

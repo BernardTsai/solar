@@ -56,13 +56,11 @@ func ArchitectureCommand(context *ishell.Context, m *model.Model) {
 		// determine list of architecture names
 		architectures := []string{}
 
-		aNames, _ := domain.ListArchitectures()
-		for _, aName := range aNames {
-			architecture, _ := domain.GetArchitecture(aName)
-
-			if (architectureName == "" || architectureName == architecture.Architecture) &&
-			   (versionName   == ""    || versionName   == architecture.Version) {
-				architectures = append(architectures, aName)
+		aNameVersions, _ := domain.ListArchitectures()
+		for _, aNameVersion := range aNameVersions {
+			if (architectureName == "" || architectureName == aNameVersion[0]) &&
+			   (versionName   == ""    || versionName   == aNameVersion[1]) {
+				architectures = append(architectures, aNameVersion[0] + " - " + aNameVersion[1])
 			}
 		}
 
@@ -99,13 +97,13 @@ func ArchitectureCommand(context *ishell.Context, m *model.Model) {
 		handleResult(context, err, "architecture could not be loaded", "")
 	case _get:
 		// check availability of arguments
-		if len(context.Args) != 3 {
+		if len(context.Args) != 4 {
 			ArchitectureUsage(true, context)
 			return
 		}
 
 		// determine architecture
-		architecture, err := model.GetArchitecture(context.Args[1], context.Args[2])
+		architecture, err := model.GetArchitecture(context.Args[1], context.Args[2], context.Args[3])
 
 		if err != nil {
 			handleResult(context, err, "architecture can not be identified", "")
@@ -117,7 +115,7 @@ func ArchitectureCommand(context *ishell.Context, m *model.Model) {
 		handleResult(context, err, "component can not be displayed", result)
 	case _delete:
 		// check availability of arguments
-		if len(context.Args) != 3 {
+		if len(context.Args) != 4 {
 			ArchitectureUsage(true, context)
 			return
 		}
@@ -131,7 +129,7 @@ func ArchitectureCommand(context *ishell.Context, m *model.Model) {
 		}
 
 		// determine architecture
-		_, err = domain.GetArchitecture(context.Args[2])
+		_, err = domain.GetArchitecture(context.Args[2], context.Args[3])
 
 		if err != nil {
 			handleResult(context, err, "architecture can not be identified", "")
@@ -139,11 +137,11 @@ func ArchitectureCommand(context *ishell.Context, m *model.Model) {
 		}
 
 		// execute command
-		err = domain.DeleteArchitecture(context.Args[2])
+		err = domain.DeleteArchitecture(context.Args[2], context.Args[3])
 		handleResult(context, err, "architecture can not be deleted", "architecture has been deleted")
 	case _deploy:
 		// check availability of arguments
-		if len(context.Args) != 3 {
+		if len(context.Args) != 4 {
 			ArchitectureUsage(true, context)
 			return
 		}
@@ -157,7 +155,7 @@ func ArchitectureCommand(context *ishell.Context, m *model.Model) {
 		}
 
 		// determine architecture
-		architecture, err := domain.GetArchitecture(context.Args[2])
+		architecture, err := domain.GetArchitecture(context.Args[2], context.Args[3])
 
 		if err != nil {
 			handleResult(context, err, "architecture can not be identified", "")
@@ -207,9 +205,9 @@ func ArchitectureUsage(header bool, context *ishell.Context) {
 	}
 	info += "  architecture list <domain> <architecture> <version>\n"
 	info += "               set <domain> <filename>\n"
-	info += "               get <domain> <architecture>\n"
-	info += "               delete <domain> <architecture>\n"
-	info += "               deploy <domain> <architecture>\n"
+	info += "               get <domain> <architecture> <version>\n"
+	info += "               delete <domain> <architecture> <version>\n"
+	info += "               deploy <domain> <architecture> <version>\n"
 
   writeInfo(context, info)
 }

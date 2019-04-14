@@ -16,7 +16,7 @@ func TestModel01(t *testing.T) {
 
 	model := GetModel()
 
-	model.Reset() 
+	model.Reset()
 
 	model.Save(filename)
 
@@ -100,7 +100,7 @@ func TestModelXY(t *testing.T) {
 	model.Load("testdata/testdata1.yaml")
 
 	solution, _     := GetSolution("demo", "app")
-	architecture, _ := GetArchitecture("demo", "app - V0.0.0")
+	architecture, _ := GetArchitecture("demo", "app", "V0.0.0")
 
 	solution.Update("demo", architecture)
 
@@ -116,33 +116,33 @@ func TestModelXY(t *testing.T) {
 	}
 
 	// component related functions
-	_, err = GetComponent("demo", "tenant - V1.0.0")
+	_, err = GetComponent("demo", "tenant", "V1.0.0")
 	if err != nil {
 		t.Errorf("GetComponent should have found an existing component")
 	}
 
-	_, err = GetComponent("demo", "unknown")
+	_, err = GetComponent("demo", "unknown", "unknown")
 	if err == nil {
 		t.Errorf("GetComponent should have complained about an non existing component")
 	}
 
-	_, err = GetComponent("unknown", "unknown")
+	_, err = GetComponent("unknown", "unknown", "unknown")
 	if err == nil {
 		t.Errorf("GetComponent should have complained about an non existing domain")
 	}
 
 	// architecture related functions
-	_, err = GetArchitecture("demo", "app - V0.0.0")
+	_, err = GetArchitecture("demo", "app", "V0.0.0")
 	if err != nil {
 		t.Errorf("GetArchitecture should have found an existing architecture")
 	}
 
-	_, err = GetArchitecture("demo", "unknown")
+	_, err = GetArchitecture("demo", "unknown", "unknown")
 	if err == nil {
 		t.Errorf("GetArchitecture should have complained about an non existing architecture")
 	}
 
-	_, err = GetArchitecture("unknown", "unknown")
+	_, err = GetArchitecture("unknown", "unknown", "unknown")
 	if err == nil {
 		t.Errorf("GetArchitecture should have complained about an non existing domain")
 	}

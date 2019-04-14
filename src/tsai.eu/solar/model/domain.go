@@ -122,13 +122,13 @@ func (domain *Domain) Load2(yaml string) error {
 //------------------------------------------------------------------------------
 
 // ListComponents lists all components of a domain
-func (domain *Domain) ListComponents() ([]string, error) {
+func (domain *Domain) ListComponents() ([][2]string, error) {
 	// collect names
-	components := []string{}
+	components := [][2]string{}
 
 	domain.ComponentsX.RLock()
-	for component := range domain.Components {
-		components = append(components, component)
+	for _, component := range domain.Components {
+		components = append(components, [2]string{component.Component, component.Version})
 	}
 	domain.ComponentsX.RUnlock()
 
@@ -159,11 +159,11 @@ func (domain *Domain) GetComponents() ([]*Component, error) {
 
 //------------------------------------------------------------------------------
 
-// GetComponent retrieves a component by name
-func (domain *Domain) GetComponent(name string) (*Component, error) {
+// GetComponent retrieves a component by name and version
+func (domain *Domain) GetComponent(name string, version string) (*Component, error) {
 	// determine template
 	domain.ComponentsX.RLock()
-	component, ok := domain.Components[name]
+	component, ok := domain.Components[name + " - " + version]
 	domain.ComponentsX.RUnlock()
 
 	if !ok {
@@ -198,10 +198,10 @@ func (domain *Domain) AddComponent(component *Component) error {
 //------------------------------------------------------------------------------
 
 // DeleteComponent deletes a component
-func (domain *Domain) DeleteComponent(name string) error {
+func (domain *Domain) DeleteComponent(name string, version string) error {
 	// determine component
 	domain.ComponentsX.RLock()
-	_, ok := domain.Components[name]
+	_, ok := domain.Components[name + " - " + version]
 	domain.ComponentsX.RUnlock()
 
 	if !ok {
@@ -210,7 +210,7 @@ func (domain *Domain) DeleteComponent(name string) error {
 
 	// remove template
 	domain.ComponentsX.Lock()
-	delete(domain.Components, name)
+	delete(domain.Components, name + " - " + version)
 	domain.ComponentsX.Unlock()
 
 	// success
@@ -220,13 +220,13 @@ func (domain *Domain) DeleteComponent(name string) error {
 //------------------------------------------------------------------------------
 
 // ListArchitectures lists all architectures of a domain
-func (domain *Domain) ListArchitectures() ([]string, error) {
+func (domain *Domain) ListArchitectures() ([][2]string, error) {
 	// collect names
-	architectures := []string{}
+	architectures := [][2]string{}
 
 	domain.ArchitecturesX.RLock()
-	for architecture := range domain.Architectures {
-		architectures = append(architectures, architecture)
+	for _, architecture := range domain.Architectures {
+		architectures = append(architectures, [2]string{architecture.Architecture, architecture.Version})
 	}
 	domain.ArchitecturesX.RUnlock()
 
@@ -237,10 +237,10 @@ func (domain *Domain) ListArchitectures() ([]string, error) {
 //------------------------------------------------------------------------------
 
 // GetArchitecture get an architecture by name
-func (domain *Domain) GetArchitecture(name string) (*Architecture, error) {
+func (domain *Domain) GetArchitecture(name string, version string) (*Architecture, error) {
 	// determine architecture
 	domain.ArchitecturesX.RLock()
-	architecture, ok := domain.Architectures[name]
+	architecture, ok := domain.Architectures[name + " - " + version]
 	domain.ArchitecturesX.RUnlock()
 
 	if !ok {
@@ -275,10 +275,10 @@ func (domain *Domain) AddArchitecture(architecture *Architecture) error {
 //------------------------------------------------------------------------------
 
 // DeleteArchitecture deletes a architecture
-func (domain *Domain) DeleteArchitecture(name string) error {
+func (domain *Domain) DeleteArchitecture(name string, version string) error {
 	// determine architecture
 	domain.ArchitecturesX.RLock()
-	_, ok := domain.Architectures[name]
+	_, ok := domain.Architectures[name + " - " + version]
 	domain.ArchitecturesX.RUnlock()
 
 	if !ok {
@@ -287,7 +287,7 @@ func (domain *Domain) DeleteArchitecture(name string) error {
 
 	// remove architecture
 	domain.ArchitecturesX.Lock()
-	delete(domain.Architectures, name)
+	delete(domain.Architectures, name + " - " + version)
 	domain.ArchitecturesX.Unlock()
 
 	// success

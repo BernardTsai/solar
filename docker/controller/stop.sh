@@ -1,4 +1,4 @@
 #!/bin/bash
 
 # stop container
-docker kill solar-grpc-controller
+docker kill solar-dummy-controller

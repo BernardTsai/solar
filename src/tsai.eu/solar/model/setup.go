@@ -94,7 +94,7 @@ func GetSetup(domainName string, solutionName string,  solutionVersion string, e
   }
 
   // determine architecture context
-  architecture, err := domain.GetArchitecture(solutionName + " - " + solutionVersion)
+  architecture, err := domain.GetArchitecture(solutionName, solutionVersion)
   if err != nil {
     return nil, err
   }
@@ -141,7 +141,7 @@ func getElementSetup(setup *Setup, elementName string) (*ElementSetup, error){
   // determine domain, solution and architecture context (have been checked before)
   domain, _       := GetDomain(setup.Domain)
   solution, _     := domain.GetSolution(setup.Solution)
-  architecture, _ := domain.GetArchitecture(setup.Solution + " - " + setup.Version)
+  architecture, _ := domain.GetArchitecture(setup.Solution, setup.Version)
 
   // determine element context
   element, _ := solution.GetElement(elementName)
@@ -194,7 +194,7 @@ func getClusterSetup(setup *Setup, elementName string, clusterName string) (*Clu
   domain, _               := GetDomain(setup.Domain)
   solution, _             := domain.GetSolution(setup.Solution)
   element, _              := solution.GetElement(elementName)
-  architecture, _         := domain.GetArchitecture(setup.Solution + " - " + setup.Version)
+  architecture, _         := domain.GetArchitecture(setup.Solution, setup.Version)
   elementConfiguration, _ := architecture.GetElement(elementName)
 
   // determine cluster context
@@ -212,7 +212,7 @@ func getClusterSetup(setup *Setup, elementName string, clusterName string) (*Clu
   }
 
   // determine component context
-  component, err := domain.GetComponent(element.Component + " - " + clusterName)
+  component, err := domain.GetComponent(element.Component, clusterName)
   if err != nil {
     return nil, err
   }
@@ -268,10 +268,10 @@ func getRelationshipSetup(setup *Setup, elementName string, clusterName string, 
   solution, _             := domain.GetSolution(setup.Solution)
   element, _              := solution.GetElement(elementName)
   cluster, _              := element.GetCluster(clusterName)
-  architecture, _         := domain.GetArchitecture(setup.Solution + " - " + setup.Version)
+  architecture, _         := domain.GetArchitecture(setup.Solution, setup.Version)
   elementConfiguration, _ := architecture.GetElement(elementName)
   clusterConfiguration, _ := elementConfiguration.GetCluster(clusterName)
-  component, _            := domain.GetComponent(element.Component + " - " + clusterName)
+  component, _            := domain.GetComponent(element.Component, clusterName)
 
   // determine relationship context
   relationship, _ := cluster.GetRelationship(relationshipName)
@@ -319,10 +319,10 @@ func getInstanceSetup(setup *Setup, elementName string, clusterName string, inst
   solution, _             := domain.GetSolution(setup.Solution)
   element, _              := solution.GetElement(elementName)
   cluster, _              := element.GetCluster(clusterName)
-  architecture, _         := domain.GetArchitecture(setup.Solution + " - " + setup.Version)
+  architecture, _         := domain.GetArchitecture(setup.Solution, setup.Version)
   elementConfiguration, _ := architecture.GetElement(elementName)
   clusterConfiguration, _ := elementConfiguration.GetCluster(clusterName)
-  component, _            := domain.GetComponent(element.Component + " - " + clusterName)
+  component, _            := domain.GetComponent(element.Component, clusterName)
 
   // determine instance context
   instance, _ := cluster.GetInstance(instanceName)

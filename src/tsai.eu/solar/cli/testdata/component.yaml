@@ -1,0 +1,13 @@
+Component: tenant
+Version: V2.0.0
+Configuration: |
+  # clouds.yaml file for os-client-config for the solution '{{solution}}' in the domain '{{domain}}':
+  clouds:
+    {{domain}}-{{solution}}:
+      region_name: {{domain}}
+      auth:
+        username: '{{username}}'
+        password: '{{password}}'
+        project_name: '{{solution}}'
+        auth_url: 'https://someopenstackserver.com:5001/v2.0'
+Dependencies: {}

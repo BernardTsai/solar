@@ -37,7 +37,7 @@ func TestDomain02(t *testing.T) {
 
 	_, err := domain.ListComponents()
 	if err != nil {
-		t.Errorf("<domain>.ListComponents should have returned a list of component names")
+		t.Errorf("<domain>.ListComponents should have returned a list of component names and versions")
 	}
 
 	_, err = domain.GetComponents()
@@ -45,12 +45,12 @@ func TestDomain02(t *testing.T) {
 		t.Errorf("<domain>.GetComponents should have returned a list of components")
 	}
 
-	_, err = domain.GetComponent("tenant - V2.0.0")
+	_, err = domain.GetComponent("tenant", "V2.0.0")
 	if err == nil {
 		t.Errorf("<domain>.GetComponent should have complained about a non existing component")
 	}
 
-	component, err := domain.GetComponent("tenant - V1.0.0")
+	component, err := domain.GetComponent("tenant", "V1.0.0")
 	if err != nil {
 		t.Errorf("<domain>.GetComponent should have returned a component")
 	}
@@ -66,12 +66,12 @@ func TestDomain02(t *testing.T) {
 		t.Errorf("<domain>.AddComponent should have not have complained when adding a new component")
 	}
 
-	err = domain.DeleteComponent("tenant - V2.0.0")
+	err = domain.DeleteComponent("tenant", "V2.0.0")
 	if err != nil {
 		t.Errorf("<domain>.DeleteComponent should have not have complained when deleting an existing component")
 	}
 
-	err = domain.DeleteComponent("tenant - V2.0.0")
+	err = domain.DeleteComponent("tenant", "V2.0.0")
 	if err == nil {
 		t.Errorf("<domain>.DeleteComponent should have have complained about attempting to delete a non-existing component")
 	}
@@ -92,12 +92,12 @@ func TestDomain03(t *testing.T) {
 		t.Errorf("<domain>.ListArchitectures should have returned a list of architecture names")
 	}
 
-	_, err = domain.GetArchitecture("app - V2.0.0")
+	_, err = domain.GetArchitecture("app", "V2.0.0")
 	if err == nil {
 		t.Errorf("<domain>.GetArchitecture should have complained about a non existing architecture")
 	}
 
-	architecture, err := domain.GetArchitecture("app - V0.0.0")
+	architecture, err := domain.GetArchitecture("app", "V0.0.0")
 	if err != nil {
 		t.Errorf("<domain>.GetArchitecture should have returned an architecture")
 	}
@@ -113,12 +113,12 @@ func TestDomain03(t *testing.T) {
 		t.Errorf("<domain>.AddArchitecture should have not have complained when adding a new architecture")
 	}
 
-	err = domain.DeleteArchitecture("app - V2.0.0")
+	err = domain.DeleteArchitecture("app", "V2.0.0")
 	if err != nil {
 		t.Errorf("<domain>.DeleteArchitecture should have not have complained when deleting an existing architecture")
 	}
 
-	err = domain.DeleteArchitecture("app - V2.0.0")
+	err = domain.DeleteArchitecture("app", "V2.0.0")
 	if err == nil {
 		t.Errorf("<domain>.DeleteArchitecture should have have complained about attempting to delete a non-existing architecture")
 	}

@@ -102,7 +102,7 @@ func Shell() *ishell.Shell{
 		Name: "comment",
 		Help: "comment",
 		Func: func(c *ishell.Context) {
-			c.Println(strings.Join(c.Args, " "))
+			writeOutput(c, strings.Join(c.Args, " "))
 		},
 	})
 

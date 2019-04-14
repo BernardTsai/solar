@@ -1,4 +1,4 @@
 #!/bin/bash
 
-# attach to the SOLAR container
-docker attach solar
+# attach to the SOLAR dummy controller container
+docker attach solar-dummy-controller

@@ -40,7 +40,7 @@ func newGRPCController(Type string, Address string) (*GRPCController, error) {
 	// create the connection
 	connection, err := grpc.Dial(Address, opts...)
 	if err != nil {
-		util.LogError("main", "CTRL", "unable to connect to the controller: " + Type + "\n" + err.Error())
+		util.LogWarn("main", "CTRL", "unable to connect to the controller: " + Type + "\n" + err.Error())
 		return nil, err
 	}
 	c.Connection = connection
@@ -50,7 +50,7 @@ func newGRPCController(Type string, Address string) (*GRPCController, error) {
 
 	// check availability of client
 	if !c.Check() {
-		util.LogError("main", "CTRL", "controller: " + Type + " unavailable")
+		util.LogWarn("main", "CTRL", "controller: " + Type + " unavailable")
 		return nil, errors.New("controller: " + Type + " unavailable")
 	}
 
@@ -91,7 +91,7 @@ func (c *GRPCController) Check() bool {
 	// invoke the remote controller
 	_, err := c.Client.Check(context.Background(), &req)
 	if err != nil {
-		util.LogError("check", "CTRL", "unable to connect to controller " + c.Type + "\n" + err.Error())
+		util.LogWarn("check", "CTRL", "unable to connect to controller " + c.Type + "\n" + err.Error())
 		return false
 	}
 

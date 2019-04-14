@@ -1,0 +1,91 @@
+OK comment Hello World
+OK usage
+
+OK output
+OK output ?
+
+OK output off
+OK comment Hello World
+
+OK output on
+OK output output.txt
+OK comment Hello World
+
+OK output cmdline
+OK comment Hello World
+
+OK model
+OK model ?
+OK model unknown_command
+OK model get
+OK model set testdata/model_001.yaml
+OK model reset
+
+OK domain
+OK domain ?
+OK domain unknown_command
+OK domain create
+OK domain create test
+OK domain list
+OK domain get
+OK domain get test
+KO domain get unknown
+OK domain reset
+OK domain reset test
+OK domain delete
+OK domain delete test
+KO domain delete unknown
+OK domain set
+KO domain set unknown
+OK domain set testdata/domain.yaml
+
+OK model reset
+OK model set testdata/model_001.yaml
+
+OK component
+OK component ?
+OK component unknown_command
+OK component list
+OK component list demo
+OK component list demo tenant
+OK component list demo tenant V1.0.0
+KO component list unknown
+OK component get
+OK component get demo tenant V1.0.0
+KO component get demo tenant unknown
+OK component delete
+OK component delete demo tenant V1.0.0
+KO component delete demo tenant unknown
+KO component delete unknown tenant unknown
+OK component set
+KO component set unknown unknown_file
+KO component set demo unknown_file
+OK component set demo testdata/component.yaml
+
+OK architecture
+OK architecture ?
+OK architecture unknown_command
+OK architecture list
+OK architecture list
+OK architecture list demo
+OK architecture list demo app
+OK architecture list demo app V1.0.0
+KO architecture list unknown
+OK architecture get
+OK architecture get demo app V0.0.0
+KO architecture get demo app unknown
+OK architecture delete
+OK architecture delete demo app V0.0.0
+KO architecture delete demo app unknown
+KO architecture delete unknown app unknown
+OK architecture set
+KO architecture set unknown unknown_file
+KO architecture set demo unknown_file
+OK architecture set demo testdata/architecture.yaml
+
+OK model reset
+OK model set testdata/model_002.yaml
+OK architecture deploy
+KO architecture deploy unknown app V0.0.0
+KO architecture deploy demo unknown V1.0.0
+OK architecture deploy demo app V0.0.0

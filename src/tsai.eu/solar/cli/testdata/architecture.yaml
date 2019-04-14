@@ -1,0 +1,575 @@
+Architecture: app
+Version: V0.0.0
+Configuration: ""
+Elements:
+  app:
+    Element: app
+    Component: application
+    Configuration: |
+      # Configuration for element 'app':
+      'domain':       'demo'
+      'solution':     'app'
+      'version':      'V0.0.0'
+      'element':      'app'
+      'server':       'app-server'
+    Clusters:
+      V1.0.0:
+        Version: V1.0.0
+        State: active
+        Min: 3
+        Max: 3
+        Size: 3
+        Configuration: |
+          # Configuration for cluster 'V1.0.0':
+          'domain':       'demo'
+          'solution':     'app'
+          'version':      'V0.0.0'
+          'element':      'app'
+          'cluster':      'V1.0.0'
+          'server':       '<enter parameter here>'
+        Relationships:
+          db:
+            Relationship: db
+            Dependency: service
+            Type: service
+            Element: db
+            Version: V1.0.0
+            Configuration: |
+              # Configuration for relationship: 'db':
+              'domain':       'demo'
+              'solution':     'app'
+              'version':      'V0.0.0'
+              'element':      'app'
+              'cluster':      'V1.0.0'
+              'relationship': 'db'
+          server:
+            Relationship: server
+            Dependency: server
+            Type: context
+            Element: app-server
+            Version: V1.0.0
+            Configuration: |
+              # Configuration for relationship: 'server':
+              'domain':       'demo'
+              'solution':     'app'
+              'version':      'V0.0.0'
+              'element':      'app'
+              'cluster':      'V1.0.0'
+              'relationship': 'server'
+  app-server:
+    Element: app-server
+    Component: server
+    Configuration: |
+      # Configuration for element 'app-server':
+      'domain':       'demo'
+      'solution':     'app'
+      'version':      'V0.0.0'
+      'element':      'app-server'
+      'flavor':       'm1.medium'
+      'image':        'centos-6'
+      'key':          'mysecretkey'
+    Clusters:
+      V1.0.0:
+        Version: V1.0.0
+        State: active
+        Min: 3
+        Max: 3
+        Size: 3
+        Configuration: |
+          # Configuration for cluster 'V1.0.0':
+          'domain':       'demo'
+          'solution':     'app'
+          'version':      'V0.0.0'
+          'element':      'app-server'
+          'cluster':      'V1.0.0'
+          'flavor':       'm1.medium'
+          'image':        'centos-6'
+          'key':          'mysecretkey'
+        Relationships:
+          ext:
+            Relationship: ext
+            Dependency: network
+            Type: context
+            Element: ext
+            Version: V1.0.0
+            Configuration: |
+              # Configuration for relationship: 'ext':
+              'domain':       'demo'
+              'solution':     'app'
+              'version':      'V0.0.0'
+              'element':      'app-server'
+              'cluster':      'V1.0.0'
+              'relationship': 'ext'
+          m2m:
+            Relationship: m2m
+            Dependency: network
+            Type: context
+            Element: m2m
+            Version: V1.0.0
+            Configuration: |
+              # Configuration for relationship: 'm2m':
+              'domain':       'demo'
+              'solution':     'app'
+              'version':      'V0.0.0'
+              'element':      'app-server'
+              'cluster':      'V1.0.0'
+              'relationship': 'm2m'
+          oam:
+            Relationship: oam
+            Dependency: network
+            Type: context
+            Element: oam
+            Version: V1.0.0
+            Configuration: |
+              # Configuration for relationship: 'oam':
+              'domain':       'demo'
+              'solution':     'app'
+              'version':      'V0.0.0'
+              'element':      'app-server'
+              'cluster':      'V1.0.0'
+              'relationship': 'oam'
+          tenant:
+            Relationship: tenant
+            Dependency: tenant
+            Type: context
+            Element: tenant
+            Version: V1.0.0
+            Configuration: |
+              # Configuration for relationship: 'tenant':
+              'domain':       'demo'
+              'solution':     'app'
+              'version':      'V0.0.0'
+              'element':      'app-server'
+              'cluster':      'V1.0.0'
+              'relationship': 'tenant'
+  db:
+    Element: db
+    Component: application
+    Configuration: |
+      # Configuration for element 'db':
+      'domain':       'demo'
+      'solution':     'app'
+      'version':      'V0.0.0'
+      'element':      'db'
+      'server':       'db-server'
+    Clusters:
+      V1.0.0:
+        Version: V1.0.0
+        State: active
+        Min: 3
+        Max: 3
+        Size: 3
+        Configuration: |
+          # Configuration for cluster 'V1.0.0':
+          'domain':       'demo'
+          'solution':     'app'
+          'version':      'V0.0.0'
+          'element':      'db'
+          'cluster':      'V1.0.0'
+          'server':       '<enter parameter here>'
+        Relationships:
+          server:
+            Relationship: server
+            Dependency: server
+            Type: context
+            Element: db-server
+            Version: V1.0.0
+            Configuration: |
+              # Configuration for relationship: 'server':
+              'domain':       'demo'
+              'solution':     'app'
+              'version':      'V0.0.0'
+              'element':      'db'
+              'cluster':      'V1.0.0'
+              'relationship': 'server'
+  db-server:
+    Element: db-server
+    Component: server
+    Configuration: |
+      # Configuration for element 'db-server':
+      'domain':       'demo'
+      'solution':     'app'
+      'version':      'V0.0.0'
+      'element':      'db-server'
+      'flavor':       'm1.large'
+      'image':        'centos-6'
+      'key':          'mysecretkey'
+    Clusters:
+      V1.0.0:
+        Version: V1.0.0
+        State: active
+        Min: 3
+        Max: 3
+        Size: 3
+        Configuration: |
+          # Configuration for cluster 'V1.0.0':
+          'domain':       'demo'
+          'solution':     'app'
+          'version':      'V0.0.0'
+          'element':      'db-server'
+          'cluster':      'V1.0.0'
+          'flavor':       'm1.large'
+          'image':        'centos-6'
+          'key':          'mysecretkey'
+        Relationships:
+          m2m:
+            Relationship: m2m
+            Dependency: network
+            Type: context
+            Element: m2m
+            Version: V1.0.0
+            Configuration: |
+              # Configuration for relationship: 'm2m':
+              'domain':       'demo'
+              'solution':     'app'
+              'version':      'V0.0.0'
+              'element':      'db-server'
+              'cluster':      'V1.0.0'
+              'relationship': 'm2m'
+          oam:
+            Relationship: oam
+            Dependency: network
+            Type: context
+            Element: oam
+            Version: V1.0.0
+            Configuration: |
+              # Configuration for relationship: 'oam':
+              'domain':       'demo'
+              'solution':     'app'
+              'version':      'V0.0.0'
+              'element':      'db-server'
+              'cluster':      'V1.0.0'
+              'relationship': 'oam'
+          tenant:
+            Relationship: tenant
+            Dependency: tenant
+            Type: context
+            Element: tenant
+            Version: V1.0.0
+            Configuration: |
+              # Configuration for relationship: 'tenant':
+              'domain':       'demo'
+              'solution':     'app'
+              'version':      'V0.0.0'
+              'element':      'db-server'
+              'cluster':      'V1.0.0'
+              'relationship': 'tenant'
+  ext:
+    Element: ext
+    Component: network
+    Configuration: |
+      # Configuration for element 'ext':
+      'domain':       'demo'
+      'solution':     'app'
+      'version':      'V0.0.0'
+      'element':      'ext'
+      'cidr':         '10.0.1.0/24'
+      'gateway':      '10.0.1.1'
+    Clusters:
+      V1.0.0:
+        Version: V1.0.0
+        State: active
+        Min: 1
+        Max: 1
+        Size: 1
+        Configuration: |
+          # Configuration for cluster 'V1.0.0':
+          'domain':       'demo'
+          'solution':     'app'
+          'version':      'V0.0.0'
+          'element':      'ext'
+          'cidr':         '10.0.1.0/24'
+          'gateway':      '10.0.1.1'
+
+        Relationships:
+          tenant:
+            Relationship: tenant
+            Dependency: tenant
+            Type: context
+            Element: tenant
+            Version: V1.0.0
+            Configuration: |
+              # Configuration for relationship: 'tenant':
+              'domain':       'demo'
+              'solution':     'app'
+              'version':      'V0.0.0'
+              'element':      'ext'
+              'cluster':      'V1.0.0'
+              'relationship': 'tenant'
+  fw:
+    Element: fw
+    Component: application
+    Configuration: |
+      # Configuration for element 'fw':
+      'domain':       'demo'
+      'solution':     'app'
+      'version':      'V0.0.0'
+      'element':      'fw'
+      'server':       'fw-server'
+    Clusters:
+      V1.0.0:
+        Version: V1.0.0
+        State: active
+        Min: 3
+        Max: 3
+        Size: 3
+        Configuration: |
+          # Configuration for cluster 'V1.0.0':
+          'domain':       'demo'
+          'solution':     'app'
+          'version':      'V0.0.0'
+          'element':      'fw'
+          'cluster':      'V1.0.0'
+          'server':       '<enter parameter here>'
+        Relationships:
+          app:
+            Relationship: app
+            Dependency: service
+            Type: service
+            Element: app
+            Version: V1.0.0
+            Configuration: |
+              # Configuration for relationship: 'app':
+              'domain':       'demo'
+              'solution':     'app'
+              'version':      'V0.0.0'
+              'element':      'fw'
+              'cluster':      'V1.0.0'
+              'relationship': 'app'
+          db:
+            Relationship: db
+            Dependency: service
+            Type: service
+            Element: db
+            Version: V1.0.0
+            Configuration: |
+              # Configuration for relationship: 'db':
+              'domain':       'demo'
+              'solution':     'app'
+              'version':      'V0.0.0'
+              'element':      'fw'
+              'cluster':      'V1.0.0'
+              'relationship': 'db'
+          server:
+            Relationship: server
+            Dependency: server
+            Type: context
+            Element: fw-server
+            Version: V1.0.0
+            Configuration: |
+              # Configuration for relationship: 'server':
+              'domain':       'demo'
+              'solution':     'app'
+              'version':      'V0.0.0'
+              'element':      'fw'
+              'cluster':      'V1.0.0'
+              'relationship': 'server'
+  fw-server:
+    Element: fw-server
+    Component: server
+    Configuration: |
+      # Configuration for element 'fw-server':
+      'domain':       'demo'
+      'solution':     'app'
+      'version':      'V0.0.0'
+      'element':      'fw-server'
+      'flavor':       'm1.small'
+      'image':        'centos-6'
+      'key':          'mysecretkey'
+    Clusters:
+      V1.0.0:
+        Version: V1.0.0
+        State: active
+        Min: 3
+        Max: 3
+        Size: 3
+        Configuration: |
+          # Configuration for cluster 'V1.0.0':
+          'domain':       'demo'
+          'solution':     'app'
+          'version':      'V0.0.0'
+          'element':      'fw-server'
+          'flavor':       'm1.small'
+          'image':        'centos-6'
+          'key':          'mysecretkey'
+        Relationships:
+          oam:
+            Relationship: oam
+            Dependency: network
+            Type: context
+            Element: oam
+            Version: V1.0.0
+            Configuration: |
+              # Configuration for relationship: 'oam':
+              'domain':       'demo'
+              'solution':     'app'
+              'version':      'V0.0.0'
+              'element':      'fw-server'
+              'cluster':      'V1.0.0'
+              'relationship': 'oam'
+          pub:
+            Relationship: pub
+            Dependency: network
+            Type: context
+            Element: pub
+            Version: V1.0.0
+            Configuration: |
+              # Configuration for relationship: 'pub':
+              'domain':       'demo'
+              'solution':     'app'
+              'version':      'V0.0.0'
+              'element':      'fw-server'
+              'cluster':      'V1.0.0'
+              'relationship': 'pub'
+          tenant:
+            Relationship: tenant
+            Dependency: tenant
+            Type: context
+            Element: tenant
+            Version: V1.0.0
+            Configuration: |
+              # Configuration for relationship: 'tenant':
+              'domain':       'demo'
+              'solution':     'app'
+              'version':      'V0.0.0'
+              'element':      'fw-server'
+              'cluster':      'V1.0.0'
+              'relationship': 'tenant'
+  m2m:
+    Element: m2m
+    Component: network
+    Configuration: |
+      # Configuration for element 'm2m':
+      'domain':       'demo'
+      'solution':     'app'
+      'version':      'V0.0.0'
+      'element':      'm2m'
+      'cidr':         '10.0.2.0/24'
+      'gateway':      '10.0.2.1'
+    Clusters:
+      V1.0.0:
+        Version: V1.0.0
+        State: active
+        Min: 1
+        Max: 1
+        Size: 1
+        Configuration: |-
+          # Configuration for cluster 'V1.0.0':
+          'domain':       'demo'
+          'solution':     'app'
+          'version':      'V0.0.0'
+          'element':      'm2m'
+          'cidr':         '10.0.2.0/24'
+          'gateway':      '10.0.2.1'
+        Relationships:
+          tenant:
+            Relationship: tenant
+            Dependency: tenant
+            Type: context
+            Element: tenant
+            Version: V1.0.0
+            Configuration: |
+              # Configuration for relationship: 'tenant':
+              'domain':       'demo'
+              'solution':     'app'
+              'version':      'V0.0.0'
+              'element':      'm2m'
+              'cluster':      'V1.0.0'
+              'relationship': 'tenant'
+  oam:
+    Element: oam
+    Component: network
+    Configuration: |
+      # Configuration for element 'oam':
+      'domain':       'demo'
+      'solution':     'app'
+      'version':      'V0.0.0'
+      'element':      'oam'
+      'cidr':         '10.0.3.0/24'
+      'gateway':      '10.0.3.1'
+    Clusters:
+      V1.0.0:
+        Version: V1.0.0
+        State: active
+        Min: 1
+        Max: 1
+        Size: 1
+        Configuration: |
+          # Configuration for cluster 'V1.0.0':
+          'domain':       'demo'
+          'solution':     'app'
+          'version':      'V0.0.0'
+          'element':      'oam'
+          'cidr':         '10.0.3.0/24'
+          'gateway':      '10.0.3.1'
+
+        Relationships:
+          tenant:
+            Relationship: tenant
+            Dependency: tenant
+            Type: context
+            Element: tenant
+            Version: V1.0.0
+            Configuration: |
+              # Configuration for relationship: 'tenant':
+              'domain':       'demo'
+              'solution':     'app'
+              'version':      'V0.0.0'
+              'element':      'oam'
+              'cluster':      'V1.0.0'
+              'relationship': 'tenant'
+  pub:
+    Element: pub
+    Component: network
+    Configuration: |
+      # Configuration for element 'pub':
+      'domain':       'demo'
+      'solution':     'app'
+      'version':      'V0.0.0'
+      'element':      'pub'
+      'cidr':         '10.0.4.0/24'
+      'gateway':      '10.0.4.1'
+    Clusters:
+      V1.0.0:
+        Version: V1.0.0
+        State: active
+        Min: 1
+        Max: 1
+        Size: 1
+        Configuration: |
+          # Configuration for cluster 'V1.0.0':
+          'domain':       'demo'
+          'solution':     'app'
+          'version':      'V0.0.0'
+          'element':      'oam'
+          'cidr':         '10.0.4.0/24'
+          'gateway':      '10.0.4.1'
+
+        Relationships:
+          tenant:
+            Relationship: tenant
+            Dependency: tenant
+            Type: context
+            Element: tenant
+            Version: V1.0.0
+            Configuration: ""
+  tenant:
+    Element: tenant
+    Component: tenant
+    Configuration: |
+      # Configuration for element 'tenant':
+      'domain':       'demo'
+      'solution':     'app'
+      'version':      'V0.0.0'
+      'element':      'tenant'
+      'password':     'secret'
+      'username':     'johndoe'
+    Clusters:
+      V1.0.0:
+        Version: V1.0.0
+        State: active
+        Min: 1
+        Max: 1
+        Size: 1
+        Configuration: ""
+        Relationships: {}

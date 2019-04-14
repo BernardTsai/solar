@@ -20,7 +20,7 @@ rm -rf dist/*
 #   -v "$PWD":"/go/"     map current directory to "/go" in the container
 #   -w "/go/src"         working directory is "/go/src" in the container
 #   go build -o ...      command to build solar binary and store to "/dist/solar"
-docker run --rm -v "$PWD":"/go/" -w "/go/src" iron/go:dev go build -o ../dist/solar-grpc-controller tsai.eu/solar/controller/gRPC
+docker run --rm -v "$PWD":"/go/" -w "/go/src" iron/go:dev go build -o ../dist/solar-grpc-controller tsai.eu/solar/cmd/controller
 
 # copy Dockerfile
 cp docker/controller/Dockerfile dist
@@ -29,4 +29,4 @@ cp docker/controller/Dockerfile dist
 cd dist
 
 # build docker image
-docker build -q -t tsai/solar-grpc-controller:V1.0.0 .
+docker build -q -t tsai/solar-dummy-controller:V1.0.0 .

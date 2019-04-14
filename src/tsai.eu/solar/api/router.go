@@ -67,17 +67,17 @@ func NewServer() *http.Server{
   router.HandleFunc("/catalog/{domain}", CatalogGetHandler).Methods("GET")
 
   // component
-  router.HandleFunc("/component/{domain}",             ComponentListHandler).Methods("GET")
-  router.HandleFunc("/component/{domain}",             ComponentSetHandler).Methods("POST")
-  router.HandleFunc("/component/{domain}/{component}", ComponentGetHandler).Methods("GET")
-  router.HandleFunc("/component/{domain}/{component}", ComponentDeleteHandler).Methods("DELETE")
+  router.HandleFunc("/component/{domain}",                       ComponentListHandler).Methods("GET")
+  router.HandleFunc("/component/{domain}",                       ComponentSetHandler).Methods("POST")
+  router.HandleFunc("/component/{domain}/{component}/{version}", ComponentGetHandler).Methods("GET")
+  router.HandleFunc("/component/{domain}/{component}/{version}", ComponentDeleteHandler).Methods("DELETE")
 
   // architecture
-  router.HandleFunc("/architecture/{domain}",                ArchitectureListHandler).Methods("GET")
-  router.HandleFunc("/architecture/{domain}",                ArchitectureSetHandler).Methods("POST")
-  router.HandleFunc("/architecture/{domain}/{architecture}", ArchitectureGetHandler).Methods("GET")
-  router.HandleFunc("/architecture/{domain}/{architecture}", ArchitectureDeleteHandler).Methods("DELETE")
-  router.HandleFunc("/architecture/{domain}/{architecture}", ArchitectureDeployHandler).Methods("POST")
+  router.HandleFunc("/architecture/{domain}",                          ArchitectureListHandler).Methods("GET")
+  router.HandleFunc("/architecture/{domain}",                          ArchitectureSetHandler).Methods("POST")
+  router.HandleFunc("/architecture/{domain}/{architecture}/{version}", ArchitectureGetHandler).Methods("GET")
+  router.HandleFunc("/architecture/{domain}/{architecture}/{version}", ArchitectureDeleteHandler).Methods("DELETE")
+  router.HandleFunc("/architecture/{domain}/{architecture}/{version}", ArchitectureDeployHandler).Methods("POST")
 
   // solution
   router.HandleFunc("/solution/{domain}",                       SolutionListHandler).Methods("GET")

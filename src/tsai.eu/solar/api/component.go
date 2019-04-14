@@ -90,9 +90,10 @@ func ComponentGetHandler(w http.ResponseWriter, r *http.Request) {
   vars          := mux.Vars(r)
   domainName    := vars["domain"]
   componentName := vars["component"]
+  version       := vars["version"]
 
   // determine component
-  component, err := model.GetComponent(domainName, componentName)
+  component, err := model.GetComponent(domainName, componentName, version)
   if err != nil {
     w.WriteHeader(http.StatusBadRequest)
     return
@@ -117,6 +118,7 @@ func ComponentDeleteHandler(w http.ResponseWriter, r *http.Request) {
   vars          := mux.Vars(r)
   domainName    := vars["domain"]
   componentName := vars["component"]
+  version       := vars["version"]
 
   // determine domain
   domain, err := model.GetDomain(domainName)
@@ -126,7 +128,7 @@ func ComponentDeleteHandler(w http.ResponseWriter, r *http.Request) {
   }
 
   // delete component
-  err = domain.DeleteComponent(componentName)
+  err = domain.DeleteComponent(componentName, version)
   if err != nil {
     w.WriteHeader(http.StatusBadRequest)
     return

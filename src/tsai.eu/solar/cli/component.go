@@ -55,13 +55,11 @@ func ComponentCommand(context *ishell.Context, m *model.Model) {
 		// determine list of component names
 		components := []string{}
 
-		cNames, _ := domain.ListComponents()
-		for _, cName := range cNames {
-			component, _ := domain.GetComponent(cName)
-
-			if (componentName == "" || componentName == component.Component) &&
-			   (versionName   == "" || versionName   == component.Version) {
-				components = append(components, cName)
+		cNameVersions, _ := domain.ListComponents()
+		for _, cNameVersion := range cNameVersions {
+			if (componentName == "" || componentName == cNameVersion[0]) &&
+			   (versionName   == "" || versionName   == cNameVersion[1]) {
+				components = append(components, cNameVersion[0] + " - " + cNameVersion[1])
 			}
 		}
 
@@ -98,13 +96,13 @@ func ComponentCommand(context *ishell.Context, m *model.Model) {
 		handleResult(context, err, "unable to load component", "")
 	case _get:
 		// check availability of arguments
-		if len(context.Args) != 3 {
+		if len(context.Args) != 4 {
 			ComponentUsage(true, context)
 			return
 		}
 
 		// determine component
-		component, err := model.GetComponent(context.Args[1], context.Args[2])
+		component, err := model.GetComponent(context.Args[1], context.Args[2], context.Args[3])
 
 		if err != nil {
 			handleResult(context, err, "component can not be identified", "")
@@ -116,7 +114,7 @@ func ComponentCommand(context *ishell.Context, m *model.Model) {
 		handleResult(context, err, "component can not be displayed", result)
 	case _delete:
 		// check availability of arguments
-		if len(context.Args) != 3 {
+		if len(context.Args) != 4 {
 			ComponentUsage(true, context)
 			return
 		}
@@ -130,7 +128,7 @@ func ComponentCommand(context *ishell.Context, m *model.Model) {
 		}
 
 		// determine component
-		_, err = d.GetComponent(context.Args[2])
+		_, err = d.GetComponent(context.Args[2], context.Args[3])
 
 		if err != nil {
 			handleResult(context, err, "component can not be identified", "")
@@ -138,7 +136,7 @@ func ComponentCommand(context *ishell.Context, m *model.Model) {
 		}
 
 		// execute command
-		err = d.DeleteComponent(context.Args[2])
+		err = d.DeleteComponent(context.Args[2], context.Args[3])
 		handleResult(context, err, "component can not be deleted", "component has been deleted")
 	default:
 		ComponentUsage(true, context)

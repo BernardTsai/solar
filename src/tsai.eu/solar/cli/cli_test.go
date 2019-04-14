@@ -1,14 +1,15 @@
-package main
+package cli
 
 import (
 	"fmt"
 	"path/filepath"
 	"strings"
 	"testing"
+	"context"
+	"io"
+	"os"
 
 	"tsai.eu/solar/engine"
-	"tsai.eu/solar/model"
-	"tsai.eu/solar/cli"
 	"tsai.eu/solar/util"
 )
 
@@ -16,6 +17,20 @@ import (
 
 const TESTDATA string = "testdata"
 const COMMANDS string = "_commands"
+
+//------------------------------------------------------------------------------
+
+// copyFile simply copies an existing file to a not yet existing destination
+func copyFile(src string, dest string) {
+  srcFile, _ := os.Open(src)
+  defer srcFile.Close()
+
+  destFile, _ := os.Create(dest)
+  defer destFile.Close()
+
+  io.Copy(destFile, srcFile)
+  destFile.Sync()
+}
 
 //------------------------------------------------------------------------------
 
@@ -49,24 +64,31 @@ func LoadCommands() ([][]string, error) {
 
 // TestCLI verifies the command line interface.
 func TestCLI(t *testing.T) {
-	// parse configuration file 'solar-conf.yaml' in local directory
-	_, err := util.ReadConfiguration()
-	if err != nil {
-		fmt.Println("unable to read the configuration file")
-		fmt.Println(err)
-	}
+	filename := "output.txt"
+	// cleanup routine
+  defer func() {os.Remove(filename)}()
+
+	// prepare configuration file
+  srcConfig  := "testdata/solar-conf.yaml"
+  destConfig := "solar-conf.yaml"
+
+  copyFile(srcConfig, destConfig)
+
+  // cleanup routine
+  defer func() {os.Remove(destConfig)}()
 
 	// initialise command line options
+	util.LogLevel("error")
 	util.ParseCommandLineOptions()
 
-	// create model
-	m := model.GetModel()
- 
+	// display progam information
+	fmt.Println("SOLAR Version 1.0.0")
+
 	// start the main event loop
-	engine.StartDispatcher(m)
+	engine.Start(context.Background())
 
 	// get the command line interface
-	shell := cli.Shell(m)
+	shell := Shell()
 
 	// load commands from a file
 	cmds, err := LoadCommands()
@@ -76,7 +98,7 @@ func TestCLI(t *testing.T) {
 	}
 
 	fmt.Println("Executing tests:")
-	fmt.Println("Nr. Command")
+	fmt.Println("Nr. OK Command")
 	fmt.Println("------------------------------------------------------------")
 	for index, cmd := range cmds {
 		// skip empty command lines
@@ -87,13 +109,23 @@ func TestCLI(t *testing.T) {
 		// construct command line string
 		cmdline := strings.Join(cmd, " ")
 
+		status  := cmdline[0:2]
+		cmdline =  cmdline[3:]
+		cmd     = cmd[1:]
+
 		// log the command line
-		fmt.Printf("%03d %s\n", index, cmdline)
+		fmt.Printf("%03d %s %s\n", index, status, cmdline)
 
 		// process
 		err = shell.Process(cmd...)
 		if err != nil {
-			t.Errorf("Command failed: %s\n%s", cmdline, err)
+			if status != "KO" {
+				t.Errorf("Command failed: %s\n%s", cmdline, err)
+			}
+		} else {
+			if status != "OK" {
+				t.Errorf("Command should have failed: %s\n%s", cmdline, err)
+			}
 		}
 	}
 }

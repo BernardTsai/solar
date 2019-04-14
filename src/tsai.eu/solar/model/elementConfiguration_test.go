@@ -31,7 +31,7 @@ func TestElementConfiguration02(t *testing.T) {
 
 	model.Load("testdata/testdata1.yaml")
 
-	architecture, _ := GetArchitecture("demo", "app - V0.0.0")
+	architecture, _ := GetArchitecture("demo", "app", "V0.0.0")
 
 	elementConfiguration, _ := architecture.GetElement("tenant")
 
