@@ -28,8 +28,11 @@ func redirect(w http.ResponseWriter, r *http.Request) {
 func Start(ctx context.Context) (*API) {
   api := API{}
 
+  // create router
+  router := NewRouter()
+
   // start web interface
-  api.Server = NewServer()
+  api.Server = NewServer(router)
 
   // create a process to check if the server needs to shutdown
   go func() {
@@ -46,8 +49,8 @@ func Start(ctx context.Context) (*API) {
 
 //------------------------------------------------------------------------------
 
-// NewServer creates and starts the API
-func NewServer() *http.Server{
+// NewRouter creates a router
+func NewRouter() *mux.Router {
   router := mux.NewRouter()
 
   // model
@@ -109,6 +112,13 @@ func NewServer() *http.Server{
   // static files
   router.PathPrefix("/solar/").Handler(http.StripPrefix("/solar/", http.FileServer(http.Dir("./static/"))))
 
+  return router
+}
+
+//------------------------------------------------------------------------------
+
+// NewServer creates and starts the API
+func NewServer(router *mux.Router) *http.Server{
   // start processing
   http.Handle("/", router)
 

@@ -27,10 +27,16 @@ func ArchitectureListHandler(w http.ResponseWriter, r *http.Request) {
   }
 
   // determine architectures
-  architectures, err := domain.ListArchitectures()
+  architectures := []string{}
+
+  aNameVersions, err := domain.ListArchitectures()
   if err != nil {
     w.WriteHeader(http.StatusInternalServerError)
     return
+  }
+
+  for _, aNameVersion := range aNameVersions {
+    architectures = append(architectures, aNameVersion[0] + " - " + aNameVersion[1])
   }
 
   // convert to yaml

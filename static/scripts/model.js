@@ -106,8 +106,12 @@ function loadComponents(domain) {
 
 // loadComponents retrieves a component from the the repository
 function loadComponent(domain, component) {
+  parts   = component.split(" - ")
+  name    = parts[0]
+  version = parts[1]
+
   // determine component
-  return fetch("http://" + window.location.hostname + ":" + window.location.port + "/component/" + domain + "/" + component)
+  return fetch("http://" + window.location.hostname + ":" + window.location.port + "/component/" + domain + "/" + name + "/" + version)
     .then((response) => response.text())
     .then((text)     => jsyaml.safeLoad(text))
     .then((yaml)     => view.component = yaml)
@@ -128,7 +132,11 @@ function saveComponent(domain, comp) {
 
 // deleteComponent removes a component from the the repository
 function deleteComponent(domain, component) {
-  return fetch("http://" + window.location.hostname + ":" + window.location.port + "/component/" + domain + "/" + component, {method: "DELETE"})
+  parts   = component.split(" - ")
+  name    = parts[0]
+  version = parts[1]
+
+  return fetch("http://" + window.location.hostname + ":" + window.location.port + "/component/" + domain + "/" + name + "/" + version, {method: "DELETE"})
     .then((response) => response.text())
     .then((text)     => loadCatalog(domain))
 }
@@ -148,8 +156,12 @@ function loadArchitectures(domain) {
 
 // loadArchitecture retrieves an architecture from the repository
 function loadArchitecture(domain, architecture) {
+  parts   = architecture.split(" - ")
+  name    = parts[0]
+  version = parts[1]
+
   // retrieve architecture
-  return fetch("http://" + window.location.hostname + ":" + window.location.port + "/architecture/" + domain + "/" + architecture)
+  return fetch("http://" + window.location.hostname + ":" + window.location.port + "/architecture/" + domain + "/" +  name + "/" + version)
     .then((response) => response.text())
     .then((text)     => jsyaml.safeLoad(text))
     .then((yaml)     => model.Architecture = yaml)
@@ -171,10 +183,8 @@ function saveArchitecture(domain, architecture) {
 
 // deployArchitecture deploys or updates a solution based on the architecture
 function deployArchitecture(domain, architecture) {
-  name = architecture.Architecture + " - " + architecture.Version
-
   // deploy architecture
-  return fetch("http://" + window.location.hostname + ":" + window.location.port + "/architecture/" + domain + "/" + name, {method: "POST"})
+  return fetch("http://" + window.location.hostname + ":" + window.location.port + "/architecture/" + domain + "/" + architecture.Architecture + "/" + architecture.Version, {method: "POST"})
     .then((response) => response.text())
 }
 
@@ -182,10 +192,8 @@ function deployArchitecture(domain, architecture) {
 
 // deleteArchitecture removes an architecture  from the repository
 function deleteArchitecture(domain, architecture) {
-  name = architecture.Architecture + " - " + architecture.Version
-
   // delete architecture
-  return fetch("http://" + window.location.hostname + ":" + window.location.port + "/architecture/" + domain + "/" + name, {method: "DELETE"})
+  return fetch("http://" + window.location.hostname + ":" + window.location.port + "/architecture/" + domain + "/" + architecture.Architecture + "/" + architecture.Version, {method: "DELETE"})
     .then((response) => response.text())
 }
 

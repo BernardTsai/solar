@@ -1,0 +1,3 @@
+OK GET                        /model
+OK PUT                        /model
+OK POST   model_001.yaml      /model
