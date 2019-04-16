@@ -32,6 +32,20 @@ go get github.com/golang/protobuf/protoc-gen-go
 go get github.com/rs/zerolog/log
 go get bou.ke/monkey
 
+
+# test
+go test -cover                   \
+  tsai.eu/solar/util             \
+  tsai.eu/solar/model            \
+  tsai.eu/solar/msg              \
+  tsai.eu/solar/controller/dummy \
+  tsai.eu/solar/controller/gRPC  \
+  tsai.eu/solar/controller       \
+  tsai.eu/solar/engine           \
+  tsai.eu/solar/monitor          \
+  tsai.eu/solar/cli              \
+  tsai.eu/solar/api
+
 # install binaries
 # cd $SRCDIR
 go install tsai.eu/solar/cmd/solar

@@ -49,7 +49,7 @@ func TestEngine001(t *testing.T) {
   // create new solution
   domain, _       := model.GetDomain("demo")
   solution, _     := model.NewSolution("app", "V0.0.0", "")
-  architecture, _ := model.GetArchitecture("demo", "app - V0.0.0")
+  architecture, _ := model.GetArchitecture("demo", "app", "V0.0.0")
 
 	domain.AddSolution(solution)
 

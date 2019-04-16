@@ -3,6 +3,18 @@ Vue.component(
   {
     props: ['model', 'view'],
     methods: {
+      // subnavModel selects the subview: model
+      subnavModel: function() {
+        view.subnav = "Model"
+      },
+      // subnavController selects the subview: controller
+      subnavController: function() {
+        view.subnav = "Controller"
+      },
+      // subnavLogs selects the subview: logs
+      subnavLogs: function() {
+        view.subnav = "Logs"
+      },
       // clearModel deletes the current model
       clearModel: function() {
         resetModel()
@@ -66,9 +78,28 @@ Vue.component(
       <div id="administration" v-if="view.nav=='Administration'">
 
         <div id="selector">
+          <div id="subnav">
+            <div
+              @click="subnavModel"
+              :class="{selected: view.subnav=='Model'}">
+              Model &nbsp;<i class="fas fa-sitemap"></i>
+            </div>
+            <div
+              v-if="view.domain!=''"
+              @click="subnavController"
+              :class="{selected: view.subnav=='Controller'}">
+              Controller &nbsp;<i class="fas fa-bell"></i>
+            </div>
+            <div
+            v-if="view.domain!=''"
+              @click="subnavLogs"
+              :class="{selected: view.subnav=='Logs'}">
+              Logs &nbsp;<i class="fas fa-redo"></i>
+            </div>
+          </div>
         </div>
 
-        <div id="actions">
+        <div id="model" v-if="view.subnav=='Model'">
           <div class="action" @click="createDomain">
             <i class="fas fa-plus-square fa-lg"></i>&nbsp;Create Domain
           </div>

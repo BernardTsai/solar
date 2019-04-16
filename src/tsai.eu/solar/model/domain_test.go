@@ -7,7 +7,7 @@ import (
 
 //------------------------------------------------------------------------------
 
-// TestDomain01 tests the basic functions of the model package.
+// TestDomain01 tests the basic functions of a domain.
 func TestDomain01(t *testing.T) {
 	filename := "test.yaml"
 
@@ -27,7 +27,7 @@ func TestDomain01(t *testing.T) {
 
 //------------------------------------------------------------------------------
 
-// TestDomain02 tests the component related functions of the domain package.
+// TestDomain02 tests the component related functions of a domain.
 func TestDomain02(t *testing.T) {
 	model := GetModel()
 
@@ -79,7 +79,7 @@ func TestDomain02(t *testing.T) {
 
 //------------------------------------------------------------------------------
 
-// TestDomain03 tests the architecture related functions of the domain package.
+// TestDomain03 tests the architecture related functions of a domain.
 func TestDomain03(t *testing.T) {
 	model := GetModel()
 
@@ -126,7 +126,7 @@ func TestDomain03(t *testing.T) {
 
 //------------------------------------------------------------------------------
 
-// TestDomain04 tests the solution related functions of the domain package.
+// TestDomain04 tests the solution related functions of a domain.
 func TestDomain04(t *testing.T) {
 	model := GetModel()
 
@@ -172,7 +172,7 @@ func TestDomain04(t *testing.T) {
 
 //------------------------------------------------------------------------------
 
-// TestDomain05 tests the task related functions of the domain package.
+// TestDomain05 tests the task related functions of a domain.
 func TestDomain05(t *testing.T) {
 	model := GetModel()
 
@@ -218,7 +218,7 @@ func TestDomain05(t *testing.T) {
 
 //------------------------------------------------------------------------------
 
-// TestDomain06 tests the event related functions of the domain package.
+// TestDomain06 tests the event related functions of a domain.
 func TestDomain06(t *testing.T) {
 	model := GetModel()
 
@@ -259,6 +259,53 @@ func TestDomain06(t *testing.T) {
 	err = domain.AddEvent(event)
 	if err != nil {
 		t.Errorf("<domain>.AddEvent should have not have complained when adding a new event")
+	}
+}
+
+//------------------------------------------------------------------------------
+
+// TestDomain07 tests the controller related functions of a domain.
+func TestDomain07(t *testing.T) {
+	model := GetModel()
+
+	model.Load("testdata/testdata1.yaml")
+
+	domain, _ := GetDomain("demo")
+
+	_, err := domain.GetController("unknown", "unknown")
+	if err == nil {
+		t.Errorf("<domain>.GetController should have complained about a non existing controller")
+	}
+
+	controller, _ := NewController("controller", "V1.0.0")
+	err = domain.AddController(controller)
+	if err != nil {
+		t.Errorf("<domain>.AddController should not have reported a failure")
+	}
+
+	err = domain.AddController(controller)
+	if err == nil {
+		t.Errorf("<domain>.AddController should have complained about an already existing controller")
+	}
+
+	_, err = domain.GetController("controller", "V1.0.0")
+	if err != nil {
+		t.Errorf("<domain>.GetController should have returned a controller")
+	}
+
+	_, err = domain.ListControllers()
+	if err != nil {
+		t.Errorf("<domain>.ListControllers should have returned a list of controller images and versions")
+	}
+
+	err = domain.DeleteController("controller", "V1.0.0")
+	if err != nil {
+		t.Errorf("<domain>.DeleteController should have not have complained when deleting an existing controller")
+	}
+
+	err = domain.DeleteController("unknown", "unknown")
+	if err == nil {
+		t.Errorf("<domain>.DeleteController should have have complained about attempting to delete a non-existing controller")
 	}
 }
 

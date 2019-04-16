@@ -21,9 +21,25 @@
   background-color:   lightgrey;
 }
 
+#navigation #administration #selector #subnav {
+  position:     absolute;
+  left:      200px;
+  font-size:  14px;
+}
+
+#navigation #administration #selector #subnav div{
+  display:         inline-block;
+  padding-right: 16px;
+  color:           grey;
+}
+
+#navigation #administration #selector #subnav div.selected{
+  color: purple;
+}
+
 /*----------------------------------------------------------------------------*/
 
-#navigation #administration #actions {
+#navigation #administration #model {
   position:           absolute;
   left:              0px;
   right:             0px;
@@ -31,7 +47,7 @@
   bottom             0px;
 }
 
-#navigation #administration #actions .action {
+#navigation #administration #model .action {
   width:              200px;
   height:              32px;
   background-color:      lightgrey;
@@ -44,15 +60,15 @@
   padding-left:        16px;
 }
 
-#navigation #administration #actions .action:hover {
+#navigation #administration #model .action:hover {
   background-color:      darkgrey;
 }
 
-#navigation #administration #actions .action span{
+#navigation #administration #model .action span{
   width: 64px;
 }
 
-#navigation #administration #actions input{
+#navigation #administration #model input{
   display: none;
 }
 

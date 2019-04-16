@@ -52,6 +52,11 @@ import (
 //   - domain.GetEvent
 //   - domain.AddEvent
 //   - domain.DeleteEvent
+//
+//   - domain.ListControllers
+//   - domain.GetController
+//   - domain.AddController
+//   - domain.DeleteController
 //------------------------------------------------------------------------------
 
 // Domain describes all artefacts managed with an administrative realm.
@@ -67,6 +72,8 @@ type Domain struct {
 	TasksX         sync.RWMutex             `yaml:"TasksX,omitempty"`         // mutex for tasks
 	Events         map[string]*Event        `yaml:"Events"`                   // list of events
 	EventsX        sync.RWMutex             `yaml:"EventsX,omitempty"`        // mutex for events
+	Controllers    map[string]*Controller   `yaml:"Controllers"`              // list of controllers
+	ControllersX   sync.RWMutex             `yaml:"ControllersX,omitempty"`   // mutex for controllers
 }
 
 //------------------------------------------------------------------------------
@@ -86,6 +93,8 @@ func NewDomain(name string) (*Domain, error) {
 	domain.TasksX         = sync.RWMutex{}
 	domain.Events         = map[string]*Event{}
 	domain.EventsX        = sync.RWMutex{}
+	domain.Controllers    = map[string]*Controller{}
+	domain.ControllersX   = sync.RWMutex{}
 
 	// success
 	return &domain, nil
@@ -534,6 +543,83 @@ func (domain *Domain) DeleteEvent(uuid string) error {
 	domain.EventsX.Lock()
 	delete(domain.Events, uuid)
 	domain.EventsX.Unlock()
+
+	// success
+	return nil
+}
+
+//------------------------------------------------------------------------------
+
+// ListControllers all controllers of a domain
+func (domain *Domain) ListControllers() ([][2]string, error) {
+	// collect names
+	controllers := [][2]string{}
+
+	domain.ControllersX.RLock()
+	for _, controller := range domain.Controllers {
+		controllers = append(controllers, [2]string{controller.Image, controller.Version})
+	}
+	domain.ControllersX.RUnlock()
+
+	// success
+	return controllers, nil
+}
+
+//------------------------------------------------------------------------------
+
+// GetController get a controller by name
+func (domain *Domain) GetController(image string, version string) (*Controller, error) {
+	// determine controller
+	domain.ControllersX.RLock()
+	controller, ok := domain.Controllers[image + " - " + version]
+	domain.ControllersX.RUnlock()
+
+	if !ok {
+		return nil, errors.New("controller not found")
+	}
+
+	// success
+	return controller, nil
+}
+
+//------------------------------------------------------------------------------
+
+// AddController adds a controller to a domain
+func (domain *Domain) AddController(controller *Controller) error {
+	// check if controller has already been defined
+	domain.ControllersX.RLock()
+	_, ok := domain.Controllers[controller.Image + " - " + controller.Version]
+	domain.ControllersX.RUnlock()
+
+	if ok {
+		return errors.New("controller already exists")
+	}
+
+	domain.ControllersX.Lock()
+	domain.Controllers[controller.Image + " - " + controller.Version] = controller
+	domain.ControllersX.Unlock()
+
+	// success
+	return nil
+}
+
+//------------------------------------------------------------------------------
+
+// DeleteController deletes an controller
+func (domain *Domain) DeleteController(image string, version string) error {
+	// determine controller
+	domain.ControllersX.RLock()
+	_, ok := domain.Controllers[image + " - " + version]
+	domain.ControllersX.RUnlock()
+
+	if !ok {
+		return errors.New("controller not found")
+	}
+
+	// remove controller
+	domain.ControllersX.Lock()
+	delete(domain.Controllers, image + " - " + version)
+	domain.ControllersX.Unlock()
 
 	// success
 	return nil
