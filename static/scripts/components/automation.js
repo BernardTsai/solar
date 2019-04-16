@@ -86,47 +86,47 @@ Vue.component(
     template: `
       <div id="automation">
         <div id="selector">
-          <div id="selector1">
-            <strong>Solution:</strong>
+          <div id="selector1" title="Solution">
+            <strong>Context:</strong>
             <select v-model="view.automation.solution" v-on:change="selectSolution">
-              <option selected value="">Please select one</option>
+              <option selected value="">Solution</option>
               <option v-for="solution in model.Solutions">{{solution}}</option>
             </select>
           </div>
 
-          <div id="selector2" v-if="model.Solution && view.automation.solution != ''">
-            <strong>Element:</strong>
+          <div id="selector2" v-if="model.Solution && view.automation.solution != ''" title="Element">
+            <strong>/</strong>
             <select v-model="view.automation.element" v-on:change="selectElement">
-              <option selected value="">Please select one</option>
+              <option selected value="">Element</option>
               <option v-for="element in model.Solution.Elements">{{element.Element}}</option>
             </select>
           </div>
 
-          <div id="selector3" v-if="model.Solution && view.automation.element != ''">
-            <strong>Cluster:</strong>
+          <div id="selector3" v-if="model.Solution && view.automation.element != ''" title="Cluster">
+            <strong>/</strong>
             <select v-model="view.automation.cluster" v-on:change="selectCluster">
-              <option selected value="">Please select one</option>
+              <option selected value="">Cluster</option>
               <option v-for="cluster in model.Solution.Elements[view.automation.element].Clusters">{{cluster.Version}}</option>
             </select>
           </div>
 
-          <div  id="selector4" v-if="model.Solution && view.automation.element != '' && view.automation.cluster != ''">
-            <strong>Instance:</strong>
+          <div  id="selector4" v-if="model.Solution && view.automation.element != '' && view.automation.cluster != ''" title="Instance">
+            <strong>/</strong>
             <select v-model="view.automation.instance" v-on:change="selectInstance">
-              <option selected value="">Please select one</option>
+              <option selected value="">Instance</option>
               <option v-for="instance in model.Solution.Elements[view.automation.element].Clusters[view.automation.cluster].Instances">{{instance.UUID}}</option>
             </select>
           </div>
 
-          <div  id="selector5" v-if="model.Trace">
-            <strong>Task:</strong>
+          <div  id="selector5" v-if="model.Trace" title="Task">
+            <strong>/</strong>
             <select>
               <option selected>{{this.view.automation.task}}</option>
             </select>
           </div>
 
-          <div @click="hideTask" v-if="model.Trace"><i class="fas fa-eye-slash"></i></div>
-          <div @click="refresh"  v-if="view.solution!=''"><i class="fas fa-recycle"></i></div>
+          <div id="hide"    @click="hideTask" v-if="model.Trace"       title="hide"><i class="fas fa-eye-slash"></i></div>
+          <div id="refresh" @click="refresh"  v-if="view.solution!=''" title="refresh"><i class="fas fa-recycle"></i></div>
 
         </div>
 

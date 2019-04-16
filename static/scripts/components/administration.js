@@ -122,6 +122,27 @@ Vue.component(
           </div>
         </div>
 
+        <div id="controllers" v-if="view.domain!='' && view.subnav=='Controller'">
+          <table class="controllers">
+            <thead>
+              <tr>
+                <th>Controller</th>
+                <th>Version</th>
+                <th>Components</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="controller in model.Controllers">
+                <td>{{controller.Image}}</td>
+                <td>{{controller.Version}}</td>
+                <td>{{controller.Components}}</td>
+                <td>{{controller.Status}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
       </div>`
   }
 )
