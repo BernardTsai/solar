@@ -6,4 +6,6 @@ CORE:
   IDENTIFIER: solar
   LOGLEVEL:   debug
 CTRL:
-  dummy: 127.0.0.1:10000
+  - type:    default
+    version: 1.0.0
+    url:     http://127.0.0.1:10000

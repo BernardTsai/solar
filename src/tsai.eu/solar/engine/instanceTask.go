@@ -106,12 +106,13 @@ func ExecuteInstanceTask(task *model.Task) {
 	}
 
 	// determine setup
-	setup, _ := model.GetSetup(task.GetDomain(),
-	                           task.GetSolution(),
-										      	 task.GetVersion(),
-										      	 task.GetElement(),
-										      	 task.GetCluster(),
-										      	 task.GetInstance() )
+	targetState, _ := model.GetTargetState(
+											task.GetDomain(),
+	                    task.GetSolution(),
+										  task.GetVersion(),
+										  task.GetElement(),
+										  task.GetCluster(),
+										  task.GetInstance() )
 
 	// determine the required controller
 	controller, err := ctrl.GetController(component.Component)
@@ -122,21 +123,21 @@ func ExecuteInstanceTask(task *model.Task) {
 	}
 
 	// execute the required transition
-	var status *model.Status
+	var currentState *model.CurrentState
 
 	switch transition {
 	case "create":
-		status, err = controller.Create(setup)
+		currentState, err = controller.Create(targetState)
 	case "start":
-		status, err = controller.Start(setup)
+		currentState, err = controller.Start(targetState)
 	case "stop":
-		status, err = controller.Stop(setup)
+		currentState, err = controller.Stop(targetState)
 	case "destroy":
-		status, err = controller.Destroy(setup)
+		currentState, err = controller.Destroy(targetState)
 	case "reset":
-		status, err = controller.Reset(setup)
+		currentState, err = controller.Reset(targetState)
 	case "configure":
-		status, err = controller.Configure(setup)
+		currentState, err = controller.Configure(targetState)
 	default:
 		util.LogError(task.UUID, "ENG", "invalid transition")
 		channel <- model.NewEvent(task.Domain, task.UUID, model.EventTypeTaskFailure, task.UUID, "invalid transition")
@@ -144,17 +145,17 @@ func ExecuteInstanceTask(task *model.Task) {
 	}
 
 	// update status
-	if status != nil {
+	if currentState != nil {
 		// remember current state
-		currentState := instance.State
+		instanceState := instance.State
 
-		// update status
-		model.SetStatus(status)
+		// update state
+		model.SetCurrentState(currentState)
 
 		// notify if instance state has changed
-		if instance.State != currentState {
-			util.LogInfo(task.UUID, "ENG", "Instance: " + status.Domain + "/" + status.Element + "/" + status.Cluster + "/" + status.Instance + " has new state:" + instance.State)
-			msg.Notify( "Instance", status.Domain + "/" + status.Element + "/" + status.Cluster + "/" + status.Instance + "/" + instance.State)
+		if instance.State != instanceState {
+			util.LogInfo(task.UUID, "ENG", "Instance: " + currentState.Domain + "/" + currentState.Element + "/" + currentState.Cluster + "/" + currentState.Instance + " has new state:" + instance.State)
+			msg.Notify( "Instance", currentState.Domain + "/" + currentState.Element + "/" + currentState.Cluster + "/" + currentState.Instance + "/" + instance.State)
 		}
 	}
 

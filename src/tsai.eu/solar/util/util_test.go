@@ -183,8 +183,8 @@ func TestSaveYAML(t *testing.T) {
 
 // TestMisc tests the other miscellaneous functions of the util package.
 func TestMisc(t *testing.T) {
-  uuid := UUID()
-  DumpYAML(uuid)
+  UUID()
+  DumpYAML("")
   Print("")
 }
 

@@ -1,0 +1,17 @@
+tasks:
+- action: create
+  state:  001_dummy_A
+- action: status
+  state:  001_dummy_A
+- action: start
+  state:  001_dummy_A
+- action: reconfigure
+  state:  001_dummy_A
+- action: stop
+  state:  001_dummy_A
+- action: configure
+  state:  001_dummy_A
+- action: reset
+  state:  001_dummy_A
+- action: destroy
+  state:  001_dummy_A

@@ -13,7 +13,8 @@ import (
 // Attributes:
 //   - Image
 //   - Version
-//   - Tags
+//   - URL
+//   - Types
 //   - Status (initial, inactive, active, failure)
 //
 // Functions:
@@ -33,6 +34,7 @@ import (
 type Controller struct {
 	Image   string      `yaml:"Image"`   // name of the controller image
 	Version string      `yaml:"Version"` // version of the controller
+	URL     string      `yaml:"URL"`     // URL of the controller
 	Status  string      `yaml:"Status"`  // status of the controller
 	Types   [][2]string `yaml:"Types"`   // supported component types
 }
@@ -45,6 +47,7 @@ func NewController(image string, version string) (*Controller, error) {
 
 	controller.Image   = image
 	controller.Version = version
+	controller.URL     = ""
 	controller.Status  = InitialState
 	controller.Types   = [][2]string{}
 

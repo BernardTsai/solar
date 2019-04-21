@@ -1,0 +1,8 @@
+Domain:        "dummy-domain"
+Solution:      "dummy-solution"
+Version:       "V1.0.0"
+Element:       "dummy_A"
+Cluster:       "V1.0.0"
+Instance:      "3e19db02-b74d-4b60-9043-375442f989f8"
+State:         "active"
+Configuration: ""

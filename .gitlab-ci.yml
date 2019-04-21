@@ -12,6 +12,7 @@ before_script:
   - go get github.com/golang/protobuf/protoc-gen-go
   - go get github.com/rs/zerolog/log
   - go get bou.ke/monkey
+  - go get github.com/cbroglie/mustache
 
 cache:
   key: key-1.0.0

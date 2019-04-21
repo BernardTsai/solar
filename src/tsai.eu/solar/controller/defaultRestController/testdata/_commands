@@ -1,0 +1,10 @@
+OK GET                        /
+OK POST   target.yaml         /status
+KO POST   wrong.yaml          /status
+OK POST   target.yaml         /create
+OK POST   target.yaml         /destroy
+OK POST   target.yaml         /start
+OK POST   target.yaml         /stop
+OK POST   target.yaml         /configure
+OK POST   target.yaml         /reconfigure
+OK POST   target.yaml         /reset

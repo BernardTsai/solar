@@ -31,7 +31,7 @@ go get google.golang.org/grpc
 go get github.com/golang/protobuf/protoc-gen-go
 go get github.com/rs/zerolog/log
 go get bou.ke/monkey
-
+go get github.com/cbroglie/mustache
 
 # test
 go test -cover                   \
