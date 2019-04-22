@@ -4,11 +4,9 @@ import (
   "testing"
   "io"
   "os"
-  "net"
   "time"
 
   "tsai.eu/solar/model"
-  "tsai.eu/solar/controller/gRPC"
 )
 
 //------------------------------------------------------------------------------
@@ -27,20 +25,6 @@ func copyFile(src string, dest string) {
 
 //------------------------------------------------------------------------------
 
-// startController creates a new gRPC controller
-func startController() {
-  // open TCP port 10000
-  lis, _ := net.Listen("tcp", ":10000")
-
-  // create a gRPC server
-  grpcServer, _ := gRPC.NewController()
-
-  // register controller and start listening
-  grpcServer.Serve(lis)
-}
-
-//------------------------------------------------------------------------------
-
 // TestController01 evaluates the gRPC functions of the controller package
 func TestController01(t *testing.T) {
   // prepare configuration file
@@ -51,9 +35,6 @@ func TestController01(t *testing.T) {
 
   // cleanup routine
   defer func() {os.Remove(destConfig)}()
-
-  // start gRPC controller
-  go startController()
 
   time.Sleep(time.Millisecond)
 

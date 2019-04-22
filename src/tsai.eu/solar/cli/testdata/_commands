@@ -84,15 +84,14 @@ KO architecture set demo unknown_file
 OK architecture set demo testdata/architecture.yaml
 
 OK model reset
-OK model set testdata/model_002.yaml
-OK architecture deploy
-KO architecture deploy unknown app V0.0.0
-KO architecture deploy demo unknown V1.0.0
-OK architecture deploy demo app V0.0.0
-
+OK domain create demo
 OK solution
 OK solution ?
 OK solution unknown_command
+OK solution set
+KO solution set unknown unknown_file
+KO solution set demo unknown_file
+OK solution set demo testdata/solution.yaml
 OK solution list
 KO solution list unknown
 OK solution list demo
@@ -104,10 +103,6 @@ OK solution delete
 KO solution delete unknown app
 KO solution delete demo unknown
 OK solution delete demo app
-OK solution set
-KO solution set unknown unknown_file
-KO solution set demo unknown_file
-OK solution set demo testdata/solution.yaml
 
 OK model reset
 OK model set testdata/model_001.yaml
@@ -133,3 +128,10 @@ OK task terminate demo 212927e4-cc49-4784-aa35-66430a6bd43b
 OK task trace
 KO task trace unknown 212927e4-cc49-4784-aa35-66430a6bd43b
 OK task trace demo 212927e4-cc49-4784-aa35-66430a6bd43b
+
+OK model reset
+OK model set testdata/model_002.yaml
+OK architecture deploy
+KO architecture deploy unknown app V0.0.0
+KO architecture deploy demo unknown V1.0.0
+OK architecture deploy demo app V0.0.0

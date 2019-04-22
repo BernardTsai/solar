@@ -34,22 +34,20 @@ go get bou.ke/monkey
 go get github.com/cbroglie/mustache
 
 # test
-go test -cover                   \
-  tsai.eu/solar/util             \
-  tsai.eu/solar/model            \
-  tsai.eu/solar/msg              \
-  tsai.eu/solar/controller/dummy \
-  tsai.eu/solar/controller/gRPC  \
-  tsai.eu/solar/controller       \
-  tsai.eu/solar/engine           \
-  tsai.eu/solar/monitor          \
-  tsai.eu/solar/cli              \
+go test -cover                                   \
+  tsai.eu/solar/util                             \
+  tsai.eu/solar/model                            \
+  tsai.eu/solar/msg                              \
+  tsai.eu/solar/controller/defaultController     \
+  tsai.eu/solar/controller/defaultRestController \
+  tsai.eu/solar/controller                       \
+  tsai.eu/solar/engine                           \
+  tsai.eu/solar/monitor                          \
+  tsai.eu/solar/cli                              \
   tsai.eu/solar/api
 
 # install binaries
-# cd $SRCDIR
 go install tsai.eu/solar/cmd/solar
-go install tsai.eu/solar/cmd/controller
 
 # change to root directory
 cd $ROOTDIR
