@@ -557,7 +557,7 @@ func (domain *Domain) ListControllers() ([][2]string, error) {
 
 	domain.ControllersX.RLock()
 	for _, controller := range domain.Controllers {
-		controllers = append(controllers, [2]string{controller.Image, controller.Version})
+		controllers = append(controllers, [2]string{controller.Controller, controller.Version})
 	}
 	domain.ControllersX.RUnlock()
 
@@ -588,7 +588,7 @@ func (domain *Domain) GetController(image string, version string) (*Controller, 
 func (domain *Domain) AddController(controller *Controller) error {
 	// check if controller has already been defined
 	domain.ControllersX.RLock()
-	_, ok := domain.Controllers[controller.Image + " - " + controller.Version]
+	_, ok := domain.Controllers[controller.Controller + " - " + controller.Version]
 	domain.ControllersX.RUnlock()
 
 	if ok {
@@ -596,7 +596,7 @@ func (domain *Domain) AddController(controller *Controller) error {
 	}
 
 	domain.ControllersX.Lock()
-	domain.Controllers[controller.Image + " - " + controller.Version] = controller
+	domain.Controllers[controller.Controller + " - " + controller.Version] = controller
 	domain.ControllersX.Unlock()
 
 	// success

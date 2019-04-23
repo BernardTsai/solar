@@ -1634,6 +1634,13 @@ Domains:
                     State: active
                     Configuration: ""
                     Endpoint: ""
+    Controllers:
+      "default - V1.0.0":
+        Type: default
+        Version: V1.0.0
+        Types: []
+        URL: ""
+        Status: inactive
     Tasks:
       0f7bec76-3252-41b0-a7c9-82b75abba9de:
         Type: Cluster

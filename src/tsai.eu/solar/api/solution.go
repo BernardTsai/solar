@@ -97,7 +97,7 @@ func SolutionGetHandler(w http.ResponseWriter, r *http.Request) {
     return
   }
 
-  // transform architecture to string
+  // transform solution to string
   yaml, err := solution.Show()
   if err != nil {
     w.WriteHeader(http.StatusInternalServerError)

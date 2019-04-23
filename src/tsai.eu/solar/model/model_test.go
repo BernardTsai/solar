@@ -298,6 +298,22 @@ func TestModelXY(t *testing.T) {
 		t.Errorf("GetRelationship should have complained about an non existing domain")
 	}
 
+	// controller related functions
+	_, err = GetController("demo", "default", "V1.0.0")
+	if err != nil {
+		t.Errorf("GetController should have found an existing controller")
+	}
+
+	_, err = GetController("demo", "unknown", "V1.0.0")
+	if err == nil {
+		t.Errorf("GetController should have complained about an non existing controller")
+	}
+
+	_, err = GetController("unknown", "unknown", "unknown")
+	if err == nil {
+		t.Errorf("GetController should have complained about a non existing domain")
+	}
+
 	// task related functions
 	_, err = GetTask("demo", "0f7bec76-3252-41b0-a7c9-82b75abba9de")
 	if err != nil {
@@ -311,7 +327,7 @@ func TestModelXY(t *testing.T) {
 
 	_, err = GetTask("unknown", "unknown")
 	if err == nil {
-		t.Errorf("GetTask should have complained about an non existing domain")
+		t.Errorf("GetTask should have complained about a non existing domain")
 	}
 
 	// event related functions

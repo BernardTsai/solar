@@ -411,6 +411,24 @@ func GetRelationship(domainName string, solutionName string, elementName string,
 
 //------------------------------------------------------------------------------
 
+// GetController get a controller by type and version
+func GetController(domainName string, controllerType string, controllerVersion string) (*Controller, error) {
+	domain, err := GetModel().GetDomain(domainName)
+	if err != nil {
+		return nil, errors.New("domain not found")
+	}
+
+	controller, err := domain.GetController(controllerType, controllerVersion)
+	if err != nil {
+		return nil, errors.New("controller not found")
+	}
+
+	// success
+	return controller, nil
+}
+
+//------------------------------------------------------------------------------
+
 // GetTask get a task by uuid
 func GetTask(domainName string, uuid string) (*Task, error) {
 	domain, err := GetModel().GetDomain(domainName)

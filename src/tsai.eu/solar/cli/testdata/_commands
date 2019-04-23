@@ -105,6 +105,30 @@ KO solution delete demo unknown
 OK solution delete demo app
 
 OK model reset
+OK domain create demo
+OK controller
+OK controller ?
+OK controller unknown_command
+OK controller set
+KO controller set unknown unknown_file
+KO controller set demo unknown_file
+OK controller set demo testdata/controller.yaml
+OK controller list
+KO controller list unknown
+OK controller list demo
+OK controller get
+KO controller get unknown default V1.0.0
+OK controller get demo default V1.0.0
+OK controller reset
+KO controller reset unknown default V1.0.0
+KO controller reset demo default unknown
+OK controller reset demo default V1.0.0
+OK controller delete ?
+KO controller delete unknown default V1.0.0
+KO controller delete demo default unknown
+OK controller delete demo default V1.0.0
+
+OK model reset
 OK model set testdata/model_001.yaml
 OK task
 OK task ?

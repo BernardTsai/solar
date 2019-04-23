@@ -37,6 +37,7 @@ func Shell() *ishell.Shell{
 			ComponentUsage(false, c)
 			ArchitectureUsage(false, c)
 			SolutionUsage(false, c)
+			ControllerUsage(false, c)
 			TaskUsage(false, c)
 			info := ""
 			info += "  # <comment>\n\n"
@@ -95,6 +96,13 @@ func Shell() *ishell.Shell{
 		Name: "task",
 		Help: "task commands",
 		Func: func(c *ishell.Context) { TaskCommand(c, m) },
+	})
+
+	// register a function for the "controller" command.
+	shell.AddCmd(&ishell.Cmd{
+		Name: "controller",
+		Help: "controller commands",
+		Func: func(c *ishell.Context) { ControllerCommand(c, m) },
 	})
 
 	// register a function for "#" command.

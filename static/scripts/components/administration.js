@@ -134,7 +134,7 @@ Vue.component(
             </thead>
             <tbody>
               <tr v-for="controller in model.Controllers">
-                <td>{{controller.Image}}</td>
+                <td>{{controller.Controller}}</td>
                 <td>{{controller.Version}}</td>
                 <td>{{controller.Components}}</td>
                 <td>{{controller.Status}}</td>

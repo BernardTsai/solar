@@ -95,6 +95,13 @@ func NewRouter() *mux.Router {
   // instance
   router.HandleFunc("/instance/{domain}/{solution}/{element}/{cluster}/{instance}", InstanceUpdateHandler).Methods("PUT")
 
+  // controller
+  router.HandleFunc("/controller/{domain}",                        ControllerListHandler).Methods("GET")
+  router.HandleFunc("/controller/{domain}",                        ControllerSetHandler).Methods("POST")
+  router.HandleFunc("/controller/{domain}/{controller}/{version}", ControllerGetHandler).Methods("GET")
+  router.HandleFunc("/controller/{domain}/{controller}/{version}", ControllerDeleteHandler).Methods("DELETE")
+  router.HandleFunc("/controller/{domain}/{controller}/{version}", ControllerResetHandler).Methods("PUT")
+
   // task
   router.HandleFunc("/tasks/{domain}/{solution}/{element}/{cluster}/{instance}", TaskListHandler).Methods("GET")
   router.HandleFunc("/tasks/{domain}/{solution}/{element}/{cluster}",            TaskListHandler).Methods("GET")
