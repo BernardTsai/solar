@@ -710,3 +710,11 @@ Domains:
     Solutions: {}
     Tasks: {}
     Events: {}
+    Controllers:
+      "default - V1.0.0":
+        Controller: default
+        Version: V1.0.0
+        Types:
+          - ["default", "V1.0.0"]
+        URL: "http://localhost/"
+        Status: active

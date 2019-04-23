@@ -73,3 +73,60 @@
 }
 
 /*----------------------------------------------------------------------------*/
+
+#navigation #administration #controllers {
+  position:           absolute;
+  left:              0px;
+  right:             0px;
+  top:              32px;
+  bottom             0px;
+}
+
+#navigation #administration #controllers table {
+  position:           absolute;
+  left:              0px;
+  right:             0px;
+  top:               0px;
+  bottom:           32px;
+  font-size:        12px;
+  border-collapse:    collapse;
+  width:           100%;
+}
+
+#navigation #administration #controllers table td, #navigation #administration #controllers table th {
+  border-bottom:  1px solid #ddd;
+  padding:        8px;
+}
+
+#navigation #administration #controllers table td:not(:first-child), #navigation #administration #controllers table th:not(:first-child) {
+  border-left: 1px solid #ddd;
+}
+
+#navigation #administration #controllers table td.noentries {
+  font-size:      16px;
+  text-align:     center;
+  padding-top:    8px;
+  padding-bottom: 8px;
+}
+
+#navigation #administration #controllers table tr:nth-child(even){
+  background-color: #f2f2f2;
+}
+
+#navigation #administration #controllers table tr:hover {
+  background-color: #ddd;
+}
+
+#navigation #administration #controllers table th {
+  padding-top:      6px;
+  padding-bottom:   6px;
+  text-align:       left;
+  background-color: lightgrey;
+  color:            black;
+}
+
+#navigation #administration #controllers table td.status.completed {
+  background-color: green;
+}
+
+/*----------------------------------------------------------------------------*/

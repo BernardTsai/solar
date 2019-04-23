@@ -25,8 +25,7 @@ func ControllerListHandler(w http.ResponseWriter, r *http.Request) {
     return
   }
 
-
-  // determine list of solution names
+  // determine list of controllers
   controllers := []*model.Controller{}
 
   cNameVersions, err := domain.ListControllers()
@@ -37,6 +36,9 @@ func ControllerListHandler(w http.ResponseWriter, r *http.Request) {
 
   for _, cNameVersion := range cNameVersions {
     controller, _ := domain.GetController(cNameVersion[0], cNameVersion[1])
+    util.DumpYAML(cNameVersion[0])
+    util.DumpYAML(cNameVersion[1])
+
 
     controllers = append(controllers, controller)
   }

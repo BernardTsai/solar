@@ -3,6 +3,7 @@ var model = {
   Catalog:       [],        // list of components
   Components:    [],        // list of component names
   Component:     null,      // the component which is currently being edited
+  Controllers:   [],        // list of controllers
   Architectures: {},        //
   Architecture:  null,      // the architecture which is currently being edited
   ArchElement:   null,      // the architectural element which is currently being edited
@@ -303,6 +304,17 @@ function loadAll(domain, solution) {
   .then((response) => response.text())
   .then((text)     => jsyaml.safeLoad(text))
   .then((yaml)     => model.Architecture = yaml)
+}
+
+//------------------------------------------------------------------------------
+
+// loadControllers retrieves a list of controllers from the the repository
+function loadControllers(domain) {
+  // determine domains
+  return fetch("http://" + window.location.hostname + ":" + window.location.port + "/controller/" + domain)
+    .then((response) => response.text())
+    .then((text)     => jsyaml.safeLoad(text))
+    .then((yaml)     => model.Controllers = yaml)
 }
 
 //------------------------------------------------------------------------------
