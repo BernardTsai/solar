@@ -39,7 +39,7 @@ func TestController01(t *testing.T) {
   time.Sleep(time.Millisecond)
 
   // GetController test
-  ctrl, err := GetController("default")
+  ctrl, err := GetController("default:V1.0.0")
   if err != nil {
     t.Errorf("GetController is unable to find default controller")
   }

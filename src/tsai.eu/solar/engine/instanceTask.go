@@ -115,9 +115,9 @@ func ExecuteInstanceTask(task *model.Task) {
 										  task.GetInstance() )
 
 	// determine the required controller
-	controller, err := ctrl.GetController(component.Component)
+	controller, err := ctrl.GetController(component.Controller)
 	if err != nil {
-		util.LogError(task.UUID, "ENG", "unknown controller: " + component.Component)
+		util.LogError(task.UUID, "ENG", "unknown controller: " + component.Component + ":" + task.GetCluster())
 		channel <- model.NewEvent(task.Domain, task.UUID, model.EventTypeTaskFailure, task.UUID, "unknown controller: " + component.Component)
 		return
 	}

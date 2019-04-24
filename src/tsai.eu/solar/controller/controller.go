@@ -35,8 +35,8 @@ var initPort      sync.Once               // initialisation guard
 
 //------------------------------------------------------------------------------
 
-// GetController retrieves a controller for a specific component type.
-func GetController(componentType string) (Controller, error) {
+// GetController retrieves a controller for a specific version of a controller.
+func GetController(controllerVersion string) (Controller, error) {
 	// initialise singleton once
 	initCtrls.Do(func() {
 		// create empty map of controllers
@@ -50,7 +50,7 @@ func GetController(componentType string) (Controller, error) {
 
 		// initialise the default controller
 		defController = defaultController.NewController()
-		controllers["default"] = defController
+		controllers["default:V1.0.0"] = defController
 		util.LogInfo("main", "CTRL", "default - controller active")
 
 		// read the controller configuration
@@ -75,13 +75,13 @@ func GetController(componentType string) (Controller, error) {
 	})
 
 	// determine controller (if unknown use the default controller)
-	controller, found := controllers[componentType]
+	controller, found := controllers[controllerVersion]
 	if found {
 		return controller, nil
 	}
 
 	// try to use the default controller
-	controller, found = controllers["default"]
+	controller, found = controllers["default:V1.0.0"]
 	if found {
 		return controller, nil
 	}
@@ -97,7 +97,7 @@ func GetController(componentType string) (Controller, error) {
 //------------------------------------------------------------------------------
 
 // AddController adds a controller to a domain
-func AddController(domainName string, image string, version string) error {
+func AddController(domainName string, controllerName string, controllerVersion string) error {
 	// determine domain
 	domain, err := model.GetDomain(domainName)
 	if err != nil {
@@ -105,10 +105,11 @@ func AddController(domainName string, image string, version string) error {
 	}
 
 	// determine controller and create a new one if it does not exist
-	controller, err := domain.GetController(image, version)
+	var ctrl *model.Controller
+	ctrl, err = domain.GetController(controllerName, controllerVersion)
 	if err != nil {
-		controller, _ = model.NewController(image, version)
-		domain.AddController(controller)
+		ctrl, _ = model.NewController(controllerName, controllerVersion)
+		domain.AddController(ctrl)
 	}
 
 	// load controller if needed

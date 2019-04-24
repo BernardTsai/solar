@@ -14,7 +14,7 @@ func TestComponent01(t *testing.T) {
 	// cleanup routine
   defer func() {os.Remove(filename)}()
 
-	component, _ := NewComponent("test", "V1.0.0", "")
+	component, _ := NewComponent("test", "V1.0.0", "", "default - V1.0.0")
 
 	component.Save(filename)
 

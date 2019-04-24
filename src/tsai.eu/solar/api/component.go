@@ -66,8 +66,8 @@ func ComponentSetHandler(w http.ResponseWriter, r *http.Request) {
     return
   }
 
-  // create new component
-  component, _ := model.NewComponent("", "", "")
+  // create new dummy component
+  component, _ := model.NewComponent("", "", "", "")
 
   err = component.Load2(string(body))
   if err != nil {

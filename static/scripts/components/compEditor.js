@@ -63,6 +63,17 @@ Vue.component(
 
         return "V" + parts[0] + "." + parts[1] + "." + nextPatch
       },
+      // controllers lists the name and versions of available controllers
+      controllers: function() {
+        var result = []
+
+        // loop over all available components
+        for (var index in this.model.Controllers) {
+          controller = this.model.Controllers[index]
+          result.push( controller.Controller + " - " + controller.Version)
+        }
+        return result
+      },
       // components lists the name of available components in the Catalog
       components: function() {
         var map    = {};
@@ -172,6 +183,16 @@ Vue.component(
               <input type="text"
                 v-model="model.Component.Version">
               </input>
+            </td>
+          </tr>
+          <tr>
+            <td>&nbsp;Controller:</td>
+            <td>
+              <select
+                v-model="model.Component.Controller">
+                <option disabled value="">please select</option>
+                <option v-for="c in controllers()">{{c}}</option>
+              </select>
             </td>
           </tr>
           <tr>

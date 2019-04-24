@@ -21,6 +21,7 @@ type TargetState struct {
   Element       string `yaml:"Element"`               // name of element
   Cluster       string `yaml:"Cluster"`               // name of cluster
   Instance      string `yaml:"Instance"`              // name of instance
+  Component     string `yaml:"Component"`             // name of instance
   State         string `yaml:"State"`                 // state of instance
 	Configuration string `yaml:"Configuration"`         // configuration of instance
 }
@@ -126,6 +127,7 @@ func GetTargetState(domainName string, solutionName string,  solutionVersion str
   targetState.Element       = elementName
   targetState.Cluster       = clusterName
   targetState.Instance      = instanceName
+  targetState.Component     = architectureComponent.Component
   targetState.State         = instance.Target
   targetState.Configuration = instance.Configuration
 

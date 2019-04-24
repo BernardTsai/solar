@@ -101,6 +101,10 @@ function loadComponents(domain) {
     .then((response) => response.text())
     .then((text)     => jsyaml.safeLoad(text))
     .then((yaml)     => model.Components = yaml)
+    .then(()         => fetch("http://" + window.location.hostname + ":" + window.location.port + "/controller/" + domain))
+    .then((response) => response.text())
+    .then((text)     => jsyaml.safeLoad(text))
+    .then((yaml)     => model.Controllers = yaml)
 }
 
 //------------------------------------------------------------------------------

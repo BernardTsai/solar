@@ -15,6 +15,7 @@ import (
 //   - Component
 //   - Version
 //   - Configuration
+//   - Controller
 //   - Dependencies
 //
 // Functions:
@@ -36,6 +37,7 @@ type Component struct {
 	Component     string                 `yaml:"Component"`             // name of the component
 	Version       string                 `yaml:"Version"`               // version of the component
 	Configuration string                 `yaml:"Configuration"`         // base configuration of the component
+	Controller    string                 `yaml:"Controller"`            // name and version of controller
 	Dependencies  map[string]*Dependency `yaml:"Dependencies"`          // dependencies of component
 	DependenciesX sync.RWMutex           `yaml:"ComponentsX,omitempty"` // mutex for dependencies
 }
@@ -43,12 +45,13 @@ type Component struct {
 //------------------------------------------------------------------------------
 
 // NewComponent creates a new component
-func NewComponent(name string, version string, configuration string) (*Component, error) {
+func NewComponent(name string, version string, configuration string, controller string) (*Component, error) {
 	var component Component
 
 	component.Component     = name
 	component.Version       = version
 	component.Configuration = configuration
+	component.Controller    = controller
 	component.Dependencies  = map[string]*Dependency{}
 	component.DependenciesX = sync.RWMutex{}
 

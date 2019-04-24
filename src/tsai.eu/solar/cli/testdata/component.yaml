@@ -1,5 +1,6 @@
 Component: tenant
 Version: V2.0.0
+Controller: "default:V1.0.0"
 Configuration: |
   # clouds.yaml file for os-client-config for the solution '{{solution}}' in the domain '{{domain}}':
   clouds:

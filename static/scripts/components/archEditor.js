@@ -170,26 +170,9 @@ Vue.component(
       },
       // showConfiguration renders the component template with the parameters
       showConfiguration: function() {
-        configuration = this.view.ae.Template
+        template      = this.view.ae.Template
         parameters    = jsyaml.safeLoad(this.view.ae.Parameters)
-
-        repeat = true
-        while (repeat) {
-          repeat = false
-          matches = configuration.match(/{{[^}]*}}/g)
-          if (matches) {
-            for (var name of matches) {
-              key = name
-              key = key.replace("{{","")
-              key = key.replace("}}","")
-              key = key.trim()
-              if (key in parameters) {
-                configuration = configuration.replace(new RegExp(name, 'g'), parameters[key])
-                repeat = true
-              }
-            }
-          }
-        }
+        configuration = Mustache.render(template, parameters)
 
         this.view.ae.Configuration = configuration
         this.view.ae.Display       = "configuration"

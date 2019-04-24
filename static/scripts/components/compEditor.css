@@ -31,8 +31,9 @@
 .compEditor input,
 .compEditor select,
 .compEditor textarea {
-  width:     100%;
-  font-size:  12px;
+  width:              100%;
+  font-size:           12px;
+  background-color:      white;
 }
 
 .compEditor .dependencies td,

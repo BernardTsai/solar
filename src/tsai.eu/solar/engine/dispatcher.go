@@ -2,7 +2,6 @@ package engine
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"tsai.eu/solar/model"
@@ -27,7 +26,7 @@ func Start(c context.Context) (*Dispatcher) {
 	}
 
 	// preload the controllers
-	controller.GetController("default")
+	controller.GetController("default:V1.0.0")
 
 	// start the dispatcher
 	go dispatcher.Run(c)
@@ -67,8 +66,7 @@ func (d *Dispatcher) Run(ctx context.Context) {
 			// get task
 			task, err := domain.GetTask(event.Task)
 			if err != nil {
-				fmt.Println(err)
-				// TODO: log unknown task
+				util.LogError("main", "engine", "Unknown error:\n" + err.Error() + "\nTask: " + event.Task)
 				continue
 			}
 

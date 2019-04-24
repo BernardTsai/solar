@@ -80,8 +80,8 @@ func ComponentCommand(context *ishell.Context, m *model.Model) {
 			return
 		}
 
-		// create new component
-		component, _ := model.NewComponent("A", "B", "C")
+		// create new dummy component
+		component, _ := model.NewComponent("A", "B", "C", "D")
 
 		// load component
 		err = component.Load(context.Args[2])
