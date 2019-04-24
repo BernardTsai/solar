@@ -129,7 +129,6 @@ Vue.component(
               <tr>
                 <th>Controller</th>
                 <th>Version</th>
-                <th>Components</th>
                 <th>URL</th>
                 <th>Status</th>
               </tr>
@@ -138,7 +137,6 @@ Vue.component(
               <tr v-for="controller in model.Controllers">
                 <td>{{controller.Controller}}</td>
                 <td>{{controller.Version}}</td>
-                <td>{{controller.Types}}</td>
                 <td>{{controller.URL}}</td>
                 <td>{{controller.Status}}</td>
               </tr>

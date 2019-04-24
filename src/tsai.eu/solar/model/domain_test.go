@@ -277,7 +277,7 @@ func TestDomain07(t *testing.T) {
 		t.Errorf("<domain>.GetController should have complained about a non existing controller")
 	}
 
-	controller, _ := NewController("controller", "V1.0.0")
+	controller, _ := NewController("default", "V2.0.0")
 	err = domain.AddController(controller)
 	if err != nil {
 		t.Errorf("<domain>.AddController should not have reported a failure")
@@ -288,7 +288,7 @@ func TestDomain07(t *testing.T) {
 		t.Errorf("<domain>.AddController should have complained about an already existing controller")
 	}
 
-	_, err = domain.GetController("controller", "V1.0.0")
+	_, err = domain.GetController("default", "V1.0.0")
 	if err != nil {
 		t.Errorf("<domain>.GetController should have returned a controller")
 	}
@@ -298,7 +298,7 @@ func TestDomain07(t *testing.T) {
 		t.Errorf("<domain>.ListControllers should have returned a list of controller images and versions")
 	}
 
-	err = domain.DeleteController("controller", "V1.0.0")
+	err = domain.DeleteController("default", "V1.0.0")
 	if err != nil {
 		t.Errorf("<domain>.DeleteController should have not have complained when deleting an existing controller")
 	}

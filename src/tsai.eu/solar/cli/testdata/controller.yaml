@@ -1,6 +1,4 @@
 Controller: default
-Version: V1.0.0
-Types:
-  - ["default", "V1.0.0"]
+Version: V2.0.0
 Status: inactive
 URL: ""

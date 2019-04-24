@@ -142,22 +142,3 @@ func ControllerDeleteHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 //------------------------------------------------------------------------------
-
-// ControllerResetHandler reset the types of a controller.
-func ControllerResetHandler(w http.ResponseWriter, r *http.Request) {
-  vars              := mux.Vars(r)
-  domainName        := vars["domain"]
-  controllerName    := vars["controller"]
-  controllerVersion := vars["version"]
-
-  // determine controller
-  controller, err := model.GetController(domainName, controllerName, controllerVersion)
-  if err != nil {
-    w.WriteHeader(http.StatusBadRequest)
-    return
-  }
-
-  controller.Types = [][2]string{}
-}
-
-//------------------------------------------------------------------------------

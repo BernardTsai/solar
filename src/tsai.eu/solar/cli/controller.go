@@ -124,25 +124,6 @@ func ControllerCommand(context *ishell.Context, m *model.Model) {
 		// execute the command
 		result, err := controller.Show()
 		handleResult(context, err, "controller can not be displayed", result)
-	case _reset:
-		// check availability of arguments
-		if len(context.Args) != 4 {
-			ControllerUsage(true, context)
-			return
-		}
-
-    // determine controller
-		controller, err := model.GetController(context.Args[1], context.Args[2], context.Args[3])
-
-		if err != nil {
-			handleResult(context, err, "controller can not be identified", "")
-			return
-		}
-
-    // reset types
-    controller.Types = [][2]string{}
-
-		handleResult(context, err, "unable to reset controller", "")
 	default:
 		ControllerUsage(true, context)
 	}
@@ -160,7 +141,6 @@ func ControllerUsage(header bool, context *ishell.Context) {
 	info += "             set <domain> <filename>\n"
 	info += "             get <domain> <controller> <version>\n"
 	info += "             delete <domain> <controller> <version>\n"
-  info += "             reset <domain> <controller> <version>\n"
 
   writeInfo(context, info)
 }
