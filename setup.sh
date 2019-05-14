@@ -27,8 +27,6 @@ go get gopkg.in/abiosoft/ishell.v2
 go get github.com/spf13/viper
 go get github.com/gorilla/mux
 go get github.com/segmentio/kafka-go
-go get google.golang.org/grpc
-go get github.com/golang/protobuf/protoc-gen-go
 go get github.com/rs/zerolog/log
 go get bou.ke/monkey
 go get github.com/cbroglie/mustache
@@ -38,8 +36,7 @@ go test -cover                                   \
   tsai.eu/solar/util                             \
   tsai.eu/solar/model                            \
   tsai.eu/solar/msg                              \
-  tsai.eu/solar/controller/defaultController     \
-  tsai.eu/solar/controller/defaultRestController \
+  tsai.eu/solar/controller/internalController    \
   tsai.eu/solar/controller                       \
   tsai.eu/solar/engine                           \
   tsai.eu/solar/monitor                          \
@@ -48,6 +45,8 @@ go test -cover                                   \
 
 # install binaries
 go install tsai.eu/solar/cmd/solar
+go install tsai.eu/solar/controller/k8sController
+go install tsai.eu/solar/controller/defaultController
 
 # change to root directory
 cd $ROOTDIR

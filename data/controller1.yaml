@@ -1,0 +1,5 @@
+Controller: Default
+Version: V1.0.0
+Image: "tsai/solar-default-controller:V1.0.0"
+URL: ""
+Status: inactive

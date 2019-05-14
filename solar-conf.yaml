@@ -5,7 +5,3 @@ MSG:
 CORE:
   IDENTIFIER: solar
   LOGLEVEL:   debug
-CTRL:
-  - type:    default
-    version: 1.0.0
-    url:     http://127.0.0.1:10000

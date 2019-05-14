@@ -7,6 +7,7 @@ import (
 	"tsai.eu/solar/engine"
 	"tsai.eu/solar/api"
 	"tsai.eu/solar/monitor"
+	"tsai.eu/solar/controller"
 	"tsai.eu/solar/msg"
 	"tsai.eu/solar/cli"
 	"tsai.eu/solar/util"
@@ -20,6 +21,7 @@ type Control struct {
 	Dispatcher *engine.Dispatcher      // the orchestration engine
 	MSG        *msg.MSG                // messaging interface
 	Monitor    *monitor.Monitor	       // monitoring process
+	Controller *controller.Manager     // controller manager
 	API        *api.API                // web API
 }
 
@@ -52,6 +54,9 @@ func main() {
 
 	// display progam information
 	fmt.Println("SOLAR Version 1.0.0")
+
+	// start the controller manager
+	control.Controller = controller.Start(mainCtx)
 
 	// start the main event loop
 	control.Dispatcher = engine.Start(mainCtx)

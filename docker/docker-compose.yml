@@ -27,7 +27,7 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
   controller:
-    image:   tsai/solar-grpc-controller:V1.0.0
+    image:   tsai/solar-default-controller:V1.0.0
     hostname: controller
     restart: "unless-stopped"
     ports:

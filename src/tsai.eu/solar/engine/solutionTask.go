@@ -22,6 +22,7 @@ func NewSolutionTask(domain string, parent string, solution *model.Solution) (mo
 	task.Cluster      = ""
 	task.Instance     = ""
 	task.State        = ""
+	task.Action       = ""
 	task.UUID         = util.UUID()
 	task.Parent       = parent
 	task.Status       = model.TaskStatusInitial

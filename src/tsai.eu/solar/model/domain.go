@@ -97,8 +97,10 @@ func NewDomain(name string) (*Domain, error) {
 	domain.ControllersX   = sync.RWMutex{}
 
 	// add default controller
-	ctrl, _ := NewController("default", "V1.0.0")
-	domain.Controllers["default:V1.0.0"] = ctrl
+	ctrl, _ := NewController("internal", "V1.0.0")
+	ctrl.Status = ActiveState
+
+	domain.Controllers["internal:V1.0.0"] = ctrl
 
 	// success
 	return &domain, nil
@@ -274,7 +276,7 @@ func (domain *Domain) AddArchitecture(architecture *Architecture) error {
 	domain.ArchitecturesX.RUnlock()
 
 	if ok {
-		return errors.New("architecture already exists")
+		// return errors.New("architecture already exists")
 	}
 
 	domain.ArchitecturesX.Lock()

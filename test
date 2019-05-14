@@ -1,0 +1,24 @@
+{
+  "Image": "tsai/solar-default-controller:V1.0.0",
+  "Tty": true,
+  "OpenStdin": true,
+  "Labels": {
+    "tsai.eu.solar.controller.image":   "tsai/solar-default-controller",
+    "tsai.eu.solar.controller.version": "V1.0.0"
+  },
+  "ExposedPorts": {
+    "10000/tcp": {}
+  },
+  "HostConfig": {
+    "PortBindings": {
+      "10000/tcp": [
+        {
+          "HostPort": "10001"
+        }
+      ]
+    },
+    "RestartPolicy": {
+      "Name": "always"
+    }
+  }
+}

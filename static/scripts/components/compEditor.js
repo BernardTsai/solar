@@ -70,7 +70,7 @@ Vue.component(
         // loop over all available components
         for (var index in this.model.Controllers) {
           controller = this.model.Controllers[index]
-          result.push( controller.Controller + " - " + controller.Version)
+          result.push( controller.Controller + ":" + controller.Version)
         }
         return result
       },

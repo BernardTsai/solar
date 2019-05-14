@@ -28,6 +28,7 @@ import (
 type Controller struct {
 	Controller string      `yaml:"Controller"`  // name of the controller
 	Version    string      `yaml:"Version"`     // version of the controller
+	Image      string      `yaml:"Image"`       // name of container image
 	URL        string      `yaml:"URL"`         // URL of the controller
 	Status     string      `yaml:"Status"`      // status of the controller
 }
@@ -40,6 +41,7 @@ func NewController(controller string, version string) (*Controller, error) {
 
 	ctrl.Controller = controller
 	ctrl.Version    = version
+	ctrl.Image      = ""
 	ctrl.URL        = ""
 	ctrl.Status     = InitialState
 

@@ -7,6 +7,7 @@ Domains:
       application - V1.0.0:
         Component: application
         Version: V1.0.0
+        Controller: "default:V1.0.0"
         Configuration: |
           # Ansible playbook for the application: '{{element}}' for the solution '{{solution}}' in the domain '{{domain}}'
           ---
@@ -41,6 +42,7 @@ Domains:
       network - V1.0.0:
         Component: network
         Version: V1.0.0
+        Controller: "default:V1.0.0"
         Configuration: |
           heat_template_version: 2013-05-23
 
@@ -76,6 +78,7 @@ Domains:
       server - V1.0.0:
         Component: server
         Version: V1.0.0
+        Controller: "default:V1.0.0"
         Configuration: |
           heat_template_version: 2013-05-23
 
@@ -119,6 +122,7 @@ Domains:
       tenant - V1.0.0:
         Component: tenant
         Version: V1.0.0
+        Controller: "default:V1.0.0"
         Configuration: |
           # clouds.yaml file for os-client-config for the solution '{{solution}}' in the domain '{{domain}}':
           clouds:
@@ -711,10 +715,9 @@ Domains:
     Tasks: {}
     Events: {}
     Controllers:
-      "default - V1.0.0":
+      "default:V1.0.0":
         Controller: default
         Version: V1.0.0
-        Types:
-          - ["default", "V1.0.0"]
+        Image: ""
         URL: "http://localhost/"
         Status: active

@@ -31,12 +31,12 @@ func newRestController(Type string, Version string, URL string) (*RestController
 
 	// check availability of client
 	if !c.Check() {
-		util.LogWarn("main", "CTRL", "controller: " + Type + " unavailable")
+		util.LogWarn("main", "CTL", "controller: " + Type + " unavailable")
 		return nil, errors.New("controller: " + Type + ":" + Version + " unavailable")
 	}
 
 	// success
-	util.LogInfo("main", "CTRL", "controller: " + Type + ":" + Version +  " available")
+	util.LogInfo("main", "CTL", "controller: " + Type + ":" + Version +  " available")
 	return &c, nil
 }
 
@@ -44,21 +44,51 @@ func newRestController(Type string, Version string, URL string) (*RestController
 
 // process triggers the request towards the controller
 func (c *RestController)process(action string, targetState *model.TargetState) (currentState *model.CurrentState, err error) {
-	body, _ := util.ConvertToYAML(targetState)
+	// convert targetState into a request
+	request := Request{
+		Request:         util.UUID(),
+		Domain:          targetState.Domain,
+		Solution:        targetState.Solution,
+		Version:         targetState.Version,
+		Element:         targetState.Element,
+		Cluster:         targetState.Cluster,
+		Instance:        targetState.Instance,
+		Component:       targetState.Component,
+		State:           targetState.State,
+		Configuration:   targetState.Configuration,
+	}
 
-	response, err := http.Post(c.URL + "/" + action, "application/x-yaml", strings.NewReader(body))
+	// trigger request
+	body, _ := util.ConvertToYAML(request)
+
+	rsp, err := http.Post(c.URL + "/" + action, "application/x-yaml", strings.NewReader(body))
 	if err != nil {
 		return nil, err
 	}
 
-	data, err := ioutil.ReadAll(response.Body)
+	data, err := ioutil.ReadAll(rsp.Body)
 	if err != nil {
 		return nil, err
 	}
 
-	err = util.ConvertFromYAML(string(data), currentState)
+	response := &Response{}
+	err = util.ConvertFromYAML(string(data), response)
 	if err != nil {
 		return nil, err
+	}
+
+	// convert response into currentState
+	currentState = &model.CurrentState{
+		Domain         : response.Domain,
+		Solution       : response.Solution,
+		Version        : response.Version,
+		Element        : response.Element,
+		Cluster        : response.Cluster,
+		Instance       : response.Instance,
+		Component      : response.Component,
+		State          : response.State,
+		Configuration  : response.Configuration,
+		Endpoint       : response.Endpoint,
 	}
 
 	return currentState, nil

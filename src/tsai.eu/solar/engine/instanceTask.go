@@ -3,10 +3,8 @@ package engine
 import (
 	"errors"
 
-	ctrl "tsai.eu/solar/controller"
 	"tsai.eu/solar/model"
 	"tsai.eu/solar/util"
-	"tsai.eu/solar/msg"
 )
 
 //------------------------------------------------------------------------------
@@ -24,6 +22,7 @@ func NewInstanceTask(domain string, parent string, solution string, version stri
 	task.Cluster  = cluster
 	task.Instance = instance
 	task.State    = state
+	task.Action   = ""
 	task.UUID     = util.UUID()
 	task.Parent   = parent
 	task.Status   = model.TaskStatusInitial
@@ -86,7 +85,6 @@ func ExecuteInstanceTask(task *model.Task) {
 
 	// determine context
 	instance, _  := model.GetInstance(task.Domain, task.Solution, task.Element, task.Cluster, task.Instance)
-	component, _ := model.GetComponent2(task.Domain, task.Solution, task.Element, task.Cluster)
 
 	// update target state of instance
 	instance.Target = task.State
@@ -103,69 +101,15 @@ func ExecuteInstanceTask(task *model.Task) {
 	if err != nil {
 		util.LogError(task.UUID, "ENG", "invalid transition")
 		channel <- model.NewEvent(task.Domain, task.UUID, model.EventTypeTaskFailure, task.UUID, "invalid transition")
-	}
-
-	// determine setup
-	targetState, _ := model.GetTargetState(
-											task.GetDomain(),
-	                    task.GetSolution(),
-										  task.GetVersion(),
-										  task.GetElement(),
-										  task.GetCluster(),
-										  task.GetInstance() )
-
-	// determine the required controller
-	controller, err := ctrl.GetController(component.Controller)
-	if err != nil {
-		util.LogError(task.UUID, "ENG", "unknown controller: " + component.Component + ":" + task.GetCluster())
-		channel <- model.NewEvent(task.Domain, task.UUID, model.EventTypeTaskFailure, task.UUID, "unknown controller: " + component.Component)
 		return
 	}
 
-	// execute the required transition
-	var currentState *model.CurrentState
+	// create controller task for the required transition
+	subtask, _ := NewControllerTask(task.Domain, task.UUID, task.Solution, task.Version, task.Element, task.Cluster, instance.UUID, task.State, transition )
+	task.AddSubtask(&subtask)
 
-	switch transition {
-	case "create":
-		currentState, err = controller.Create(targetState)
-	case "start":
-		currentState, err = controller.Start(targetState)
-	case "stop":
-		currentState, err = controller.Stop(targetState)
-	case "destroy":
-		currentState, err = controller.Destroy(targetState)
-	case "reset":
-		currentState, err = controller.Reset(targetState)
-	case "configure":
-		currentState, err = controller.Configure(targetState)
-	default:
-		util.LogError(task.UUID, "ENG", "invalid transition")
-		channel <- model.NewEvent(task.Domain, task.UUID, model.EventTypeTaskFailure, task.UUID, "invalid transition")
-		return
-	}
-
-	// update status
-	if currentState != nil {
-		// remember current state
-		instanceState := instance.State
-
-		// update state
-		model.SetCurrentState(currentState)
-
-		// notify if instance state has changed
-		if instance.State != instanceState {
-			util.LogInfo(task.UUID, "ENG", "Instance: " + currentState.Domain + "/" + currentState.Element + "/" + currentState.Cluster + "/" + currentState.Instance + " has new state:" + instance.State)
-			msg.Notify( "Instance", currentState.Domain + "/" + currentState.Element + "/" + currentState.Cluster + "/" + currentState.Instance + "/" + instance.State)
-		}
-	}
-
-	// check for errors and reexecute the task until the desired state has been reached
-	if err != nil {
-		util.LogError(task.UUID, "ENG", "controller has reported an error:\n" + err.Error())
-		channel <- model.NewEvent(task.Domain, task.UUID, model.EventTypeTaskFailure, task.UUID, err.Error())
-	} else {
-		channel <- model.NewEvent(task.Domain, task.UUID, model.EventTypeTaskExecution, task.UUID, "")
-	}
+	// trigger the task
+	channel <- model.NewEvent(task.Domain, subtask.UUID, model.EventTypeTaskExecution, task.UUID, "")
 }
 
 //------------------------------------------------------------------------------

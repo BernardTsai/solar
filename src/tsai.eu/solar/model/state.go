@@ -21,7 +21,7 @@ type TargetState struct {
   Element       string `yaml:"Element"`               // name of element
   Cluster       string `yaml:"Cluster"`               // name of cluster
   Instance      string `yaml:"Instance"`              // name of instance
-  Component     string `yaml:"Component"`             // name of instance
+  Component     string `yaml:"Component"`             // name of component
   State         string `yaml:"State"`                 // state of instance
 	Configuration string `yaml:"Configuration"`         // configuration of instance
 }
@@ -36,6 +36,7 @@ type CurrentState struct {
   Element       string `yaml:"Element"`               // name of element
   Cluster       string `yaml:"Cluster"`               // name of cluster
   Instance      string `yaml:"Instance"`              // name of instance
+  Component     string `yaml:"Component"`             // name of component
   State         string `yaml:"State"`                 // state of instance
 	Configuration string `yaml:"Configuration"`         // configuration of instance
 	Endpoint      string `yaml:"Endpoint"`              // endpoint of instance

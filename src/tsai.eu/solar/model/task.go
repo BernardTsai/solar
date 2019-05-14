@@ -20,6 +20,7 @@ type TaskInfo struct {
 	Cluster      string      `yaml:"Cluster"`      // cluster of entity
 	Instance     string      `yaml:"Instance"`     // instance of entity
 	State        string      `yaml:"State"`        // desired state of entity
+	Action       string      `yaml:"Action"`       // action to be performed by a controller
 	UUID         string      `yaml:"UUID"`         // uuid of task
 	Parent       string      `yaml:"Parent"`       // uuid of parent task
 	Status       string      `yaml:"Status"`       // status of task: (execution/completion/failure)
@@ -41,6 +42,7 @@ func NewTaskInfo(task *Task, level int) (*TaskInfo) {
 		Cluster:    task.Cluster,
 		Instance:   task.Instance,
 		State:      task.State,
+		Action:     task.Action,
 		UUID:       task.UUID,
 		Parent:     task.Parent,
 		Status:     task.Status,
@@ -94,6 +96,7 @@ type Task struct {
 	Cluster      string     `yaml:"Cluster"`      // cluster of entity
 	Instance     string     `yaml:"Instance"`     // instance of entity
 	State        string     `yaml:"State"`        // desired state of entity
+	Action       string     `yaml:"Action"`       // desired action for entity
 	UUID         string     `yaml:"UUID"`         // uuid of task
 	Parent       string     `yaml:"Parent"`       // uuid of parent task
 	Status       string     `yaml:"Status"`       // status of task: (execution/completion/failure)
@@ -161,6 +164,13 @@ func (task *Task) GetInstance() string {
 // GetState delivers the state of the entity.
 func (task *Task) GetState() string {
 	return task.State
+}
+
+//------------------------------------------------------------------------------
+
+// GetAction delivers the action for the entity.
+func (task *Task) GetAction() string {
+	return task.Action
 }
 
 //------------------------------------------------------------------------------

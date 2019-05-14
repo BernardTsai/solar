@@ -2,12 +2,11 @@ package controller
 
 import (
 	"sync"
-	"context"
+	// "context"
 
 	"tsai.eu/solar/model"
 	"tsai.eu/solar/util"
-	"tsai.eu/solar/controller/defaultController"
-	"tsai.eu/solar/controller/defaultRestController"
+	"tsai.eu/solar/controller/internalController"
 )
 
 //------------------------------------------------------------------------------
@@ -42,36 +41,10 @@ func GetController(controllerVersion string) (Controller, error) {
 		// create empty map of controllers
 		controllers = map[string]Controller{}
 
-		// initialise the default controller
-		def2Controller := defaultRestController.NewController()
-		def2Controller.Run(context.Background())
-		// controllers["default2"] = def2Controller
-		util.LogInfo("main", "CTRL", "default2 - controller active")
-
-		// initialise the default controller
-		defController = defaultController.NewController()
-		controllers["default:V1.0.0"] = defController
-		util.LogInfo("main", "CTRL", "default - controller active")
-
-		// read the controller configuration
-		config, _ := util.GetConfiguration()
-
-		// initialise all REST controllers
-		for _, info := range config.CTRL {
-			controller, err := newRestController(info.Type, info.Version, info.URL)
-			if err == nil {
-				controllers[info.Type + ":" + info.Version] = controller
-				util.LogInfo("main", "CTRL", info.Type + ":" + info.Version + " - controller active")
-			}
-		}
-		// initialise all gRPC controllers
-		// for controllerType, controllerAddress := range config.CTRL {
-		// 	controller, err := newGRPCController(controllerType, controllerAddress)
-		// 	if err == nil {
-		// 		controllers[controllerType] = controller
-		// 		util.LogInfo("main", "CTRL", controllerType + " - controller active")
-		// 	}
-		// }
+		// initialise the default internal controller
+		defController = internalController.NewController()
+		controllers["internal:V1.0.0"] = defController
+		util.LogInfo("main", "CTL", "internal - controller active")
 	})
 
 	// determine controller (if unknown use the default controller)
@@ -80,13 +53,7 @@ func GetController(controllerVersion string) (Controller, error) {
 		return controller, nil
 	}
 
-	// try to use the default controller
-	controller, found = controllers["default:V1.0.0"]
-	if found {
-		return controller, nil
-	}
-
-	// offer the default controller
+	// offer the default internal controller
 	return defController, nil
 
 

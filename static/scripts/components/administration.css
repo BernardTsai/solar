@@ -129,4 +129,18 @@
   background-color: green;
 }
 
+#navigation #administration #controllers table input,
+#navigation #administration #controllers table select {
+  width:            100%;
+  font-size:         12px;
+  border:              none;
+  background-color:    inherit;
+}
+
+#navigation #administration #controllers input:disabled,
+#navigation #administration #controllers select:disabled,
+#navigation #administration #controllers textarea:disabled {
+  background-color: #eee
+}
+
 /*----------------------------------------------------------------------------*/

@@ -73,6 +73,24 @@ Vue.component(
             view.domain = ""
           })
         }
+      },
+      // addController adds a new controller
+      addController: function() {
+        // ask for name of the new controller
+        name = prompt("Name of the controller to be added:")
+        if (name != null && name != "" && name != "null") {
+          // add relationship
+          this.model.Controllers.push({
+            Controller:  name,
+            Version:     "",
+            URL:         "",
+            Status:      ""
+          })
+          this.$forceUpdate()
+        }
+      },
+      // deleteController removes an existing controller
+      deleteController: function(ctrl) {
       }
     },
     template: `
@@ -131,14 +149,28 @@ Vue.component(
                 <th>Version</th>
                 <th>URL</th>
                 <th>Status</th>
+                <th class="center" @click="addController"><i class="fas fa-plus-circle"></i></th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="controller in model.Controllers">
                 <td>{{controller.Controller}}</td>
-                <td>{{controller.Version}}</td>
-                <td>{{controller.URL}}</td>
-                <td>{{controller.Status}}</td>
+                <td>
+                  <input type="text" v-model="controller.Version"/>
+                </td>
+                <td>
+                  <input type="text" v-model="controller.URL"/>
+                </td>
+                <td>
+                  <select
+                    v-model="controller.Status">
+                    <option value="active">active</option>
+                    <option value="active">inactive</option>
+                  </select>
+                </td>
+                <td @click="deleteController(controller)">
+                  <i class="fas fa-minus-circle"></i>
+                </td>
               </tr>
             </tbody>
           </table>

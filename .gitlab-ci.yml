@@ -8,8 +8,6 @@ before_script:
   - go get github.com/spf13/viper
   - go get github.com/gorilla/mux
   - go get github.com/segmentio/kafka-go
-  - go get google.golang.org/grpc
-  - go get github.com/golang/protobuf/protoc-gen-go
   - go get github.com/rs/zerolog/log
   - go get bou.ke/monkey
   - go get github.com/cbroglie/mustache

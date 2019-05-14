@@ -15,8 +15,9 @@ import (
 
 // ImageSummary list details related to an image
 type ImageSummary struct {
-	ID     string            `yaml:"Id"     json:"Id"`
-	Labels map[string]string `yaml:"Labels" json:"Labels"`
+	ID       string            `yaml:"Id"       json:"Id"`
+	Labels   map[string]string `yaml:"Labels"   json:"Labels"`
+  RepoTags []string          `yaml:"RepoTags" json:"RepoTags"`
 }
 
 // ContainerSummmary has the details of a container
@@ -45,10 +46,9 @@ type createContainerResponse struct {
 //------------------------------------------------------------------------------
 
 // createContainerTemplate is a template for creating a container
-const createContainerTemplate string = `
-{
+const createContainerTemplate string =
+`{
   "Image": "{{IMAGE}}:{{VERSION}}",
-  "Cmd": ["/bin/sh"],
   "Tty": true,
   "OpenStdin": true,
   "Labels": {
@@ -88,10 +88,11 @@ func ListImages() ([]ImageSummary, error) {
   }
 
   // trigger request
-	response, reqErr := httpc.Get("http://1.39/images/json")
-	if reqErr != nil {
-    return result, reqErr
+	response, reqErr := httpc.Get("http://v1.39/images/json")
+  if reqErr != nil {
+    return result, newError("Unable to list images", response, reqErr)
 	}
+
   defer response.Body.Close()
 
   decodeErr := json.NewDecoder(response.Body).Decode(&result)
@@ -118,14 +119,12 @@ func ListContainers() ([]ContainerSummmary, error) {
   }
 
   // trigger request
-	response, reqErr := httpc.Get("http://1.39/containers/json")
+	response, reqErr := httpc.Get("http://v1.39/containers/json")
 	if reqErr != nil {
-    return result, reqErr
+    return result,  newError("Unable to list containers", response, reqErr)
 	}
-  defer response.Body.Close()
 
-  // data, _ := ioutil.ReadAll(response.Body)
-  // Print(string(data))
+  defer response.Body.Close()
 
   decodeErr := json.NewDecoder(response.Body).Decode(&result)
   if decodeErr != nil {
@@ -149,10 +148,11 @@ func PullImage(image string, version string) error {
   }
 
   // trigger request
-	response, reqErr := httpc.Post("http://1.39/images/create?fromImage=" + image + ":" + version, "", nil)
-	if reqErr != nil {
-    return reqErr
+	response, reqErr := httpc.Post("http://v1.39/images/create?fromImage=" + image + ":" + version, "", nil)
+  if reqErr != nil {
+    return newError("Unable to pull image '" + image + ":" + version + "'", response, reqErr)
 	}
+
   defer response.Body.Close()
 
   // wait until the image has been retrieved
@@ -169,7 +169,7 @@ func StartContainer(image string, version string) (port int, err error) {
   // determine all containers
   containers, err := ListContainers()
   if err != nil{
-    return 0, err
+    return -1, err
   }
 
   // iterate over all containers
@@ -191,7 +191,7 @@ func StartContainer(image string, version string) (port int, err error) {
 //------------------------------------------------------------------------------
 
 // startContainer starts a new container
-func startContainer(image string, version string) (port int, err error) {
+func startContainer(image string, version string) (int, error) {
   // create client
   httpc := http.Client{
 		Transport: &http.Transport{
@@ -202,45 +202,59 @@ func startContainer(image string, version string) (port int, err error) {
   }
 
   // prepare body of the request
-  port, _ = getNewPort()
+  port, getNewPortError := getNewPort()
+  if getNewPortError != nil {
+    Print("No new port\n")
+    return 0, errors.New("Unable to determine new port:\n" + getNewPortError.Error())
+  }
 
   body := createContainerTemplate
   body =  strings.Replace(body, "{{IMAGE}}",   image,               -1)
   body =  strings.Replace(body, "{{VERSION}}", version,             -1)
   body =  strings.Replace(body, "{{PORT}}",    strconv.Itoa(port),  -1)
 
+  // normalize name
+  name := image + "_" + version
+  name =  strings.Replace(name, "/", "_", -1)
+
   // trigger request
-	response, reqErr := httpc.Post("http://1.39/containers/create?name=" + image + "_" + version, "application/json", strings.NewReader(body))
-	if reqErr != nil {
-    return 0, reqErr
+	response, reqErr := httpc.Post("http://v1.39/containers/create?name=" + name, "application/json", strings.NewReader(body))
+  if reqErr != nil {
+    Print("A\n")
+    return 0, newError("Unable to create container '" + image + ":" + version + "'", response, reqErr)
 	}
   if !strings.HasPrefix(response.Status, "201") {
-    return 0, errors.New("failed to create container: " + response.Status )
+    Print("%s\n", newError("Failed to create container '" + image + ":" + version + "'", response, reqErr))
+    return 0, newError("Failed to create container '" + image + ":" + version + "'", response, reqErr)
   }
-  defer response.Body.Close()
 
+  defer response.Body.Close()
 
   result := createContainerResponse{}
 
   decodeErr := json.NewDecoder(response.Body).Decode(&result)
   if decodeErr != nil {
+    Print("C\n")
     return 0, decodeErr
   }
 
   // start container
-	response2, reqErr2 := httpc.Post("http://1.39/containers/"+ result.ID + "/start", "application/json", nil)
+	response2, reqErr2 := httpc.Post("http://v1.39/containers/"+ result.ID + "/start", "application/json", nil)
 	if reqErr2 != nil {
-    return 0, reqErr2
+    Print("D\n")
+    return 0, newError("Unable to start container '" + image + ":" + version + "'", response2, reqErr2)
 	}
   if !strings.HasPrefix(response2.Status, "204") {
-    return 0, errors.New("failed to start container: " + response2.Status )
+    Print("E\n")
+    return 0, newError("Failed to start container '" + image + ":" + version + "'", response2, reqErr2)
   }
+
   defer response2.Body.Close()
 
   ioutil.ReadAll(response2.Body)
 
   // wait for container
-	// response3, reqErr3 := httpc.Post("http://1.39/containers/"+ result.ID + "/wait?condition=running", "application/json", nil)
+	// response3, reqErr3 := httpc.Post("http://v1.39/containers/"+ result.ID + "/wait?condition=running", "application/json", nil)
 	// if reqErr3 != nil {
   //   return 0, reqErr3
 	// }
@@ -268,18 +282,22 @@ func StopContainer(image string, version string) (err error) {
 		},
   }
 
+  // normalize name
+  name := image + "_" + version
+  name =  strings.Replace(name, "/", "_", -1)
+
   // create request
-  request, _ := http.NewRequest("DELETE", "http://1.39/containers/"+ image + "_" + version + "?force=true", nil)
+  request, _ := http.NewRequest("DELETE", "http://v1.39/containers/"+ name + "?force=true", nil)
 
   // trigger request
 	response, reqErr := httpc.Do(request)
-	if reqErr != nil {
-    return reqErr
+  if reqErr != nil {
+    return newError("Unable to stop container '" + image + ":" + version + "'", response, reqErr)
 	}
-
   if !strings.HasPrefix(response.Status, "204") {
-    return errors.New("failed to stop container: " + response.Status )
+    return newError("Failed to stop container '" + image + ":" + version + "'", response, reqErr)
   }
+
   defer response.Body.Close()
 
   ioutil.ReadAll(response.Body)
@@ -313,7 +331,7 @@ func getNewPort() (port int, err error) {
       // remove public port of the container from list of available ports
       for _, containerPort := range container.Ports {
         index := containerPort.PublicPort - 10001
-        if 0 < index && index < length {
+        if 0 <= index && index < length {
           available[index] = false
         }
       }
@@ -329,6 +347,44 @@ func getNewPort() (port int, err error) {
   }
 
   return 10001 + portNr, nil
+}
+
+//------------------------------------------------------------------------------
+
+// newError derives a new error from an error and a http response
+func newError(message string, response *http.Response, err error) error {
+  var txt string
+
+  // construct error message
+  if message != "" {
+    txt = message + ": "
+  } else {
+    txt = "Error: "
+  }
+
+  // add error message
+  if err != nil {
+    txt = txt + err.Error()
+  }
+
+  // add line break
+  txt = txt + "\n"
+
+  // add response body
+  if response != nil && response.Body != nil {
+    txt = txt + response.Status + "\n"
+
+    defer response.Body.Close()
+
+    bodyBytes, readAllError := ioutil.ReadAll(response.Body)
+
+    if readAllError != nil {
+      txt = txt + string(bodyBytes)
+    }
+  }
+
+  // return new error
+  return errors.New(txt)
 }
 
 //------------------------------------------------------------------------------

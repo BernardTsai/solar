@@ -1642,7 +1642,7 @@ Domains:
       "default:V1.0.0":
         Controller: default
         Version: V1.0.0
-        Types: []
+        Image: "tsai/solar-default-controller:V1.0.0"
         URL: ""
         Status: inactive
     Tasks:

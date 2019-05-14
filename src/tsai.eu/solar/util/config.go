@@ -24,20 +24,10 @@ type CoreConfiguration struct {
 
 //------------------------------------------------------------------------------
 
-// ControllerConfiguration holds all configuration information related to a controller
-type ControllerConfiguration struct {
-  Type    string
-  Version string
-  URL     string
-}
-
-//------------------------------------------------------------------------------
-
 // Configuration holds all configuration information for the application
 type Configuration struct {
   MSG  MsgConfiguration
   CORE CoreConfiguration
-  CTRL []ControllerConfiguration
 }
 
 //------------------------------------------------------------------------------
@@ -81,7 +71,6 @@ func readConfiguration(path string) (*Configuration, error) {
   // set default values
   viper.SetDefault("MSG",  map[string]string{"Notifications": "notifications", "Monitoring": "monitoring", "Address": "127.0.0.1:9092"})
   viper.SetDefault("CORE", map[string]string{"Identifier": "solar", "LogLevel": ""})
-  viper.SetDefault("CTRL", []ControllerConfiguration{})
 
   // read configuration (ignore any errors)
   if err := viper.ReadInConfig(); err != nil {
