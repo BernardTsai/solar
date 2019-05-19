@@ -3,24 +3,12 @@ Vue.component(
   {
     props: ['model', 'view'],
     methods: {
-      // subnavModel selects the subview: model
-      subnavModel: function() {
-        view.subnav = "Model"
-      },
-      // subnavController selects the subview: controller
-      subnavController: function() {
-        loadControllers(view.domain)
-        view.subnav = "Controller"
-      },
-      // subnavLogs selects the subview: logs
-      subnavLogs: function() {
-        view.subnav = "Logs"
-      },
       // clearModel deletes the current model
       clearModel: function() {
         resetModel()
         .then(() => loadDomains())
         .then(() => this.view.domain = "")
+        .then(() => this.view.modelDomain = "")
         .then(() => alert("Model has been reset"))
       },
       // importModel imports a new model from an uploaded file
@@ -47,32 +35,28 @@ Vue.component(
       exportModel: function() {
         window.open("/model", "_blank")
       },
-      // createDomain creates a new domain
-      createDomain: function() {
+      // addDomain creates a new domain
+      addDomain: function() {
         // ask for name of new domain and add a new domain
         name = prompt("Name of the new domain:")
         if (name != null && name != "" && name != "null") {
           saveDomain(name)
           .then(() => loadDomains())
-          .then(() => {
-            view.domain = name
-            navComponents()
-            selectDomain()
-          })
         }
       },
+      // selectModelDomain selects a specific model domain from view.modelDomain
+      selectModelDomain: function(domain) {
+        this.view.modelDomain = domain
+        loadControllers(view.modelDomain)
+      },
       // removeDomain removes an existing domain
-      removeDomain: function() {
+      removeDomain: function(domain) {
         // ask for name of an existing domain and remove it
-        name = prompt("Name of the domain to be removed:")
-        if (name != null && name != "" && name != "null") {
-          deleteDomain(name)
-          .then(() => loadDomains())
-          .then(() => alert("Domain has been removed"))
-          .then(() => {
-            view.domain = ""
-          })
-        }
+        deleteDomain(domain)
+        .then(() => loadDomains())
+        .then(() => {
+          view.modelDomain = ""
+        })
       },
       // addController adds a new controller
       addController: function() {
@@ -87,93 +71,115 @@ Vue.component(
             Status:      ""
           }
 
-          addController(view.domain, controller)
-          .then(() => loadControllers(view.domain))
+          addController(view.modelDomain, controller)
+          .then(() => loadControllers(view.modelDomain))
         }
       },
       // deleteController removes an existing controller
       deleteController: function(controller) {
         if (controller.Image != "") {
-          deleteController(view.domain, controller)
-          .then(() => loadControllers(view.domain))
+          deleteController(view.modelDomain, controller)
+          .then(() => loadControllers(view.modelDomain))
         }
       }
     },
     template: `
-      <div id="administration" v-if="view.nav=='Administration'">
+      <div id="Administration" v-if="view.nav=='Administration'">
 
+        <!-- model domain selector -->
         <div id="selector">
-          <div id="subnav">
-            <div
-              @click="subnavModel"
-              :class="{selected: view.subnav=='Model'}">
-              Model &nbsp;<i class="fas fa-sitemap"></i>
-            </div>
-            <div
-              v-if="view.domain!=''"
-              @click="subnavController"
-              :class="{selected: view.subnav=='Controller'}">
-              Controller &nbsp;<i class="fas fa-bell"></i>
-            </div>
-            <div
-              v-if="view.domain!=''"
-              @click="subnavLogs"
-              :class="{selected: view.subnav=='Logs'}">
-              Logs &nbsp;<i class="fas fa-redo"></i>
-            </div>
+          <strong>Model</strong>
+          <div class="buttons">
+            <button class="action" title="import model" @click="importModel">
+              Import&nbsp;<i class="fas fa-arrow-circle-up"></i>
+              <input type="file" id="file" name="model" @change="uploadModel" style=""/>
+            </button>
+            <button class="action" title="export model" @click="exportModel">
+              Export&nbsp;<i class="fas fa-arrow-circle-down"></i>
+            </button>
+            <button class="action" title="reset model" @click="clearModel">
+              Reset&nbsp;<i class="fas fa-times-circle"></i>
+            </button>
           </div>
         </div>
 
-        <div id="model" v-if="view.subnav=='Model'">
-          <div class="action" @click="createDomain">
-            <i class="fas fa-plus-square fa-lg"></i>&nbsp;Create Domain
+        <!-- model domains -->
+        <div id="modelDomains">
+          <div class="header">
+            <h3>Model:</h3>
           </div>
 
-          <div class="action" @click="removeDomain">
-            <i class="fas fa-minus-square fa-lg"></i>&nbsp;Remove Domain
-          </div>
-
-          <div class="action" @click="clearModel">
-            <i class="fas fa-window-close fa-lg"></i>&nbsp;Reset Model
-          </div>
-
-          <div class="action" @click="importModel">
-            <i class="fas fa-caret-square-up fa-lg"></i>&nbsp;Import Model
-            <input type="file" id="file" name="model" @change="uploadModel"/>
-          </div>
-
-          <div class="action" @click="exportModel">
-            <i class="fas fa-caret-square-down fa-lg"></i>&nbsp;Export Model
-          </div>
-        </div>
-
-        <div id="controllers" v-if="view.domain!='' && view.subnav=='Controller'">
-          <table class="controllers">
+          <table class="components">
             <thead>
               <tr>
-                <th>Controller</th>
-                <th>Version</th>
-                <th>Image</th>
-                <th>URL</th>
-                <th>Status</th>
-                <th class="center" @click="addController"><i class="fas fa-plus-circle"></i></th>
+                <th>Domain</th>
+                <th @click="addDomain()" title="add new domain">
+                  <i class="fas fa-plus-circle"></i>
+                </th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="controller in model.Controllers">
-                <td>{{controller.Controller}}</td>
-                <td>{{controller.Version}}</td>
-                <td>{{controller.Image}}</td>
-                <td>{{controller.URL}}</td>
-                <td>{{controller.Status}}</td>
-                <td @click="deleteController(controller)">
-                  <i class="fas fa-minus-circle" v-if="controller.Image!=''"></i>
+              <tr v-for="domain in model.Domains">
+                <td @click="selectModelDomain(domain)">{{domain}}</td>
+                <td  @click="selectModelDomain(domain)" title="view domain">
+                  <i class="fas fa-edit"></i>
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
 
+        <!-- domain details -->
+        <div id="domainDetails" v-if="view.modelDomain!=''">
+          <div class="header">
+            <h3>Domain: {{view.modelDomain}}</h3>
+            <button class="modal-default-button" v-if="!view.ce.New" v-on:click="removeDomain(view.modelDomain)" title="delete domain">
+              Delete <i class="fas fa-times-circle">
+            </button>
+            <button class="modal-default-button" v-if="!view.ce.New" v-on:click="selectModelDomain(view.modelDomain)" title="refresh">
+              Refresh <i class="fas fa-recycle">
+            </button>
+          </div>
+
+          <table style="width: 100%">
+            <col width="10*">
+            <col width="990*">
+            <tr>
+              <td><strong>Controllers:</strong></td>
+              <td>
+
+                <table id="controllers">
+                  <thead>
+                    <tr>
+                      <th>Controller</th>
+                      <th>Version</th>
+                      <th>Image</th>
+                      <th>URL</th>
+                      <th>Status</th>
+                      <th class="center" @click="addController" title="add controller">
+                        <i class="fas fa-plus-circle"></i>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="controller in model.Controllers">
+                      <td>{{controller.Controller}}</td>
+                      <td>{{controller.Version}}</td>
+                      <td>{{controller.Image}}</td>
+                      <td>{{controller.URL}}</td>
+                      <td>{{controller.Status}}</td>
+                      <td @click="deleteController(controller)" title="delete controller">
+                        <i class="fas fa-minus-circle" v-if="controller.Image!=''"></i>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+
+              </td>
+            </tr>
+          </table>
+
+        </div>
       </div>`
   }
 )

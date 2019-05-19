@@ -59,8 +59,15 @@ function loadDomains() {
   return fetch("http://" + window.location.hostname + ":" + window.location.port + "/domain")
     .then((response) => response.text())
     .then((text)     => jsyaml.safeLoad(text))
-    .then((yaml)     => model.Domains = yaml)
+    .then((yaml)     => model.Domains = yaml.sort(compareDomains))
 }
+
+function compareDomains(a,b) {
+  if (a < b) { return -1 }
+  if (a > b) { return  1 }
+  return 0
+}
+
 
 //------------------------------------------------------------------------------
 

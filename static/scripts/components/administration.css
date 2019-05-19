@@ -1,4 +1,4 @@
-#navigation #administration {
+#navigation #Administration {
   position: absolute;
   left:     0px;
   right:    0px;
@@ -6,40 +6,157 @@
   bottom:   0px;
 }
 
-#navigation #administration #selector {
+#navigation #Administration #selector {
   position:           absolute;
   left:              0px;
   right:             0px;
   top:               0px;
   height:           32px;
-  padding-left:      8px;
+  padding-left:    200px;
   padding-right:     8px;
   line-height:      31px;
   vertical-align:     middle;
   border-bottom:     1px solid grey;
-  font-size:        12px;
+  font-size:        14px;
   background-color:   lightgrey;
 }
 
-#navigation #administration #selector #subnav {
-  position:     absolute;
-  left:      200px;
-  font-size:  14px;
+#navigation #Administration #selector div {
+  padding-left:    8px;
+  padding-right:   8px;
+  display:          inline-block;
 }
 
-#navigation #administration #selector #subnav div{
-  display:         inline-block;
-  padding-right: 16px;
-  color:           grey;
+#navigation #Administration #selector .buttons {
+  float:          right;
+  height:       31px;
+  vertical-align: middle;
 }
 
-#navigation #administration #selector #subnav div.selected{
-  color: purple;
+#navigation #Administration #selector .action {
+  margin-left:   8px;
+  font-size:    12px;
+  padding:       2px 10px;
+}
+
+#navigation #Administration #selector input{
+  display: none;
 }
 
 /*----------------------------------------------------------------------------*/
 
-#navigation #administration #model {
+#navigation #Administration #domainDetails {
+  position:         absolute;
+  top:             32px;
+  bottom:           0px;
+  left:             200px;
+  right:            0px;
+  font-size:       14px;
+  padding-top:      8px;
+  padding-left:      8px;
+  padding-right:     8px;
+}
+
+#navigation #Administration #domainDetails .header {
+  padding-right: 8px;
+}
+
+#navigation #Administration #domainDetails .header h3 {
+  margin-top: 0px;
+  display:     inline-block;
+}
+
+#navigation #Administration #domainDetails .header .close {
+  float: right;
+}
+
+#navigation #Administration #domainDetails table {
+  border-collapse: collapse;
+}
+
+#navigation #Administration #domainDetails td,
+#navigation #Administration #domainDetails th {
+  vertical-align: top;
+  border:         none;
+}
+
+/*----------------------------------------------------------------------------*/
+
+#navigation #Administration #modelDomains {
+  position:        absolute;
+  left:           0px;
+  width:        200px;
+  top:           32px;
+  bottom:         0px;
+  padding-top:    8px;
+
+  border-right:   1px solid lightgrey;
+
+  font-size:     14px;
+}
+
+#navigation #Administration #modelDomains .action {
+  display: inline-block;
+}
+
+#navigation #Administration #modelDomains .header h3 {
+  display:       inline-block;
+  margin-top:   0px;
+  padding-left: 8px;
+}
+
+#navigation #Administration #modelDomains table {
+  overflow-x: hidden;
+  overflow-y: auto;
+  width:      100%;
+
+  border-collapse: collapse;
+  border-spacing:  0;
+  font-size:       12px;
+  text-align:      left;
+}
+
+#navigation #Administration #modelDomains table thead, table tbody {
+  width:      100%;
+}
+
+#navigation #Administration #modelDomains table tr {
+  background-color: #fff;
+  border-top:       1px solid #c6cbd1;
+}
+
+#navigation #Administration #modelDomains table tr:nth-child(2n) {
+  background-color: #f6f8fa;
+}
+
+#navigation #Administration #modelDomains table th, table td {
+  border:  1px solid #dfe2e5;
+  padding: 4px 4px;
+}
+
+#navigation #Administration #modelDomains table th {
+  background-color: #f6f8fa;
+}
+
+#navigation #Administration #modelDomains table tr th:last-child,
+#navigation #Administration #modelDomains table tr td:last-child {
+  text-align: center;
+  width:      32px;
+}
+
+#navigation #Administration #modelDomains table.components th.center,
+#navigation #Administration #modelDomains table.components td.center {
+  text-align: center;
+}
+
+
+#navigation #Administration #modelDomains table tbody tr:hover {
+  background-color: #eef;
+}
+
+/*----------------------------------------------------------------------------*/
+
+#navigation #Administration #model {
   position:           absolute;
   left:              0px;
   right:             0px;
@@ -47,7 +164,7 @@
   bottom             0px;
 }
 
-#navigation #administration #model .action {
+#navigation #Administration #model .action {
   width:              200px;
   height:              32px;
   background-color:      lightgrey;
@@ -60,29 +177,19 @@
   padding-left:        16px;
 }
 
-#navigation #administration #model .action:hover {
+#navigation #Administration #model .action:hover {
   background-color:      darkgrey;
 }
 
-#navigation #administration #model .action span{
+#navigation #Administration #model .action span{
   width: 64px;
 }
 
-#navigation #administration #model input{
+#navigation #Administration #model input{
   display: none;
 }
 
-/*----------------------------------------------------------------------------*/
-
-#navigation #administration #controllers {
-  position:           absolute;
-  left:              0px;
-  right:             0px;
-  top:              32px;
-  bottom:            0px;
-}
-
-#navigation #administration #controllers table {
+#navigation #Administration #model table{
   position:           absolute;
   left:              0px;
   right:             0px;
@@ -93,31 +200,31 @@
   width:           100%;
 }
 
-#navigation #administration #controllers table td, #navigation #administration #controllers table th {
+#navigation #Administration #model table td, #navigation #Administration #controllers table th {
   border-bottom:  1px solid #ddd;
   padding:        8px;
 }
 
-#navigation #administration #controllers table td:not(:first-child), #navigation #administration #controllers table th:not(:first-child) {
+#navigation #Administration #model table td:not(:first-child), #navigation #Administration #controllers table th:not(:first-child) {
   border-left: 1px solid #ddd;
 }
 
-#navigation #administration #controllers table td.noentries {
+#navigation #Administration #model table td.noentries {
   font-size:      16px;
   text-align:     center;
   padding-top:    8px;
   padding-bottom: 8px;
 }
 
-#navigation #administration #controllers table tr:nth-child(even){
+#navigation #Administration #model table tr:nth-child(even){
   background-color: #f2f2f2;
 }
 
-#navigation #administration #controllers table tr:hover {
+#navigation #Administration #model table tr:hover {
   background-color: #ddd;
 }
 
-#navigation #administration #controllers table th {
+#navigation #Administration #model table th {
   padding-top:      6px;
   padding-bottom:   6px;
   text-align:       left;
@@ -125,27 +232,59 @@
   color:            black;
 }
 
-#navigation #administration #controllers table td.status.completed {
+#navigation #Administration #model table td.status.completed {
   background-color: green;
 }
 
-#navigation #administration #controllers table input,
-#navigation #administration #controllers table select {
-  width:            100%;
-  font-size:         12px;
-  border:              none;
-  background-color:    inherit;
-}
-
-#navigation #administration #controllers input:disabled,
-#navigation #administration #controllers select:disabled,
-#navigation #administration #controllers textarea:disabled {
-  background-color: #eee
-}
-
-#navigation #administration #controllers table th:last-child,
-#navigation #administration #controllers table td:last-child{
+#navigation #Administration #model table th:last-child,
+#navigation #Administration #model table td:last-child{
   width: 32px;
+}
+
+/*----------------------------------------------------------------------------*/
+
+#navigation #Administration #controllers {
+  overflow-x:      hidden;
+  overflow-y:      auto;
+  width:           100%;
+  border-collapse: collapse;
+  border-spacing:  0;
+  font-size:       12px;
+  text-align:      left;
+}
+
+#navigation #Administration #controllers thead,
+#navigation #Administration #controllers tbody {
+  width:      100%;
+}
+
+#navigation #Administration #controllers tr {
+  background-color: #fff;
+  border-top:       1px solid #c6cbd1;
+}
+
+#navigation #Administration #controllers tr:nth-child(2n) {
+  background-color: #f6f8fa;
+}
+
+#navigation #Administration #controllers tbody tr:hover {
+  background-color: #eef;
+}
+
+#navigation #Administration #controllers td,
+#navigation #Administration #controllers th {
+  border:  1px solid #dfe2e5;
+  padding: 4px 4px;
+}
+
+#navigation #Administration #controllers  th {
+  background-color: #f6f8fa;
+}
+
+#navigation #Administration #controllers th:last-child,
+#navigation #Administration #controllers td:last-child{
+  width:      32px;
+  text-align: center;
 }
 
 /*----------------------------------------------------------------------------*/

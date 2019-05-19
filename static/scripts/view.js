@@ -1,6 +1,7 @@
 var view = {
   nav:          "Administration",  // selected view (Components,Architecture,Solution,Automation,Administration)
   subnav:       "Model",           // selected subview (Model,Logs, Controller for Administration)
+  modelDomain:  "",                // selected domain within the administration view
   domain:       "",                // selected domain
   component:    -1,                // index of selected component
   newComponent: false,             // indicates if a new component is to be designed

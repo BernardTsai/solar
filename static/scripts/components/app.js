@@ -9,7 +9,8 @@ Vue.component( 'app',
             <div id="domain-selector">
               <strong>Domain:</strong>
               <select id="domainSelector" v-model="view.domain" @change="selectDomain">
-                <option disabled value="">Please select one</option>
+                <option value="">administration</option>
+                <option disabled value="---">--------------------</option>
                 <option v-for="domain in model.Domains">{{domain}}</option>
               </select>
             </div>
@@ -19,7 +20,7 @@ Vue.component( 'app',
             <div v-if="view.domain!=''" @click="navArchitecture"   :class="{selected: view.nav=='Architecture'}"   id="Architecture">Architecture     <i class="fas fa-map    text-gray-300"></i></div>
             <div v-if="view.domain!=''" @click="navSolution"       :class="{selected: view.nav=='Solution'}"       id="Solution">Solution             <i class="fas fa-cubes  text-gray-300"></i></div>
             <div v-if="view.domain!=''" @click="navAutomation"     :class="{selected: view.nav=='Automation'}"     id="Automation">Automation         <i class="fas fa-cogs   text-gray-300"></i></div>
-            <div                        @click="navAdministration" :class="{selected: view.nav=='Administration'}" id="Administration">Administration <i class="fas fa-wrench text-gray-300"></i></div>
+            <div v-if="view.domain==''" @click="navAdministration" :class="{selected: view.nav=='Administration'}" id="Administration">Administration <i class="fas fa-wrench text-gray-300"></i></div>
           </div>
         </div>
         <navigation v-bind:model="model" v-bind:view="view"></navigation>

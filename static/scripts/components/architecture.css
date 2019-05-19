@@ -86,21 +86,6 @@
 
 /*----------------------------------------------------------------------------*/
 
-#navigation #architecture #comps {
-  position:        absolute;
-  left:           0px;
-  width:        200px;
-  top:           32px;
-  bottom:         0px;
-  padding-top:    8px;
-
-  border-right:   1px solid lightgrey;
-
-  font-size:     14px;
-}
-
-/*----------------------------------------------------------------------------*/
-
 #comps .header h3 {
   display:       inline-block;
   margin-top:   0px;
