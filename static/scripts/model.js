@@ -314,11 +314,44 @@ function loadAll(domain, solution) {
 
 // loadControllers retrieves a list of controllers from the the repository
 function loadControllers(domain) {
+
   // determine domains
   return fetch("http://" + window.location.hostname + ":" + window.location.port + "/controller/" + domain)
     .then((response) => response.text())
     .then((text)     => jsyaml.safeLoad(text))
-    .then((yaml)     => model.Controllers = yaml)
+    .then((yaml)     => model.Controllers = yaml.sort(compareControllers))
+}
+
+function compareControllers(a,b) {
+  if (a.Controller < b.Controller) { return -1 }
+  if (a.Controller > b.Controller) { return  1 }
+  if (a.Version    < b.Version   ) { return -1 }
+  if (a.Version    > b.Version   ) { return  1 }
+  return 0
+}
+
+//------------------------------------------------------------------------------
+
+// addController adds a new controller
+function addController(domain, controller) {
+  // determine domains
+  return fetch("http://" + window.location.hostname + ":" + window.location.port + "/controller/" + domain, {
+      method: "POST",
+      body:   jsyaml.safeDump(controller)
+    })
+    .then((response) => response.text())
+}
+
+//------------------------------------------------------------------------------
+
+// deleteController removes an existing controller
+function deleteController(domain, controller) {
+  // determine domains
+  return fetch("http://" + window.location.hostname + ":" + window.location.port + "/controller/" + domain + "/" + controller.Controller + "/" + controller.Version, {
+      method: "DELETE",
+      body:   jsyaml.safeDump(controller)
+    })
+    .then((response) => response.text())
 }
 
 //------------------------------------------------------------------------------

@@ -118,11 +118,11 @@ KO controller list unknown
 OK controller list demo
 OK controller get
 KO controller get unknown default V1.0.0
-OK controller get demo default V1.0.0
+OK controller get demo Internal V1.0.0
 OK controller delete ?
 KO controller delete unknown default V1.0.0
 KO controller delete demo default unknown
-OK controller delete demo default V1.0.0
+OK controller delete demo Internal V1.0.0
 
 OK model reset
 OK model set testdata/model_001.yaml

@@ -81,7 +81,7 @@ func (m *Manager) Stop() {
 
 // checkControllers checks the status of the controllers
 func checkControllers() {
-  // loop over all domains
+  // loop over all domains to restart dormant controllers
   domainNames, _ := model.GetDomains()
   for _, domainName := range domainNames {
     domain, _ := model.GetDomain(domainName)
@@ -97,7 +97,7 @@ func checkControllers() {
       }
 
       // check status of controller
-      checkController(controller)
+      checkController(domain, controller)
 
       // start controller if required
       if controller.Status != model.ActiveState {
@@ -118,7 +118,7 @@ func checkControllers() {
 //------------------------------------------------------------------------------
 
 // checkController checks the status of a controller
-func checkController(controller *model.Controller) {
+func checkController(domain *model.Domain, controller *model.Controller) {
   // create client
   httpc := http.Client{}
 
@@ -146,8 +146,21 @@ func checkController(controller *model.Controller) {
       return
     }
 
-    controller.Controller = parts[1]
-    controller.Version    = parts[2]
+    // replace controller if needed
+    controllerName    := parts[1]
+    controllerVersion := parts[2]
+
+    if controllerName != controller.Controller || controllerVersion != controller.Version {
+      controller2, _ := model.NewController(controllerName, controllerVersion)
+
+      controller2.Image  = controller.Image
+      controller2.URL    = controller.URL
+      controller2.Status = model.ActiveState
+
+      domain.AddController(controller2)
+
+      domain.DeleteController(controller.Controller, controller.Version)
+    }
   }
 }
 

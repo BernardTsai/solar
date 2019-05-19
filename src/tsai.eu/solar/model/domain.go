@@ -3,6 +3,7 @@ package model
 import (
 	"sync"
 	"errors"
+	"strings"
 
 	"tsai.eu/solar/util"
 )
@@ -97,10 +98,10 @@ func NewDomain(name string) (*Domain, error) {
 	domain.ControllersX   = sync.RWMutex{}
 
 	// add default controller
-	ctrl, _ := NewController("internal", "V1.0.0")
+	ctrl, _ := NewController("Internal", "V1.0.0")
 	ctrl.Status = ActiveState
 
-	domain.Controllers["internal:V1.0.0"] = ctrl
+	domain.Controllers["Internal:V1.0.0"] = ctrl
 
 	// success
 	return &domain, nil
@@ -562,8 +563,13 @@ func (domain *Domain) ListControllers() ([][2]string, error) {
 	controllers := [][2]string{}
 
 	domain.ControllersX.RLock()
-	for _, controller := range domain.Controllers {
-		controllers = append(controllers, [2]string{controller.Controller, controller.Version})
+	for controllerNameVersion := range domain.Controllers {
+		parts := strings.Split(controllerNameVersion, ":")
+		if len(parts) == 2 {
+			controllers = append(controllers, [2]string{parts[0], parts[1]})
+		} else {
+			controllers = append(controllers, [2]string{controllerNameVersion, ""})
+		}
 	}
 	domain.ControllersX.RUnlock()
 
@@ -574,10 +580,12 @@ func (domain *Domain) ListControllers() ([][2]string, error) {
 //------------------------------------------------------------------------------
 
 // GetController get a controller by name
-func (domain *Domain) GetController(controllerName string, controllerVersion string) (*Controller, error) {
+func (domain *Domain) GetController(controllerName string, controllerVersion string) (controller *Controller, err error) {
+	var ok bool
+
 	// determine controller
 	domain.ControllersX.RLock()
-	controller, ok := domain.Controllers[controllerName + ":" + controllerVersion]
+	controller, ok = domain.Controllers[controllerName + ":" + controllerVersion]
 	domain.ControllersX.RUnlock()
 
 	if !ok {
@@ -612,10 +620,10 @@ func (domain *Domain) AddController(controller *Controller) error {
 //------------------------------------------------------------------------------
 
 // DeleteController deletes an controller
-func (domain *Domain) DeleteController(image string, version string) error {
+func (domain *Domain) DeleteController(controller string, version string) error {
 	// determine controller
 	domain.ControllersX.RLock()
-	_, ok := domain.Controllers[image + ":" + version]
+	_, ok := domain.Controllers[controller + ":" + version]
 	domain.ControllersX.RUnlock()
 
 	if !ok {
@@ -624,7 +632,7 @@ func (domain *Domain) DeleteController(image string, version string) error {
 
 	// remove controller
 	domain.ControllersX.Lock()
-	delete(domain.Controllers, image + ":" + version)
+	delete(domain.Controllers, controller + ":" + version)
 	domain.ControllersX.Unlock()
 
 	// success

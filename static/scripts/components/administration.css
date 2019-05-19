@@ -79,7 +79,7 @@
   left:              0px;
   right:             0px;
   top:              32px;
-  bottom             0px;
+  bottom:            0px;
 }
 
 #navigation #administration #controllers table {
@@ -141,6 +141,11 @@
 #navigation #administration #controllers select:disabled,
 #navigation #administration #controllers textarea:disabled {
   background-color: #eee
+}
+
+#navigation #administration #controllers table th:last-child,
+#navigation #administration #controllers table td:last-child{
+  width: 32px;
 }
 
 /*----------------------------------------------------------------------------*/

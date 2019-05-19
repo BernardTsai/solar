@@ -77,20 +77,26 @@ Vue.component(
       // addController adds a new controller
       addController: function() {
         // ask for name of the new controller
-        name = prompt("Name of the controller to be added:")
+        name = prompt("Image name of the controller to be added:")
         if (name != null && name != "" && name != "null") {
-          // add relationship
-          this.model.Controllers.push({
-            Controller:  name,
-            Version:     "",
+          controller = {
+            Controller:  uuid(),
+            Version:     "V0.0.0",
+            Image:       name,
             URL:         "",
             Status:      ""
-          })
-          this.$forceUpdate()
+          }
+
+          addController(view.domain, controller)
+          .then(() => loadControllers(view.domain))
         }
       },
       // deleteController removes an existing controller
-      deleteController: function(ctrl) {
+      deleteController: function(controller) {
+        if (controller.Image != "") {
+          deleteController(view.domain, controller)
+          .then(() => loadControllers(view.domain))
+        }
       }
     },
     template: `
@@ -110,7 +116,7 @@ Vue.component(
               Controller &nbsp;<i class="fas fa-bell"></i>
             </div>
             <div
-            v-if="view.domain!=''"
+              v-if="view.domain!=''"
               @click="subnavLogs"
               :class="{selected: view.subnav=='Logs'}">
               Logs &nbsp;<i class="fas fa-redo"></i>
@@ -147,6 +153,7 @@ Vue.component(
               <tr>
                 <th>Controller</th>
                 <th>Version</th>
+                <th>Image</th>
                 <th>URL</th>
                 <th>Status</th>
                 <th class="center" @click="addController"><i class="fas fa-plus-circle"></i></th>
@@ -155,21 +162,12 @@ Vue.component(
             <tbody>
               <tr v-for="controller in model.Controllers">
                 <td>{{controller.Controller}}</td>
-                <td>
-                  <input type="text" v-model="controller.Version"/>
-                </td>
-                <td>
-                  <input type="text" v-model="controller.URL"/>
-                </td>
-                <td>
-                  <select
-                    v-model="controller.Status">
-                    <option value="active">active</option>
-                    <option value="active">inactive</option>
-                  </select>
-                </td>
+                <td>{{controller.Version}}</td>
+                <td>{{controller.Image}}</td>
+                <td>{{controller.URL}}</td>
+                <td>{{controller.Status}}</td>
                 <td @click="deleteController(controller)">
-                  <i class="fas fa-minus-circle"></i>
+                  <i class="fas fa-minus-circle" v-if="controller.Image!=''"></i>
                 </td>
               </tr>
             </tbody>
