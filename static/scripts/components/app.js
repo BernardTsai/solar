@@ -5,14 +5,9 @@ Vue.component( 'app',
       <div>
         <div id="header">
           <div id="title" title="Simplified Orchestration of the Lifecycle Automation of Resources\nReference implementation - © Bernard Tsai 2018">SOLAR</div>
-          <div id="selectors">
+          <div id="selectors" v-if="view.domain!=''" >
             <div id="domain-selector">
-              <strong>Domain:</strong>
-              <select id="domainSelector" v-model="view.domain" @change="selectDomain">
-                <option value="">administration</option>
-                <option disabled value="---">--------------------</option>
-                <option v-for="domain in model.Domains">{{domain}}</option>
-              </select>
+              <strong>Domain:</strong> &nbsp; {{view.domain}} &nbsp;
             </div>
           </div>
           <div id="nav">
@@ -20,59 +15,13 @@ Vue.component( 'app',
             <div v-if="view.domain!=''" @click="navArchitecture"   :class="{selected: view.nav=='Architecture'}"   id="Architecture">Architecture     <i class="fas fa-map    text-gray-300"></i></div>
             <div v-if="view.domain!=''" @click="navSolution"       :class="{selected: view.nav=='Solution'}"       id="Solution">Solution             <i class="fas fa-cubes  text-gray-300"></i></div>
             <div v-if="view.domain!=''" @click="navAutomation"     :class="{selected: view.nav=='Automation'}"     id="Automation">Automation         <i class="fas fa-cogs   text-gray-300"></i></div>
-            <div v-if="view.domain==''" @click="navAdministration" :class="{selected: view.nav=='Administration'}" id="Administration">Administration <i class="fas fa-wrench text-gray-300"></i></div>
+            <div                        @click="navAdministration" :class="{selected: view.nav=='Administration'}" id="Administration">Administration <i class="fas fa-wrench text-gray-300"></i></div>
           </div>
         </div>
         <navigation v-bind:model="model" v-bind:view="view"></navigation>
       </div>`
   }
 )
-
-//------------------------------------------------------------------------------
-
-// selectArchitecture pick a specific version of an architecture
-function selectDomain() {
-  // load catalog
-  if (view.domain == ""){
-    model.Catalog = []
-  } else {
-    loadCatalog(view.domain)
-  }
-
-  // load components
-  if (view.domain == ""){
-    model.Components = []
-  } else {
-    loadComponents(view.domain)
-  }
-
-  // load architectures
-  if (view.domain == ""){
-    model.Architectures = []
-    model.Architecture  = null
-  } else {
-    loadArchitectures(view.domain)
-    model.Architecture  = null
-  }
-  view.architecture = ""
-
-  // load solutions
-  if (view.domain == ""){
-    model.Solutions = []
-    model.Solution  = null
-  } else {
-    loadSolutions(view.domain)
-    model.Solution  = null
-  }
-  view.solution = ""
-
-  // activate administration if no domain has been selected
-  if (view.domain == "") {
-    navAdministration()
-  } else if (view.nav == "" || view.nav == "Administration") {
-    view.nav = "Components"
-  }
-}
 
 //------------------------------------------------------------------------------
 

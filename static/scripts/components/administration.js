@@ -44,6 +44,51 @@ Vue.component(
           .then(() => loadDomains())
         }
       },
+      // selectDomain selects a domain for editing
+      selectDomain: function(domain) {
+        view.domain = domain
+
+        // load catalog
+        if (view.domain == ""){
+          model.Catalog = []
+        } else {
+          loadCatalog(view.domain)
+        }
+
+        // load components
+        if (view.domain == ""){
+          model.Components = []
+        } else {
+          loadComponents(view.domain)
+        }
+
+        // load architectures
+        if (view.domain == ""){
+          model.Architectures = []
+          model.Architecture  = null
+        } else {
+          loadArchitectures(view.domain)
+          model.Architecture  = null
+        }
+        view.architecture = ""
+
+        // load solutions
+        if (view.domain == ""){
+          model.Solutions = []
+          model.Solution  = null
+        } else {
+          loadSolutions(view.domain)
+          model.Solution  = null
+        }
+        view.solution = ""
+
+        // activate administration if no domain has been selected
+        if (view.domain == "") {
+          navAdministration()
+        } else if (view.nav == "" || view.nav == "Administration") {
+          view.nav = "Components"
+        }
+      },
       // selectModelDomain selects a specific model domain from view.modelDomain
       selectModelDomain: function(domain) {
         this.view.modelDomain = domain
@@ -106,7 +151,7 @@ Vue.component(
         <!-- model domains -->
         <div id="modelDomains">
           <div class="header">
-            <h3>Model:</h3>
+            <h3>Domains:</h3>
           </div>
 
           <table class="components">
@@ -120,8 +165,8 @@ Vue.component(
             </thead>
             <tbody>
               <tr v-for="domain in model.Domains">
-                <td @click="selectModelDomain(domain)">{{domain}}</td>
-                <td  @click="selectModelDomain(domain)" title="view domain">
+                <td @click="selectModelDomain(domain)" title="view domain">{{domain}}</td>
+                <td  @click="selectDomain(domain)" title="select domain">
                   <i class="fas fa-edit"></i>
                 </td>
               </tr>
@@ -133,11 +178,14 @@ Vue.component(
         <div id="domainDetails" v-if="view.modelDomain!=''">
           <div class="header">
             <h3>Domain: {{view.modelDomain}}</h3>
-            <button class="modal-default-button" v-if="!view.ce.New" v-on:click="removeDomain(view.modelDomain)" title="delete domain">
+            <button class="modal-default-button" v-on:click="removeDomain(view.modelDomain)" title="delete domain">
               Delete <i class="fas fa-times-circle">
             </button>
-            <button class="modal-default-button" v-if="!view.ce.New" v-on:click="selectModelDomain(view.modelDomain)" title="refresh">
+            <button class="modal-default-button" v-on:click="selectModelDomain(view.modelDomain)" title="refresh">
               Refresh <i class="fas fa-recycle">
+            </button>
+            <button class="modal-default-button" v-on:click="selectDomain(view.modelDomain)" title="select domain">
+              Edit <i class="fas fa-edit">
             </button>
           </div>
 
