@@ -6,6 +6,12 @@ Vue.component( 'task',
         if (event.Index1 < event.Index2) {
           return ((event.Index1)*view.automation.line + (event.Layer1+1)*view.automation.line/(event.Layers1+1)) + 'px'
         }
+        if (event.Index1 > event.Index2) {
+          return ((event.Index2)*view.automation.line + (event.Layer2+1)*view.automation.line/(event.Layers2+1)) + 'px'
+        }
+        if (event.Layer1 < event.Layer2) {
+          return ((event.Index1)*view.automation.line + (event.Layer1+1)*view.automation.line/(event.Layers1+1)) + 'px'
+        }
         return ((event.Index2)*view.automation.line + (event.Layer2+1)*view.automation.line/(event.Layers2+1)) + 'px'
       },
       height: function(event) {

@@ -11,11 +11,11 @@ Vue.component( 'app',
             </div>
           </div>
           <div id="nav">
-            <div v-if="view.domain!=''" @click="navComponents"     :class="{selected: view.nav=='Components'}"     id="Components">Catalog            <i class="fas fa-cube   text-gray-300"></i></div>
-            <div v-if="view.domain!=''" @click="navArchitecture"   :class="{selected: view.nav=='Architecture'}"   id="Architecture">Architecture     <i class="fas fa-map    text-gray-300"></i></div>
-            <div v-if="view.domain!=''" @click="navSolution"       :class="{selected: view.nav=='Solution'}"       id="Solution">Solution             <i class="fas fa-cubes  text-gray-300"></i></div>
-            <div v-if="view.domain!=''" @click="navAutomation"     :class="{selected: view.nav=='Automation'}"     id="Automation">Automation         <i class="fas fa-cogs   text-gray-300"></i></div>
-            <div                        @click="navAdministration" :class="{selected: view.nav=='Administration'}" id="Administration">Administration <i class="fas fa-wrench text-gray-300"></i></div>
+            <div v-if="view.domain!=''" @click="navComponents"     :class="{selected: view.nav=='Components'}"     title="Source building blocks for a solutions"      id="Components">Catalog            <i class="fas fa-cube   text-gray-300"></i></div>
+            <div v-if="view.domain!=''" @click="navArchitecture"   :class="{selected: view.nav=='Architecture'}"   title="Design and configure solution architectures" id="Architecture">Architecture     <i class="fas fa-map    text-gray-300"></i></div>
+            <div v-if="view.domain!=''" @click="navSolution"       :class="{selected: view.nav=='Solution'}"       title="Manage solutions"                            id="Solution">Solution             <i class="fas fa-cubes  text-gray-300"></i></div>
+            <div v-if="view.domain!=''" @click="navAutomation"     :class="{selected: view.nav=='Automation'}"     title="Monitor the automation of solutions"         id="Automation">Automation         <i class="fas fa-cogs   text-gray-300"></i></div>
+            <div                        @click="navAdministration" :class="{selected: view.nav=='Administration'}" title="Administrate solution domains"               id="Administration">Administration <i class="fas fa-wrench text-gray-300"></i></div>
           </div>
         </div>
         <navigation v-bind:model="model" v-bind:view="view"></navigation>
