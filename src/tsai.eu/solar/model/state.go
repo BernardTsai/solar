@@ -46,61 +46,77 @@ type CurrentState struct {
 
 // GetTargetState determines the desired state of an element, cluster and instance
 func GetTargetState(domainName string, solutionName string,  solutionVersion string, elementName string,  clusterName string, instanceName string) (*TargetState, error) {
-	targetState := TargetState{}
+	targetState := &TargetState{
+    Domain:        domainName,
+    Solution:      solutionName,
+    Version:       solutionVersion,
+    Element:       elementName,
+    Cluster:       clusterName,
+    Instance:      instanceName,
+    Component:     "",
+    State:         "initial",
+    Configuration: "",
+  }
 
   // determine domain context
   domain, err := GetDomain(domainName)
   if err != nil {
-    return nil, err
+    return targetState, err
   }
 
   // determine solution context
   solution, err := domain.GetSolution(solutionName)
   if err != nil {
-    return nil, err
+    return targetState, err
   }
 
   // determine element context
   element, err := solution.GetElement(elementName)
   if err != nil {
-    return nil, err
+    return targetState, err
   }
 
   // determine cluster context
   cluster, err := element.GetCluster(clusterName)
   if err != nil {
-    return nil, err
+    return targetState, err
   }
 
   // determine instance context
   instance, err := cluster.GetInstance(instanceName)
   if err != nil {
-    return nil, err
+    return targetState, err
   }
+
+  // update state of target state
+  targetState.State = instance.Target
 
   // determine architecture context
   architecture, err := domain.GetArchitecture(solutionName, solutionVersion)
   if err != nil {
-    return nil, err
+    return targetState, err
   }
 
   // determine architecture element context
   architectureElement, err := architecture.GetElement(elementName)
   if err != nil {
-    return nil, err
+    return targetState, err
   }
 
   // determine architecture cluster context
   architectureCluster, err := architectureElement.GetCluster(clusterName)
   if err != nil {
-    return nil, err
+    return targetState, err
   }
 
   // determine architecture component context
   architectureComponent, err := domain.GetComponent(element.Component, clusterName)
   if err != nil {
-    return nil, err
+    return targetState, err
   }
+
+  // update component of target state
+  targetState.Component = architectureComponent.Component
 
   // render instance configuration
   template   := architectureComponent.Configuration
@@ -109,31 +125,23 @@ func GetTargetState(domainName string, solutionName string,  solutionVersion str
   // convert parameters
   err = yaml.Unmarshal([]byte(architectureCluster.Configuration), &parameters )
   if err != nil {
-    return nil, err
+    return targetState, err
   }
 
   // render
   configuration, err := mustache.Render(template, parameters)
   if err != nil {
-    return nil, err
+    return targetState, err
   }
 
   // update instance configuration
   instance.Configuration = configuration
 
-  // set context information
-  targetState.Domain        = domainName
-  targetState.Solution      = solutionName
-  targetState.Version       = solutionVersion
-  targetState.Element       = elementName
-  targetState.Cluster       = clusterName
-  targetState.Instance      = instanceName
-  targetState.Component     = architectureComponent.Component
-  targetState.State         = instance.Target
+  // update configuration oft target state
   targetState.Configuration = instance.Configuration
 
   // success
-  return &targetState, nil
+  return targetState, nil
 }
 
 //------------------------------------------------------------------------------
