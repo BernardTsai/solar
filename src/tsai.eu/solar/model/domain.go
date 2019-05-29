@@ -97,11 +97,21 @@ func NewDomain(name string) (*Domain, error) {
 	domain.Controllers    = map[string]*Controller{}
 	domain.ControllersX   = sync.RWMutex{}
 
-	// add default controller
+	// add internal default controller
 	ctrl, _ := NewController("Internal", "V1.0.0")
 	ctrl.Status = ActiveState
 
 	domain.Controllers["Internal:V1.0.0"] = ctrl
+
+	// add default controllers listed in the configuration file
+	configuration, _ := util.GetConfiguration()
+
+	for _, controllerImage := range configuration.CONTROLLERS {
+		controller, _ := NewController(util.UUID(),"V0.0.0")
+		controller.Image = controllerImage
+
+		domain.AddController(controller)
+	}
 
 	// success
 	return &domain, nil

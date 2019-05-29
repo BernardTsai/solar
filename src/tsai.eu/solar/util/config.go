@@ -26,8 +26,9 @@ type CoreConfiguration struct {
 
 // Configuration holds all configuration information for the application
 type Configuration struct {
-  MSG  MsgConfiguration
-  CORE CoreConfiguration
+  MSG         MsgConfiguration
+  CORE        CoreConfiguration
+  CONTROLLERS []string // list of controller tags of the format "image-name:version"
 }
 
 //------------------------------------------------------------------------------
@@ -69,19 +70,21 @@ func readConfiguration(path string) (*Configuration, error) {
   viper.AddConfigPath(path)
 
   // set default values
-  viper.SetDefault("MSG",  map[string]string{"Notifications": "notifications", "Monitoring": "monitoring", "Address": "127.0.0.1:9092"})
-  viper.SetDefault("CORE", map[string]string{"Identifier": "solar", "LogLevel": ""})
+  viper.SetDefault("MSG",         map[string]string{"Notifications": "notifications", "Monitoring": "monitoring", "Address": "127.0.0.1:9092"})
+  viper.SetDefault("CORE",        map[string]string{"Identifier": "solar", "LogLevel": ""})
+  viper.SetDefault("CONTROLLERS", []string{})
 
   // read configuration (ignore any errors)
-  if err := viper.ReadInConfig(); err != nil {
-    return nil, err
+  err := viper.ReadInConfig(); 
+  if err != nil {
+    LogError("CORE", "util", "Unable to read configuration file")
   }
 
   // decode the configuration
   viper.Unmarshal(&configuration)
 
   // success
-  return &configuration, nil
+  return &configuration, err
 }
 
 //------------------------------------------------------------------------------

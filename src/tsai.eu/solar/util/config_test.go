@@ -16,8 +16,9 @@ MSG:
 CORE:
   IDENTIFIER: solar
   LOGLEVEL:   debug
-CTRL:
-  dummy: 127.0.0.1:10000
+CONTROLLERS:
+  - tsai/solar-k8s-controller:V1.0.0
+  - tsai/solar-default-controller:V1.0.0
 `
 
 //------------------------------------------------------------------------------

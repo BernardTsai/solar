@@ -5,3 +5,6 @@ MSG:
 CORE:
   IDENTIFIER: solar
   LOGLEVEL:   error
+CONTROLLERS:
+  - tsai/solar-k8s-controller:V1.0.0
+  - tsai/solar-default-controller:V1.0.0
