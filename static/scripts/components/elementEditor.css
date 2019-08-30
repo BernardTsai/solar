@@ -1,4 +1,4 @@
-.archEditor {
+.elementEditor {
   position:          absolute;
   top:             32px;
   bottom:           0px;
@@ -11,59 +11,59 @@
   background-color:   #eee;
 }
 
-.archEditor .header h3 {
+.elementEditor .header h3 {
   margin-top: 0px;
   display:     inline-block;
 }
 
-.archEditor .header .close {
+.elementEditor .header .close {
   float: right;
 }
 
-.archEditor table {
+.elementEditor table {
   border-collapse: collapse;
 }
 
-.archEditor td, .archEditor th {
+.elementEditor td, .elementEditor th {
   vertical-align: top;
   border:         none;
 }
 
-.archEditor input,
-.archEditor select,
-.archEditor textarea {
+.elementEditor input,
+.elementEditor select,
+.elementEditor textarea {
   width:     100%;
   font-size:  12px;
 }
 
-.archEditor .relationships td,
-.archEditor .relationships th {
+.elementEditor .relationships td,
+.elementEditor .relationships th {
   vertical-align:  top;
   border:         1px solid #dfe2e5;
   padding:        4px 4px;
 }
 
 
-.archEditor .relationships input,
-.archEditor .relationships select {
+.elementEditor .relationships input,
+.elementEditor .relationships select {
   width:            100%;
   font-size:         12px;
   border:              none;
   background-color:    inherit;
 }
 
-.archEditor textarea {
+.elementEditor textarea {
   resize:    none;
   border:   1px solid lightgrey;
 }
 
-.archEditor input:disabled,
-.archEditor select:disabled,
-.archEditor textarea:disabled {
+.elementEditor input:disabled,
+.elementEditor select:disabled,
+.elementEditor textarea:disabled {
   background-color: #eee
 }
 
-.archEditor table.relationships  {
+.elementEditor table.relationships  {
   overflow-x: hidden;
   overflow-y: auto;
   width:      100%;
@@ -74,46 +74,46 @@
   text-align:      left;
 }
 
-.archEditor table.relationships thead,
-.archEditor table.relationships tbody {
+.elementEditor table.relationships thead,
+.elementEditor table.relationships tbody {
   width:      100%;
 }
 
-.archEditor table.relationships tr {
+.elementEditor table.relationships tr {
   background-color: #fff;
   border-top:       1px solid #c6cbd1;
 }
 
-.archEditor table.relationships tr:nth-child(2n) {
+.elementEditor table.relationships tr:nth-child(2n) {
   background-color: #f6f8fa;
 }
 
-.archEditor table.relationships th,
-.archEditor table.relationships td {
+.elementEditor table.relationships th,
+.elementEditor table.relationships td {
   border:  1px solid #dfe2e5;
   padding: 4px 4px;
 }
 
-.archEditor table.relationships  th {
+.elementEditor table.relationships  th {
   background-color: #f6f8fa;
 }
 
-.archEditor table.relationships tr td:last-child {
+.elementEditor table.relationships tr td:last-child {
   text-align: center;
 }
 
-.archEditor table.relationships tbody tr:hover {
+.elementEditor table.relationships tbody tr:hover {
   background-color: #eef;
 }
 
-.archEditor table.relationships th.center,
-.archEditor table.relationships td.center {
+.elementEditor table.relationships th.center,
+.elementEditor table.relationships td.center {
   text-align: center;
 }
 
 /* -------------------------------------------------------------------------- */
 
-.archEditor .configurationEditor {
+.elementEditor .configurationEditor {
   position:            absolute;
   left:               0px;
   right:              0px;
@@ -124,7 +124,7 @@
   padding-bottom:    96px;
 }
 
-.archEditor .configurationEditor .modal {
+.elementEditor .configurationEditor .modal {
   width:             100%;
   background-color:     white;
   padding-top:         8px;
@@ -136,7 +136,7 @@
   transition:           all .3s ease;
 }
 
-.archEditor .configurationEditor textarea {
+.elementEditor .configurationEditor textarea {
   width:             100%;
   height:            400px;
   margin-bottom:       8px;

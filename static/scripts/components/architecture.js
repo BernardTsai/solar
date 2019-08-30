@@ -254,7 +254,7 @@ Vue.component(
           <graph :model="model" :view="view" :graph="graph()" @node-selected="viewNode"/>
         </div>
 
-        <archEditor v-if="model.ArchElement" :model="model" :view="view" :element="model.ArchElement"/>
+        <elementEditor v-if="model.ArchElement" :model="model" :view="view" :element="model.ArchElement"/>
       </div>`
   }
 )

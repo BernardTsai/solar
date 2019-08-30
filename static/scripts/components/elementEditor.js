@@ -1,5 +1,5 @@
 Vue.component(
-  'archEditor',
+  'elementEditor',
   {
     props: ['model', 'view','element'],
     methods: {
@@ -324,7 +324,7 @@ Vue.component(
       }
     },
     template: `
-      <div class="archEditor">
+      <div class="elementEditor">
         <div class="header">
           <h3>Element: {{element.Element}} ({{element.Component}})</h3>
 
