@@ -32,6 +32,13 @@ Vue.component(
           this.selectArchitecture()
         })
       },
+      // edit allows to specify configuration information
+      edit: function() {
+        // hide element editor
+        this.model.ArchElement = null
+        // hide graph
+        this.view.showGraph    = false
+      },
       // update updates the architecture
       update: function() {
         architecture = this.model.Architecture
@@ -109,6 +116,9 @@ Vue.component(
       hideElement: function() {
         // reset the architecture element of the model
         this.model.ArchElement = null
+
+        // show graph
+        this.view.showGraph = true
 
         this.$forceUpdate()
       },
@@ -207,19 +217,22 @@ Vue.component(
           </div>
 
           <div class="buttons">
-            <button class="action" v-if="view.architecture==''" @click="create()">
+            <button class="action" v-if="view.architecture==''" @click="create()" title="Create a new architecture">
               Create <i class="fas fa-plus-circle">
             </button>
-            <button class="action" v-if="view.architecture!=''" @click="update()">
+            <button class="action" v-if="view.architecture!=''" @click="edit()" title="Edit architecture information">
+              Edit <i class="fas fa-edit">
+            </button>
+            <button class="action" v-if="view.architecture!=''" @click="update()" title="Save the architecture">
               Update <i class="fas fa-cloud-upload-alt">
             </button>
-            <button class="action" v-if="view.architecture!=''" @click="deploy()">
+            <button class="action" v-if="view.architecture!=''" @click="deploy()" title="Deploy the architecture">
               Deploy <i class="fas fa-play-circle">
             </button>
-            <button class="action" v-if="view.architecture!=''" @click="duplicate()">
+            <button class="action" v-if="view.architecture!=''" @click="duplicate()" title="Create a copy of the architecture">
               Duplicate <i class="fas fa-copy">
             </button>
-            <button class="action" v-if="view.architecture!=''" @click="remove()">
+            <button class="action" v-if="view.architecture!=''" @click="remove()" title="Delete the architecture">
               Delete <i class="fas fa-minus-circle">
             </button>
           </div>
@@ -250,11 +263,14 @@ Vue.component(
           </table>
         </div>
 
-        <div id="container" v-if="model.Architecture">
+        <architectureEditor v-if="model.Architecture && !view.showGraph" :model="model" :view="view"/>
+
+        <div id="container" v-if="model.Architecture && view.showGraph">
           <graph :model="model" :view="view" :graph="graph()" @node-selected="viewNode"/>
         </div>
 
         <elementEditor v-if="model.ArchElement" :model="model" :view="view" :element="model.ArchElement"/>
+
       </div>`
   }
 )

@@ -1,0 +1,50 @@
+.architectureEditor {
+  position:          absolute;
+  top:             32px;
+  bottom:           0px;
+  left:             200px;
+  right:            0px;
+  font-size:       14px;
+  padding-top:      8px;
+  padding-left:      8px;
+  padding-right:     8px;
+  background-color:   #eee;
+}
+
+.architectureEditor .header h3 {
+  margin-top: 0px;
+  display:     inline-block;
+}
+
+.architectureEditor .header .close {
+  float: right;
+}
+
+.architectureEditor table {
+  border-collapse: collapse;
+}
+
+.architectureEditor td, .architectureEditor th {
+  vertical-align: top;
+  border:         none;
+}
+
+.architectureEditor input,
+.architectureEditor select,
+.architectureEditor textarea {
+  width:     100%;
+  font-size:  12px;
+}
+
+.architectureEditor textarea {
+  resize:    none;
+  border:   1px solid lightgrey;
+}
+
+.architectureEditor input:disabled,
+.architectureEditor select:disabled,
+.architectureEditor textarea:disabled {
+  background-color: #eee
+}
+
+/* -------------------------------------------------------------------------- */

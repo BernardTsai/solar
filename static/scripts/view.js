@@ -11,8 +11,7 @@ var view = {
   element:      "",                // name of selected element
   cluster:      "",                // name of selected cluster
   relationship: "",                // name of selected relationship
-
-
+  showGraph:    true,              // specifies wether to show graph or editor
 
   ce: {                          // fields for the component editor
     New:            false,
