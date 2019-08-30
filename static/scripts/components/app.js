@@ -16,6 +16,7 @@ Vue.component( 'app',
             <div v-if="view.domain!=''" @click="navSolution"       :class="{selected: view.nav=='Solution'}"       title="Manage solutions"                            id="Solution">Solution             <i class="fas fa-cubes  text-gray-300"></i></div>
             <div v-if="view.domain!=''" @click="navAutomation"     :class="{selected: view.nav=='Automation'}"     title="Monitor the automation of solutions"         id="Automation">Automation         <i class="fas fa-cogs   text-gray-300"></i></div>
             <div                        @click="navAdministration" :class="{selected: view.nav=='Administration'}" title="Administrate solution domains"               id="Administration">Administration <i class="fas fa-wrench text-gray-300"></i></div>
+            <div                        @click="navDocumentation"  :class="{selected: view.nav=='Documentation'}"  title="Show documentation"                          id="Documentation">Documentation   <i class="fas fa-book   text-gray-300"></i></div>
           </div>
         </div>
         <navigation v-bind:model="model" v-bind:view="view"></navigation>
@@ -84,6 +85,12 @@ function navAutomation()   {
 
 function navAdministration() {
   view.nav = "Administration";
+}
+
+//------------------------------------------------------------------------------
+
+function navDocumentation() {
+  view.nav = "Documentation";
 }
 
 //------------------------------------------------------------------------------

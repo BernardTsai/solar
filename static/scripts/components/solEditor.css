@@ -215,7 +215,7 @@
 
 .solEditor #solutionStatus table th:last-child,
 .solEditor #solutionStatus table td:last-child{
-  witdh: 32px;
+  width: 32px;
 }
 
 .solEditor #solutionStatus .cluster {

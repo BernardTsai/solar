@@ -217,7 +217,7 @@ Vue.component(
                       <td>{{controller.URL}}</td>
                       <td>{{controller.Status}}</td>
                       <td @click="deleteController(controller)" title="delete controller">
-                        <i class="fas fa-minus-circle" v-if="controller.Image!=''"></i>
+                        <div v-if="controller.Image!=''"><i class="fas fa-minus-circle"></i></div>
                       </td>
                     </tr>
                   </tbody>

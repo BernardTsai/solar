@@ -75,9 +75,9 @@ func readConfiguration(path string) (*Configuration, error) {
   viper.SetDefault("CONTROLLERS", []string{})
 
   // read configuration (ignore any errors)
-  err := viper.ReadInConfig(); 
+  err := viper.ReadInConfig();
   if err != nil {
-    LogError("CORE", "util", "Unable to read configuration file")
+    LogWarn("CORE", "util", "Unable to read configuration file")
   }
 
   // decode the configuration

@@ -41,7 +41,7 @@
 /*----------------------------------------------------------------------------*/
 
 #navigation #container .destination {
-  fill-color: red;
+  fill: red;
 }
 
 #navigation #container .destination.active {

@@ -96,7 +96,8 @@ textare:focus, select:focus, input:focus {
   height:           56px;
   line-height:      56px;
   vertical-align:   middle;
-  background-color: lightgrey;
+  background-color: #2A3F54;
+  color:            white;
   border-bottom:    1px solid grey;
   min-width:        1024px;
   padding-left:     8px;
@@ -110,7 +111,7 @@ textare:focus, select:focus, input:focus {
   height:           56px;
   line-height:      56px;
   vertical-align:   middle;
-  background-color: lightgrey;
+  background-color: #2A3F54;;
   border-bottom:    1px solid grey;
   padding-left:     8px;
   font-size:        24px;
@@ -146,19 +147,22 @@ textare:focus, select:focus, input:focus {
   white-space:           nowrap;
   width:                 200px;
   padding-right:         32px;
-  background-color:        white;
+  background-color:      white;
 }
 
 #header #nav div {
   display:         inline-block;
-  color:           grey;
-  padding-right:    8px;
+  color:           #999;
+  padding-right:   8px;
 }
-
-#header #nav #Components.selected     { color: green; }
-#header #nav #Architecture.selected   { color: blue; }
-#header #nav #Solution.selected       { color: red; }
-#header #nav #Automation.selected     { color: orange; }
-#header #nav #Administration.selected { color: purple; }
+#header #nav div.selected {
+  color:           white;
+}
+#header #nav div:hover{
+  color:           #ccc;
+}
+#header #nav div.selected:hover {
+  color:           white;
+}
 
 /*----------------------------------------------------------------------------*/
