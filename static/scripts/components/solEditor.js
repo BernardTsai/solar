@@ -173,6 +173,14 @@ Vue.component(
                 </textarea>
               </td>
             </tr>
+            <tr v-if="view.se.Cluster != ''">
+              <td>&nbsp;Endpoint:</td>
+              <td>
+                <textarea id="endpoint2" rows=5 readonly
+                  v-model="element.Clusters[view.se.Cluster].Endpoint">
+                </textarea>
+              </td>
+            </tr>
 
             <tr v-if="view.se.Cluster != ''">
               <td><strong>Relationships:</strong></td>

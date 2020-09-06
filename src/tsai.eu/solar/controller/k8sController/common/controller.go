@@ -63,18 +63,42 @@ const StatusAction string = "status"
 
 //------------------------------------------------------------------------------
 
+// RelationshipState describes the current state of a relationship
+type RelationshipState struct {
+  Relationship  string  `yaml:"Relationship"`  // name of relationship
+  Dependency    string  `yaml:"Dependency"`    // name of dependency
+  Configuration string  `yaml:"Configuration"` // configuration information
+  Endpoint      string  `yaml:"Endpoint"`      // endpoint information in yaml format
+}
+
+//------------------------------------------------------------------------------
+
+// InstanceState describes the current state of an instance
+type InstanceState struct {
+  Instance string  `yaml:"Instance"`  // id of an instance
+  State    string  `yaml:"State"`     // state of an instance
+  Endpoint string  `yaml:"Endpoint"`  // endpoint information in yaml format
+}
+
+//------------------------------------------------------------------------------
+
 // Request sent to controller.
 type Request struct {
-  Request       string `yaml:"Request"`               // request ID
-  Domain        string `yaml:"Domain"`                // name of the domain
-  Solution      string `yaml:"Solution"`              // name of solution
-	Version       string `yaml:"Version"`               // version of solution
-  Element       string `yaml:"Element"`               // name of element
-  Cluster       string `yaml:"Cluster"`               // name of cluster
-  Instance      string `yaml:"Instance"`              // name of instance
-  Component     string `yaml:"Component"`             // component type of instance
-  State         string `yaml:"State"`                 // state of instance
-	Configuration string `yaml:"Configuration"`         // configuration of instance
+  Request       string              `yaml:"Request"`       // request ID
+  Domain        string              `yaml:"Domain"`        // name of the domain
+  Solution      string              `yaml:"Solution"`      // name of solution
+	Version       string              `yaml:"Version"`       // version of solution
+  Element       string              `yaml:"Element"`       // name of element
+  Cluster       string              `yaml:"Cluster"`       // name of cluster
+  Instance      string              `yaml:"Instance"`      // name of instance
+  Component     string              `yaml:"Component"`     // component type of instance
+  State         string              `yaml:"State"`         // state of instance
+  Min           int                 `yaml:"Min"`           // min. size of the solution element cluster
+	Max           int                 `yaml:"Max"`           // max. size of the solution element cluster
+	Size          int                 `yaml:"Size"`          // size of the solution element cluster
+	Configuration string              `yaml:"Configuration"` // configuration of instance
+  Relationships []RelationshipState `yaml:"Relationships"` // current state of all relationships
+  Instances     []InstanceState     `yaml:"Instances"`     // current state of all instances
 }
 
 //------------------------------------------------------------------------------

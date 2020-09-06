@@ -4,7 +4,7 @@ Vue.component( 'app',
     template: `
       <div>
         <div id="header">
-          <div id="title" title="Simplified Orchestration of the Lifecycle Automation of Resources\nReference implementation - © Bernard Tsai 2018">SOLAR</div>
+          <div id="title" title="Simplified Orchestration of the Lifecycle Automation of Resources\nReference implementation - © Bernard Tsai 2018"><ing src="/images/solar.svg">SOLAR</div>
           <div id="selectors" v-if="view.domain!=''" >
             <div id="domain-selector">
               <strong>Domain:</strong> &nbsp; {{view.domain}} &nbsp;

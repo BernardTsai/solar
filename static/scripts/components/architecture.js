@@ -11,7 +11,11 @@ Vue.component(
           architecture = {
             Architecture:  name,
             Version:       "V0.0.0",
-            Configuration: "",
+            Configuration: jsyaml.safeDump({
+              domain:   this.view.domain,
+              solution: name,
+              version:  "V0.0.0"
+            }),
             Elements:      {}
           }
 

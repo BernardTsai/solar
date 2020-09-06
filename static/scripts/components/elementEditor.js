@@ -101,81 +101,13 @@ Vue.component(
 
         return result
       },
-      // alignParameters initialises the configuration parameters
-      alignParameters: function(configuration_type, template, configuration) {
-        dict = jsyaml.safeLoad(configuration)
-        if (!dict) {
-          dict = {}
-        }
-        dict["domain"]       = this.view.domain
-        dict["solution"]     = this.view.solution
-        dict["version"]      = this.view.version
-        dict["element"]      = this.element.Element
-        dict["cluster"]      = this.view.ae.Cluster
-        dict["relationship"] = this.view.ae.Relationship
-
-        defDict = {"domain": 0, "solution":0, "version":0, "element":0, "cluster": 0, "relationship": 0}
-        config = "# Configuration parameters\n"
-        names = []
-        length = 12
-        matches = template.match(/{{[^}]*}}/g)
-        if (matches) {
-          for (var name of matches) {
-            name = name.replace("{{","")
-            name = name.replace("}}","")
-            name = name.trim()
-            if (!(name in defDict)) {
-              defDict[name] = null
-              names.push(name)
-              length = Math.max(length, name.length)
-              if (!(name in dict)) {
-                dict[name] = null
-              }
-            }
-          }
-        }
-        if (configuration_type == 'relationship') {
-          names.unshift("relationship")
-        }
-        if (configuration_type != 'element') {
-          names.unshift("cluster")
-        }
-        names.sort()
-        names.unshift("element")
-        names.unshift("version")
-        names.unshift("solution")
-        names.unshift("domain")
-
-        // construct parameters
-        config = "# " + this.view.ae.ConfTitle + "\n"
-        for (var name of names) {
-          key = "'" + name + "': " + " ".repeat(length)
-          key = key.substr(0, length + 4)
-          if (dict[name]) {
-            config += key + "'" + dict[name] + "'\n"
-          } else {
-            config += key + "'<enter parameter here>'\n"
-          }
-        }
-
-        return config
-      },
-      // showTemplate displays the template
-      showTemplate: function() {
-        this.view.ae.Display = "template"
+      // showSchema displays the schema
+      showSchema: function() {
+        this.view.ae.Display = "schema"
       },
       // showParameters displays the parameters
       showParameters: function() {
         this.view.ae.Display = "parameters"
-      },
-      // showConfiguration renders the component template with the parameters
-      showConfiguration: function() {
-        template      = this.view.ae.Template
-        parameters    = jsyaml.safeLoad(this.view.ae.Parameters)
-        configuration = Mustache.render(template, parameters)
-
-        this.view.ae.Configuration = configuration
-        this.view.ae.Display       = "configuration"
       },
       // editConfiguration opens editor for editing a configuration
       editConfiguration: function(configuration_type, relationship) {
@@ -187,60 +119,41 @@ Vue.component(
             this.view.ae.ConfTitle     = "Configuration for element '" + this.element.Element + "':"
             this.view.ae.Display       = "parameters"
             this.view.ae.Relationship  = ""
-            // find templates of all matching component versions
-            templates = ""
-            for (var c of this.model.Catalog) {
-              // add all dependencies
-              if (c.Component == this.element.Component) {
-                templates += "-".repeat(80) + "\n"
-                templates += "Configuration template of component version: " + c.Version + "\n"
-                templates += "-".repeat(80) + "\n\n"
-                templates += c.Configuration + "\n\n"
-              }
-            }
-            this.view.ae.Template      = templates
-            this.view.ae.Parameters    = this.alignParameters(configuration_type, templates, this.element.Configuration)
-            this.view.ae.Configuration = ""
+
+            this.view.ae.Schema        = ""
+            this.view.ae.Parameters    = this.element.Configuration
             break
           case "cluster":
             this.view.ae.ConfTitle     = "Configuration for cluster '" + this.view.ae.Cluster + "':"
             this.view.ae.Display       = "parameters"
             this.view.ae.Relationship  = ""
-            // find templates of the matching component version
-            template = ""
+            // find schema of the matching component version
+            schema = ""
             for (var c of this.model.Catalog) {
               // add all dependencies
               if (c.Component == this.element.Component && c.Version == this.view.ae.Cluster) {
-                template += "-".repeat(80) + "\n"
-                template += "Configuration template of component version: " + c.Version + "\n"
-                template += "-".repeat(80) + "\n\n"
-                template += c.Configuration + "\n\n"
+                schema = c.Configuration
                 break
               }
             }
-            this.view.ae.Template      = template
-            this.view.ae.Parameters    = this.alignParameters(configuration_type, template, this.element.Clusters[this.view.ae.Cluster].Configuration)
-            this.view.ae.Configuration = ""
+            this.view.ae.Schema        = schema
+            this.view.ae.Parameters    =this.element.Clusters[this.view.ae.Cluster].Configuration
             break
           case "relationship":
             this.view.ae.ConfTitle     = "Configuration for relationship: '" + relationship.Relationship + "':"
             this.view.ae.Display       = "parameters"
             this.view.ae.Relationship  = relationship.Relationship
-            // find templates of the matching dependency
-            template = ""
+            // find schema of the matching dependency
+            schema = ""
             for (var c of this.model.Catalog) {
               if (c.Component == this.element.Component && c.Version == this.view.ae.Cluster) {
-                dep = c.Dependencies[relationship.Dependency]
-                template += "-".repeat(80) + "\n"
-                template += "Configuration template of dependency : " + dep.Dependency + "\n"
-                template += "-".repeat(80) + "\n\n"
-                template += dep.Configuration + "\n\n"
+                dep    = c.Dependencies[relationship.Dependency]
+                schema = dep.Configuration
                 break
               }
             }
-            this.view.ae.Template      = template
-            this.view.ae.Parameters    = this.alignParameters(configuration_type, template, this.element.Clusters[this.view.ae.Cluster].Relationships[this.view.ae.Relationship].Configuration)
-            this.view.ae.Configuration = ""
+            this.view.ae.Schema        = schema
+            this.view.ae.Parameters    = this.element.Clusters[this.view.ae.Cluster].Relationships[this.view.ae.Relationship].Configuration
             break
         }
 
@@ -248,6 +161,13 @@ Vue.component(
       },
       // updateConfiguration updates the corresponding configuration
       updateConfiguration: function() {
+        // validate parameters
+        msg = validateParameters(this.view.ae.Schema, this.view.ae.Parameters)
+        if (msg != "") {
+          alert(msg)
+          return
+        }
+
         switch( this.view.ae.ConfType ) {
           case "element":
             this.element.Configuration = this.view.ae.Parameters
@@ -266,9 +186,8 @@ Vue.component(
       // discardConfiguration closes the configuration editor
       discardConfiguration: function() {
         this.view.ae.Display       = ""
-        this.view.ae.Template      = ""
+        this.view.ae.Schema        = ""
         this.view.ae.Parameters    = ""
-        this.view.ae.Configuration = ""
         this.view.ae.ConfType      = ""
         this.view.ae.ConfTitle     = ""
         this.view.ae.Relationship  = ""
@@ -353,7 +272,7 @@ Vue.component(
             </td>
           </tr>
           <tr>
-            <td>&nbsp;Conf.&nbsp;Parameters:</td>
+            <td>&nbsp;Parameters:</td>
             <td>
               <textarea id="configuration" rows=5
                 @click="editConfiguration('element', '')"
@@ -403,7 +322,7 @@ Vue.component(
             </td>
           </tr>
           <tr v-if="view.ae.Cluster != ''">
-            <td>&nbsp;Conf.&nbsp;Parameters:</td>
+            <td>&nbsp;Parameters:</td>
             <td>
               <textarea id="configuration2" rows=5 readonly
                 @click="editConfiguration('cluster', '')"
@@ -422,7 +341,7 @@ Vue.component(
                     <th>Relationship</th>
                     <th>Dependency</th>
                     <th>Element</th>
-                    <th>Conf.&nbsp;Parameters</th>
+                    <th>Parameters</th>
                     <th class="center" @click="addRelationship"><i class="fas fa-plus-circle"></i></th>
                 </thead>
                 <tbody>
@@ -463,23 +382,19 @@ Vue.component(
         <div class="configurationEditor" v-if="view.ae.Display != ''">
           <div class="modal">
             <h3>{{view.ae.ConfTitle}}</h3>
-            <textarea v-focus readonly @keyup.esc="discardConfiguration()" v-if="view.ae.Display=='configuration'" v-model="view.ae.Configuration"></textarea>
             <textarea v-focus          @keyup.esc="discardConfiguration()" v-if="view.ae.Display=='parameters'"    v-model="view.ae.Parameters"></textarea>
-            <textarea v-focus readonly @keyup.esc="discardConfiguration()" v-if="view.ae.Display=='template'"      v-model="view.ae.Template"></textarea>
+            <textarea v-focus readonly @keyup.esc="discardConfiguration()" v-if="view.ae.Display=='schema'"        v-model="view.ae.Schema"></textarea>
             <button class="modal-default-button" @click="updateConfiguration()">
               OK <i class="fas fa-check-circle">
             </button>
             <button class="modal-default-button" @click="discardConfiguration()">
               Cancel <i class="fas fa-times-circle">
             </button>
-            <button class="modal-default-button" @click="showConfiguration()">
-              Configuration <i class="fas fa-file-alt">
-            </button>
             <button class="modal-default-button" @click="showParameters()">
               Parameters <i class="fas fa-align-justify">
             </button>
-            <button class="modal-default-button" @click="showTemplate()">
-              Template <i class="fas fa-file-code">
+            <button class="modal-default-button" @click="showSchema()">
+              Schema <i class="fas fa-file-code">
             </button>
 
           </div>

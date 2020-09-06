@@ -114,11 +114,11 @@ Vue.component(
       // editConfiguration opens editor for editing a configuration
       editConfiguration: function(dep) {
         if (dep != "") {
-          this.view.ce.ConfTitle     = "Configuration template of dependency: " + dep.Dependency
+          this.view.ce.ConfTitle     = "Configuration schema of dependency: " + dep.Dependency
           this.view.ce.Configuration = dep.Configuration
           this.view.ce.Dependency    = dep.Dependency
         } else {
-          this.view.ce.ConfTitle     = "Configuration template of component: "
+          this.view.ce.ConfTitle     = "Configuration schema of component: "
           this.view.ce.Configuration = this.model.Component.Configuration
           this.view.ce.Dependency    = ""
         }
@@ -133,6 +133,13 @@ Vue.component(
       },
       // updateConfiguration updates the corresponding configuration
       updateConfiguration: function() {
+        // validate configuration schema
+        msg = validateSchema(this.view.ce.Configuration)
+        if (msg != "") {
+          alert(msg)
+          return
+        }
+
         // update configuration
         depName = this.view.ce.Dependency
         if (depName != "") {
@@ -196,7 +203,7 @@ Vue.component(
             </td>
           </tr>
           <tr>
-            <td>&nbsp;Conf.&nbsp;Template:</td>
+            <td>&nbsp;Schema:</td>
             <td>
               <textarea id="configuration" rows=10
                 @focus="editConfiguration('')"
@@ -215,7 +222,7 @@ Vue.component(
                     <th>Type</th>
                     <th>Component</th>
                     <th>Version</th>
-                    <th>Conf.&nbsp;Template</th>
+                    <th>Schema</th>
                     <th class="center" @click="addDependency"><i class="fas fa-plus-circle"></i></th>
                 </thead>
                 <tbody>
